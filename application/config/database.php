@@ -76,9 +76,9 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
-	'username' => (ENVIRONMENT !== 'production')?'root':'drillu',
-	'password' => (ENVIRONMENT !== 'production')?'':'Ak@gowtham',
-	'database' => (ENVIRONMENT !== 'production')?'management':'control',
+	'username' => (ENVIRONMENT !== 'production')?'root':'root',
+	'password' => (ENVIRONMENT !== 'production')?'':'',
+	'database' => (ENVIRONMENT !== 'production')?'mcms':'mcms',
 	'dbdriver' => 'mysqli', 
 	'dbprefix' => '',
 	'pconnect' => FALSE,

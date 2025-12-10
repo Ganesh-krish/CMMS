@@ -90,8 +90,9 @@ defined('ClientSecret')      or define('ClientSecret', 'GOCSPX-6MS7C_qb9iX_UquXA
 defined('RedirectURL')      or define('RedirectURL', "OAuth/verify");
 
 defined('DB_INSTALL_KEY')      or define('DB_INSTALL_KEY', "YInTXhwPxaMwSGGZ9DQtVkuTk4OoZguJ");
-defined('STUDENT_PORTAL_BASE_URL')      or define('STUDENT_PORTAL_BASE_URL','https://drillu.in');
-defined('ONE_COMPILER_API_KEY') or define('ONE_COMPILER_API_KEY', getenv('ONE_COMPILER_API_KEY') ?: '');
+defined('STUDENT_PORTAL_BASE_URL')      or define('STUDENT_PORTAL_BASE_URL','');
+defined('ONE_COMPILER_API_KEY') or define('ONE_COMPILER_API_KEY', '');
+defined('SINGLE_COLLEGE_ID') or define('SINGLE_COLLEGE_ID', 1);
 
 defined('DESIGNATION_PRINCIPAL')      or define('DESIGNATION_PRINCIPAL', 1);
 defined('DESIGNATION_HOD')      or define('DESIGNATION_HOD', 2);

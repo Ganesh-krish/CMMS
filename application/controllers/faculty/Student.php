@@ -29,6 +29,7 @@ class Student extends CI_Controller {
         $this->load->model( 'faculty/common', 'common' );
         $this->load->model( 'faculty/db_model', 'db_model' );
         $this->load->model( 'faculty/test_model', 'test_model' );
+        $this->load->model( 'Lesson_model', 'lesson_model' );
         $this->load->library( 'session' );
 
         
@@ -144,28 +145,6 @@ class Student extends CI_Controller {
             } 
             
             
-            
-            if (!isset($student->external_id) || empty($student->external_id) || 
-                !isset($student->user_token) || empty($student->user_token)) {
-                
-                
-                $api_result = $this->create_external_user($student);
-                
-                if ($api_result && isset($api_result['_id']) && isset($api_result['api']['token'])) {
-                
-                    $update_data = array(
-                        'external_id' => $api_result['_id'],
-                        'user_token' => $api_result['api']['token']
-                    );
-                    
-                    $this->db->where('id', $student->id);
-                    $this->db->update('students', $update_data);
-                    
-                
-                    $student->external_id = $api_result['_id'];
-                    $student->user_token = $api_result['api']['token'];
-                }
-            }
             
             $response = array(
                 'status' => 'success',
@@ -2395,5 +2374,32 @@ class Student extends CI_Controller {
         return;
     }
 
+    public function lessons($module_id = null) {
+        $student = $this->session->userdata($this->url . '_student');
+        if (!$student) {
+            http_response_code(401);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'User not authenticated',
+                'data' => null
+            ]);
+            return;
+        }
+        $module_id = (int)$module_id;
+        if (!$module_id) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'module_id is required',
+                'data' => null
+            ]);
+            return;
+        }
 
+        $lessons = $this->lesson_model->list_by_module($module_id);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $lessons
+        ]);
+    }
 }

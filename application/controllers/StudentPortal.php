@@ -11,6 +11,7 @@ class StudentPortal extends CI_Controller
         parent::__construct();
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/common', 'faculty_common');
+        $this->load->model('Lesson_model', 'lesson_model');
         $this->load->library('session');
     }
 
@@ -75,10 +76,24 @@ class StudentPortal extends CI_Controller
             'is_active' => 1
         ]);
 
+        $modules_by_course = [];
+        if (!empty($courses)) {
+            foreach ($courses as $course) {
+                $modules = $this->db_model->get_all('course_modules', [
+                    'course_id' => $course['id']
+                ], '*', 'id', 'ASC');
+                foreach ($modules as &$module) {
+                    $module['lessons'] = $this->lesson_model->list_by_module($module['id']);
+                }
+                $modules_by_course[$course['id']] = $modules;
+            }
+        }
+
         $data = [
             'college' => $this->college,
             'student' => $student,
             'courses' => $courses,
+            'modules_by_course' => $modules_by_course,
             'college_slug' => $college_slug
         ];
         $this->load->view('student/dashboard', $data);
@@ -90,4 +105,5 @@ class StudentPortal extends CI_Controller
         redirect("student-portal/$college_slug/login");
     }
 }
+
 

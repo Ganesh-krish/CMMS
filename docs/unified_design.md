@@ -51,3 +51,4 @@
 - Define migrations for new tables (instruments, batches/schedules, progress logs, notifications).
 - Replace React portal with CI3 student views after API parity.
 
+

@@ -83,7 +83,7 @@ $route['(:any)/staff/staff'] = 'faculty/Staff/staff';
 $route['(:any)/staff/students'] = 'faculty/Staff/students';
 $route['(:any)/hod/groups'] = 'faculty/Hod/groups';
 
-// Course functionality 
+// Course functionality (tests removed)
 $route['(:any)/course'] = 'faculty/Course/courses'; 
 $route['(:any)/allcourses'] = 'faculty/Course/allcourses';
 $route['(:any)/course/new'] = 'faculty/Course';
@@ -91,9 +91,6 @@ $route['(:any)/course/add'] = 'faculty/Course/add';
 $route['(:any)/course/edit/(:any)/(:any)'] = 'faculty/Course/edit/$2/$3'; 
 $route['(:any)/course/edit/(:any)'] = 'faculty/Course/edit/$4'; 
 $route['(:any)/course/delete/(:any)/(:any)'] = 'faculty/Course/delete/$2/$3';
-$route['(:any)/course/test/add/(:any)'] = 'faculty/Course/test/$2';
-$route['(:any)/course/add_test_to_course'] = 'faculty/Course/add_test_to_course';
-$route['(:any)/course/remove_test_from_course/(:any)/(:any)'] = 'faculty/Course/remove_test_from_course/$2/$3';
 $route['(:any)/course/view_students/(:any)'] = 'faculty/Course/view_students/$2';
 $route['(:any)/course/modules/(:any)'] = 'faculty/Course/modules/$2';
 $route['(:any)/allcourses/modules/(:any)'] = 'faculty/Course/allcourses_modules/$2';
@@ -101,31 +98,6 @@ $route['(:any)/allspecialcourses/assign_students/(:any)'] = 'faculty/Course/assi
 $route['(:any)/course/add_module'] = 'faculty/Course/add_module';
 $route['(:any)/course/edit_module/(:any)/(:any)'] = 'faculty/Course/edit_module/$2/$3';
 $route['(:any)/course/delete_module/(:any)/(:any)'] = 'faculty/Course/delete_module/$2/$3';
-$route['(:any)/course/module_tests/(:any)/(:any)'] = 'faculty/Course/module_tests/$2/$3';
-$route['(:any)/allcourses/module_tests/(:any)/(:any)'] = 'faculty/Course/all_course_module_tests/$2/$3';
-$route['(:any)/course/add_tests_to_module'] = 'faculty/Course/add_tests_to_module';
-$route['(:any)/course/edit_module_test/(:any)/(:any)/(:any)'] = 'faculty/Course/edit_module_test/$2/$3/$4';
-$route['(:any)/course/remove_test_from_module/(:any)/(:any)/(:any)'] = 'faculty/Course/remove_test_from_module/$2/$3/$4';
-$route['(:any)/course/view_module_tests/(:any)/(:any)'] = 'faculty/Course/view_module_tests/$2/$3';
-$route['(:any)/course/test_questions/(:any)'] = 'faculty/Course/test_questions/$2';
-$route['(:any)/allcourses/test_questions/(:any)'] = 'faculty/Course/all_course_test_questions/$2';
-
-// Test Results Routes
-$route['(:any)/course/test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/test_results/$2/$3/$4';
-$route['(:any)/allcourses/test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/all_course_test_results/$2/$3/$4';
-$route['(:any)/course/student_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/student_test_report/$2/$3/$4/$5';
-$route['(:any)/allcourses/student_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/all_course_student_test_report/$2/$3/$4/$5';
-$route['(:any)/course/student_overall_test_report/(:num)'] = 'faculty/course/student_overall_test_report/$2';
-$route['(:any)/course/export_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/export_test_report/$2/$3/$4/$5';
-$route['(:any)/course/export_test_report_csv/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/export_test_report_csv/$2/$3/$4/$5';
-$route['(:any)/course/export_all_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/export_all_test_results/$2/$3/$4';
-$route['(:any)/course/export_performance_report/(:num)'] = 'faculty/course/export_performance_report/$2';
-$route['(:any)/course/export_module_report/(:num)/(:num)'] = 'faculty/course/export_module_report/$2/$3';
-$route['(:any)/course/export_detailed_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/export_detailed_test_results/$2/$3/$4';
-$route['(:any)/course/sync_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/sync_test_results/$2/$3/$4';
-$route['(:any)/course/get_sync_status/(:num)/(:num)/(:num)'] = 'faculty/Course/get_sync_status/$2/$3/$4';
-$route['(:any)/allcourses/sync_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/sync_test_results/$2/$3/$4';
-$route['(:any)/allcourses/get_sync_status/(:num)/(:num)/(:num)'] = 'faculty/Course/get_sync_status/$2/$3/$4';
 
 // Batches & schedules
 $route['(:any)/batches/(:num)'] = 'faculty/Batches/index/$2';
@@ -134,47 +106,8 @@ $route['(:any)/batches/update/(:num)'] = 'faculty/Batches/update/$2';
 $route['(:any)/batches/schedules/(:num)'] = 'faculty/Batches/schedules/$2';
 $route['(:any)/batches/schedules/add'] = 'faculty/Batches/add_schedule';
 
-// Question bank
-$route['(:any)/question'] = 'faculty/Question/questions';
-$route['(:any)/question/add'] = 'faculty/Question/add';
-$route['(:any)/question/create'] = 'faculty/Question/create';
-$route['(:any)/question/update/(:num)'] = 'faculty/Question/update/$2';
-$route['(:any)/question/edit/(:num)'] = 'faculty/Question/edit/$2';
-$route['(:any)/question/delete/(:num)'] = 'faculty/Question/delete/$2';
-$route['(:any)/question/bulk_add_questions'] = 'faculty/Question/bulk_add_questions';
-$route['(:any)/SampleCsv/download_sample_csv_questions'] = 'faculty/SampleCsv/download_sample_csv_questions';
-$route['(:any)/question/uploadQuestionImage'] = 'faculty/Question/uploadQuestionImage';
-$route['(:any)/question/view/(:any)'] = 'faculty/Question/view/$2';
-$route['(:any)/question/download_mcq'] = 'faculty/Question/download_mcq';
-$route['(:any)/question/upload_report'] = 'faculty/Question/upload_report';
-
 $route['(:any)/staff/reset_password'] = 'faculty/Staff/reset_password'; 
 $route['(:any)/staff/reset_password_student'] = 'faculty/Staff/reset_password_student'; 
-
-// Test builder
-$route['(:any)/test'] = 'faculty/Test/view';
-$route['(:any)/test/add'] = 'faculty/Test/add';
-$route['(:any)/test/edit/(:num)'] = 'faculty/Test/edit/$2';
-$route['(:any)/test/create'] = 'faculty/Test/create';
-$route['(:any)/test/delete/(:num)'] = 'faculty/Test/delete/$2';
-$route['(:any)/test/questions/(:num)'] = 'faculty/Test/questions/$2';
-$route['(:any)/test/add_question'] = 'faculty/Test/add_question';
-$route['(:any)/test/add_questions'] = 'faculty/Test/add_questions';
-$route['(:any)/test/remove_question'] = 'faculty/Test/remove_question';
-$route['(:any)/test/remove_all_questions'] = 'faculty/Test/remove_all_questions';
-$route['(:any)/test/save_question_order'] = 'faculty/Test/save_question_order';
-$route['(:any)/test/reorder_test_questions'] = 'faculty/Test/reorder_test_questions';
-$route['(:any)/test/upload_image'] = 'faculty/Test/upload_image';
-
-// Section Management Routes
-$route['(:any)/test/get_sections/(:num)'] = 'faculty/Test/get_sections/$2';
-$route['(:any)/test/create_challenge/(:num)'] = 'faculty/Test/create_challenge/$2';
-$route['(:any)/test/update_challenge_with_sections/(:num)'] = 'faculty/Test/update_challenge_with_sections/$2';
-$route['(:any)/test/create_section'] = 'faculty/Test/create_section';
-$route['(:any)/test/update_section'] = 'faculty/Test/update_section';
-$route['(:any)/test/delete_section'] = 'faculty/Test/delete_section';
-$route['(:any)/test/assign_question_to_section'] = 'faculty/Test/assign_question_to_section';
-$route['(:any)/test/remove_question_from_section'] = 'faculty/Test/remove_question_from_section';
 
 // Groups
 $route['(:any)/staff/groups'] = 'faculty/Staff/groups';
@@ -190,11 +123,6 @@ $route['(:any)/groups/addMemberstoGroup'] = 'faculty/Groups/addMemberstoGroup';
 $route['(:any)/report'] = 'faculty/Report';
 $route['(:any)/report/kpis'] = 'faculty/Report/kpis';
 $route['(:any)/report/(:any)'] = 'faculty/Report/$2';
-$route['(:any)/report/student_detail/(:any)'] = 'faculty/Report/student_detail/$2';
-$route['(:any)/report/test_detail/(:any)'] = 'faculty/Report/test_detail/$2';
-$route['(:any)/report/course_detail/(:any)'] = 'faculty/Report/course_detail/$2';
-$route['(:any)/report/export_csv/(:any)'] = 'faculty/Report/export_csv/$2';
-$route['(:any)/report/print/(:any)'] = 'faculty/Report/print/$2';
 $route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';
 
 // Instrument Inventory
@@ -210,11 +138,14 @@ $route['(:any)/student/login'] = 'faculty/Student/login';
 $route['(:any)/student/check_auth'] = 'faculty/Student/check_auth';
 $route['(:any)/student/auth_logout'] = 'faculty/Student/auth_logout';
 $route['(:any)/student/courses'] = 'faculty/Student/courses';
-$route['(:any)/student/test'] = 'faculty/Student/test';
-$route['(:any)/student/test/submit/(:any)/(:any)/(:any)'] = 'faculty/Student/test_submit/$2/$3/$4';
 $route['(:any)/student/dashboard'] = 'faculty/Student/dashboard';
 $route['(:any)/student/course_modules/(:any)'] = 'faculty/Student/course_modules/$2';
-$route['(:any)/student/test_result'] = 'faculty/Student/test_result';
-$route['(:any)/student/get_test_link'] = 'faculty/Student/get_test_link';
 $route['(:any)/student/logo'] = 'faculty/Student/logo';
 $route['(:any)/student/banner'] = 'faculty/Student/banner';
+$route['(:any)/student/lessons/(:num)'] = 'faculty/Student/lessons/$2';
+$route['(:any)/lessons'] = 'faculty/Lessons/index';
+$route['(:any)/lessons/module/(:num)'] = 'faculty/Lessons/by_module/$2';
+$route['(:any)/lessons/create'] = 'faculty/Lessons/create';
+$route['(:any)/lessons/update/(:num)'] = 'faculty/Lessons/update/$2';
+$route['(:any)/lessons/delete/(:num)'] = 'faculty/Lessons/delete/$2';
+$route['(:any)/lessons/upload_attachment'] = 'faculty/Lessons/upload_attachment';

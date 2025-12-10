@@ -1,0 +1,220 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/*
+| -------------------------------------------------------------------------
+| URI ROUTING
+| -------------------------------------------------------------------------
+| This file lets you re-map URI requests to specific controller functions.
+|
+| Typically there is a one-to-one relationship between a URL string
+| and its corresponding controller class/method. The segments in a
+| URL normally follow this pattern:
+|
+|	example.com/class/method/id/
+|
+| In some instances, however, you may want to remap this relationship
+| so that a different class/function is called than the one
+| corresponding to the URL.
+|
+| Please see the user guide for complete details:
+|
+|	https://codeigniter.com/userguide3/general/routing.html
+|
+| -------------------------------------------------------------------------
+| RESERVED ROUTES
+| -------------------------------------------------------------------------
+|
+| There are three reserved routes:
+|
+|	$route['default_controller'] = 'welcome';
+|
+| This route indicates which controller class should be loaded if the
+| URI contains no data. In the above example, the "welcome" class
+| would be loaded.
+|
+|	$route['404_override'] = 'errors/page_missing';
+|
+| This route will tell the Router which controller/method to use if those
+| provided in the URL cannot be matched to a valid route.
+|
+|	$route['translate_uri_dashes'] = FALSE;
+|
+| This is not exactly a route, but allows you to automatically route
+| controller and method names that contain dashes. '-' isn't a valid
+| class or method name character, so it requires translation.
+| When you set this option to TRUE, it will replace ALL dashes in the
+| controller and method URI segments.
+|
+| Examples:	my-controller/index	-> my_controller/index
+|		my-controller/my-method	-> my_controller/my_method
+*/
+$route['default_controller'] = 'OAuth';
+$route['logout'] = 'OAuth/logout';
+$route['404_override'] = '';
+$route['translate_uri_dashes'] = FALSE;
+
+// Student portal (CI views)
+$route['student-portal/(:any)/login'] = 'StudentPortal/login/$1';
+$route['student-portal/(:any)/authenticate'] = 'StudentPortal/authenticate/$1';
+$route['student-portal/(:any)/dashboard'] = 'StudentPortal/dashboard/$1';
+$route['student-portal/(:any)/logout'] = 'StudentPortal/logout/$1';
+
+// Faculty/Student portals (migrated from college app)
+$route['(:any)/login/faculty'] = 'faculty/Login/faculty/$1'; 
+$route['(:any)/college'] = 'faculty/College'; 
+$route['(:any)/logout'] = 'faculty/Login/logout/$1'; 
+$route['(:any)/principal'] = 'faculty/Principal'; 
+$route['(:any)/principal/view'] = 'faculty/Principal/view'; 
+$route['(:any)/principal/hod'] = 'faculty/Principal/hod'; 
+$route['(:any)/principal/staff'] = 'faculty/Principal/staff'; 
+$route['(:any)/principal/students'] = 'faculty/Principal/students'; 
+$route['(:any)/principal/profile'] = 'faculty/Principal/profile'; 
+$route['(:any)/principal/reset_password'] = 'faculty/Principal/reset_password'; 
+$route['(:any)/principal/reset_password_student'] = 'faculty/Principal/reset_password_student'; 
+$route['(:any)/hod'] = 'faculty/Hod';  
+$route['(:any)/hod/hod'] = 'faculty/Hod/hod'; 
+$route['(:any)/hod/staff'] = 'faculty/Hod/staff'; 
+$route['(:any)/hod/students'] = 'faculty/Hod/students'; 
+$route['(:any)/hod/reset_password'] = 'faculty/Hod/reset_password'; 
+$route['(:any)/hod/reset_password_student'] = 'faculty/Hod/reset_password_student'; 
+$route['(:any)/staff'] = 'faculty/Staff';   
+$route['(:any)/staff/staff'] = 'faculty/Staff/staff'; 
+$route['(:any)/staff/students'] = 'faculty/Staff/students';
+$route['(:any)/hod/groups'] = 'faculty/Hod/groups';
+
+// Course functionality 
+$route['(:any)/course'] = 'faculty/Course/courses'; 
+$route['(:any)/allcourses'] = 'faculty/Course/allcourses';
+$route['(:any)/course/new'] = 'faculty/Course';
+$route['(:any)/course/add'] = 'faculty/Course/add'; 
+$route['(:any)/course/edit/(:any)/(:any)'] = 'faculty/Course/edit/$2/$3'; 
+$route['(:any)/course/edit/(:any)'] = 'faculty/Course/edit/$4'; 
+$route['(:any)/course/delete/(:any)/(:any)'] = 'faculty/Course/delete/$2/$3';
+$route['(:any)/course/test/add/(:any)'] = 'faculty/Course/test/$2';
+$route['(:any)/course/add_test_to_course'] = 'faculty/Course/add_test_to_course';
+$route['(:any)/course/remove_test_from_course/(:any)/(:any)'] = 'faculty/Course/remove_test_from_course/$2/$3';
+$route['(:any)/course/view_students/(:any)'] = 'faculty/Course/view_students/$2';
+$route['(:any)/course/modules/(:any)'] = 'faculty/Course/modules/$2';
+$route['(:any)/allcourses/modules/(:any)'] = 'faculty/Course/allcourses_modules/$2';
+$route['(:any)/allspecialcourses/assign_students/(:any)'] = 'faculty/Course/assign_students/$2';
+$route['(:any)/course/add_module'] = 'faculty/Course/add_module';
+$route['(:any)/course/edit_module/(:any)/(:any)'] = 'faculty/Course/edit_module/$2/$3';
+$route['(:any)/course/delete_module/(:any)/(:any)'] = 'faculty/Course/delete_module/$2/$3';
+$route['(:any)/course/module_tests/(:any)/(:any)'] = 'faculty/Course/module_tests/$2/$3';
+$route['(:any)/allcourses/module_tests/(:any)/(:any)'] = 'faculty/Course/all_course_module_tests/$2/$3';
+$route['(:any)/course/add_tests_to_module'] = 'faculty/Course/add_tests_to_module';
+$route['(:any)/course/edit_module_test/(:any)/(:any)/(:any)'] = 'faculty/Course/edit_module_test/$2/$3/$4';
+$route['(:any)/course/remove_test_from_module/(:any)/(:any)/(:any)'] = 'faculty/Course/remove_test_from_module/$2/$3/$4';
+$route['(:any)/course/view_module_tests/(:any)/(:any)'] = 'faculty/Course/view_module_tests/$2/$3';
+$route['(:any)/course/test_questions/(:any)'] = 'faculty/Course/test_questions/$2';
+$route['(:any)/allcourses/test_questions/(:any)'] = 'faculty/Course/all_course_test_questions/$2';
+
+// Test Results Routes
+$route['(:any)/course/test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/test_results/$2/$3/$4';
+$route['(:any)/allcourses/test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/all_course_test_results/$2/$3/$4';
+$route['(:any)/course/student_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/student_test_report/$2/$3/$4/$5';
+$route['(:any)/allcourses/student_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/all_course_student_test_report/$2/$3/$4/$5';
+$route['(:any)/course/student_overall_test_report/(:num)'] = 'faculty/course/student_overall_test_report/$2';
+$route['(:any)/course/export_test_report/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/export_test_report/$2/$3/$4/$5';
+$route['(:any)/course/export_test_report_csv/(:num)/(:num)/(:num)/(:num)'] = 'faculty/Course/export_test_report_csv/$2/$3/$4/$5';
+$route['(:any)/course/export_all_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/export_all_test_results/$2/$3/$4';
+$route['(:any)/course/export_performance_report/(:num)'] = 'faculty/course/export_performance_report/$2';
+$route['(:any)/course/export_module_report/(:num)/(:num)'] = 'faculty/course/export_module_report/$2/$3';
+$route['(:any)/course/export_detailed_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/export_detailed_test_results/$2/$3/$4';
+$route['(:any)/course/sync_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/sync_test_results/$2/$3/$4';
+$route['(:any)/course/get_sync_status/(:num)/(:num)/(:num)'] = 'faculty/Course/get_sync_status/$2/$3/$4';
+$route['(:any)/allcourses/sync_test_results/(:num)/(:num)/(:num)'] = 'faculty/Course/sync_test_results/$2/$3/$4';
+$route['(:any)/allcourses/get_sync_status/(:num)/(:num)/(:num)'] = 'faculty/Course/get_sync_status/$2/$3/$4';
+
+// Batches & schedules
+$route['(:any)/batches/(:num)'] = 'faculty/Batches/index/$2';
+$route['(:any)/batches/create'] = 'faculty/Batches/create';
+$route['(:any)/batches/update/(:num)'] = 'faculty/Batches/update/$2';
+$route['(:any)/batches/schedules/(:num)'] = 'faculty/Batches/schedules/$2';
+$route['(:any)/batches/schedules/add'] = 'faculty/Batches/add_schedule';
+
+// Question bank
+$route['(:any)/question'] = 'faculty/Question/questions';
+$route['(:any)/question/add'] = 'faculty/Question/add';
+$route['(:any)/question/create'] = 'faculty/Question/create';
+$route['(:any)/question/update/(:num)'] = 'faculty/Question/update/$2';
+$route['(:any)/question/edit/(:num)'] = 'faculty/Question/edit/$2';
+$route['(:any)/question/delete/(:num)'] = 'faculty/Question/delete/$2';
+$route['(:any)/question/bulk_add_questions'] = 'faculty/Question/bulk_add_questions';
+$route['(:any)/SampleCsv/download_sample_csv_questions'] = 'faculty/SampleCsv/download_sample_csv_questions';
+$route['(:any)/question/uploadQuestionImage'] = 'faculty/Question/uploadQuestionImage';
+$route['(:any)/question/view/(:any)'] = 'faculty/Question/view/$2';
+$route['(:any)/question/download_mcq'] = 'faculty/Question/download_mcq';
+$route['(:any)/question/upload_report'] = 'faculty/Question/upload_report';
+
+$route['(:any)/staff/reset_password'] = 'faculty/Staff/reset_password'; 
+$route['(:any)/staff/reset_password_student'] = 'faculty/Staff/reset_password_student'; 
+
+// Test builder
+$route['(:any)/test'] = 'faculty/Test/view';
+$route['(:any)/test/add'] = 'faculty/Test/add';
+$route['(:any)/test/edit/(:num)'] = 'faculty/Test/edit/$2';
+$route['(:any)/test/create'] = 'faculty/Test/create';
+$route['(:any)/test/delete/(:num)'] = 'faculty/Test/delete/$2';
+$route['(:any)/test/questions/(:num)'] = 'faculty/Test/questions/$2';
+$route['(:any)/test/add_question'] = 'faculty/Test/add_question';
+$route['(:any)/test/add_questions'] = 'faculty/Test/add_questions';
+$route['(:any)/test/remove_question'] = 'faculty/Test/remove_question';
+$route['(:any)/test/remove_all_questions'] = 'faculty/Test/remove_all_questions';
+$route['(:any)/test/save_question_order'] = 'faculty/Test/save_question_order';
+$route['(:any)/test/reorder_test_questions'] = 'faculty/Test/reorder_test_questions';
+$route['(:any)/test/upload_image'] = 'faculty/Test/upload_image';
+
+// Section Management Routes
+$route['(:any)/test/get_sections/(:num)'] = 'faculty/Test/get_sections/$2';
+$route['(:any)/test/create_challenge/(:num)'] = 'faculty/Test/create_challenge/$2';
+$route['(:any)/test/update_challenge_with_sections/(:num)'] = 'faculty/Test/update_challenge_with_sections/$2';
+$route['(:any)/test/create_section'] = 'faculty/Test/create_section';
+$route['(:any)/test/update_section'] = 'faculty/Test/update_section';
+$route['(:any)/test/delete_section'] = 'faculty/Test/delete_section';
+$route['(:any)/test/assign_question_to_section'] = 'faculty/Test/assign_question_to_section';
+$route['(:any)/test/remove_question_from_section'] = 'faculty/Test/remove_question_from_section';
+
+// Groups
+$route['(:any)/staff/groups'] = 'faculty/Staff/groups';
+$route['(:any)/staff/addMemberstoGroup'] = 'faculty/Staff/addMemberstoGroup';
+$route['(:any)/groups'] = 'faculty/Groups';
+$route['(:any)/groups/add'] = 'faculty/Groups/add';
+$route['(:any)/groups/edit/(:num)'] = 'faculty/Groups/edit/$2';
+$route['(:any)/groups/delete_group'] = 'faculty/Groups/deleteGroup';
+$route['(:any)/groups/group_students/(:num)'] = 'faculty/Groups/group_students/$2';
+$route['(:any)/groups/addMemberstoGroup'] = 'faculty/Groups/addMemberstoGroup';
+
+// Reports
+$route['(:any)/report'] = 'faculty/Report';
+$route['(:any)/report/kpis'] = 'faculty/Report/kpis';
+$route['(:any)/report/(:any)'] = 'faculty/Report/$2';
+$route['(:any)/report/student_detail/(:any)'] = 'faculty/Report/student_detail/$2';
+$route['(:any)/report/test_detail/(:any)'] = 'faculty/Report/test_detail/$2';
+$route['(:any)/report/course_detail/(:any)'] = 'faculty/Report/course_detail/$2';
+$route['(:any)/report/export_csv/(:any)'] = 'faculty/Report/export_csv/$2';
+$route['(:any)/report/print/(:any)'] = 'faculty/Report/print/$2';
+$route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';
+
+// Instrument Inventory
+$route['(:any)/inventory'] = 'faculty/Inventory/index';
+$route['(:any)/inventory/create'] = 'faculty/Inventory/create';
+$route['(:any)/inventory/update/(:num)'] = 'faculty/Inventory/update/$2';
+$route['(:any)/inventory/issue'] = 'faculty/Inventory/issue';
+$route['(:any)/inventory/return'] = 'faculty/Inventory/return_item';
+$route['(:any)/inventory/maintenance'] = 'faculty/Inventory/maintenance';
+
+// Student routes
+$route['(:any)/student/login'] = 'faculty/Student/login';
+$route['(:any)/student/check_auth'] = 'faculty/Student/check_auth';
+$route['(:any)/student/auth_logout'] = 'faculty/Student/auth_logout';
+$route['(:any)/student/courses'] = 'faculty/Student/courses';
+$route['(:any)/student/test'] = 'faculty/Student/test';
+$route['(:any)/student/test/submit/(:any)/(:any)/(:any)'] = 'faculty/Student/test_submit/$2/$3/$4';
+$route['(:any)/student/dashboard'] = 'faculty/Student/dashboard';
+$route['(:any)/student/course_modules/(:any)'] = 'faculty/Student/course_modules/$2';
+$route['(:any)/student/test_result'] = 'faculty/Student/test_result';
+$route['(:any)/student/get_test_link'] = 'faculty/Student/get_test_link';
+$route['(:any)/student/logo'] = 'faculty/Student/logo';
+$route['(:any)/student/banner'] = 'faculty/Student/banner';

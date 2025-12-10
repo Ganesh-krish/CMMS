@@ -1,0 +1,934 @@
+<?php
+defined( 'BASEPATH' ) or exit( 'No direct script access allowed' );
+
+class Install extends CI_Controller
+ {
+
+    public function __construct()
+ {
+        parent::__construct();
+        // Load the database library
+        $this->load->database();
+    }
+
+    // This method will drop all tables and create new ones
+
+    public function index()
+ {
+        // Optional: Check for a security key to prevent unauthorized access
+        if ( $this->input->get( 'key' ) !== DB_INSTALL_KEY ) {
+            echo 'Access Denied';
+            exit;
+        }
+        
+        // Start transaction
+        $this->db->trans_start();
+
+        try {
+        // Step 1: Drop all tables
+        $this->drop_all_tables();
+
+        // Step 2: Create the tables
+        $this->create_tables();
+
+          // Add new columns to existing tables
+         $this->add_new_columns();
+
+        $this->add_new_tables();
+            
+        // Modify existing columns
+            $this->modify_existing_columns();
+            
+        // Add new indexes
+            $this->add_new_indexes();
+            
+        // Add new foreign keys
+            $this->add_new_foreign_keys();
+   
+        // Complete transaction
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                echo 'Database update failed';
+            } else {
+                echo 'Database updated successfully';
+            }
+
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            echo 'Failed: ' . $e->getMessage();
+        }
+   
+    }
+
+
+
+    // Method to drop all tables in the database
+
+    private function drop_all_tables()
+ {
+        $this->db->query( 'SET FOREIGN_KEY_CHECKS = 0' );
+
+        $tables = $this->db->list_tables();
+
+        if ( !empty( $tables ) ) {
+            foreach ( $tables as $table ) {
+                $this->db->query( "DROP TABLE IF EXISTS `$table`" );
+            }
+            echo 'All tables have been dropped.<br>';
+        } else {
+            echo 'No tables found to drop.<br>';
+        }
+
+        $this->db->query( 'SET FOREIGN_KEY_CHECKS = 1' );
+    }
+    // Method to create tables
+
+    private function create_tables()
+ {
+        // Define your SQL queries to create tables here
+        // Use separate queries for each statement
+        $sql1 = "
+            CREATE TABLE login_requests (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                name VARCHAR(255),
+                profile_picture TEXT,  
+                is_active TINYINT(1) DEFAULT 1, 
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
+            );
+        ";
+
+        $sql2 = "
+                CREATE TABLE owner (
+                    id INT AUTO_INCREMENT PRIMARY KEY, 
+                    email VARCHAR(255) NOT NULL,
+                    name VARCHAR(255),
+                    profile_picture TEXT, 
+                    is_active TINYINT(1) DEFAULT 1, 
+                    created_by INT NOT NULL,
+                    updated_by INT DEFAULT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
+                );
+        ";
+
+        $sql3 = "INSERT INTO owner (email) VALUES ('ranjithwebdev01@gmail.com'), ('yokesh@nutz.in'), ('drillu25@gmail.com'), ('mailtochalam@gmail.com'), ('raydcode@gmail.com');";
+
+        $sql4 = "
+            CREATE TABLE colleges (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                site_url VARCHAR(255) NOT NULL, 
+                established_year VARCHAR(100) NOT NULL,
+                address TEXT NOT NULL,
+                description TEXT NULL,
+                city VARCHAR(100) NOT NULL,
+                state VARCHAR(100) NOT NULL, 
+                phone_number VARCHAR(20) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                logo VARCHAR(255) NULL,
+                banner VARCHAR(255) NULL,
+                is_active TINYINT(1) DEFAULT 1,
+                created_by INT NOT NULL,
+                updated_by INT DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ); 
+        ";
+
+        $sql5 = "
+            CREATE TABLE departments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                is_active BOOLEAN DEFAULT TRUE,
+                college_id INT NOT NULL,
+                created_by INT NOT NULL,
+                updated_by INT DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ); 
+        ";
+
+        $sql6 = "
+            CREATE TABLE staffs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                college_id INT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                phone_number VARCHAR(20) NOT NULL,
+                password VARCHAR(20) NOT NULL,
+                designation VARCHAR(100) NOT NULL,
+                department VARCHAR(100) NULL,
+                other_department TEXT NULL,
+                joining_date DATE NOT NULL,
+                file_path VARCHAR(255) NULL,
+                is_active BOOLEAN DEFAULT TRUE,
+                created_by INT NOT NULL,
+                updated_by INT DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
+        ";
+
+        $sql7 = "
+            CREATE TABLE students (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                external_id TEXT NULL,
+                user_token TEXT NULL,
+                college_id INT NOT NULL,
+                registration_number VARCHAR(255) DEFAULT NULL,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                phone_number VARCHAR(20) NOT NULL,
+                password VARCHAR(20) NOT NULL, 
+                department VARCHAR(100) NULL,
+                joining_date DATE NOT NULL,
+                expire_date DATE NOT NULL,
+                batch VARCHAR(100) NULL,
+                file_path VARCHAR(255) NULL,
+                is_active BOOLEAN DEFAULT TRUE,
+                created_by INT NOT NULL,
+                updated_by INT DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
+        ";
+
+        $sql8 = "
+        CREATE TABLE `tests` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `challenge_id` TEXT NULL,
+          `challenge_link` TEXT NULL,
+          `pass_percentage` INT NOT NULL,
+          `title` TEXT NOT NULL,
+          `instructions` TEXT NOT NULL,
+          `start_date` datetime DEFAULT NULL,
+          `end_date` datetime DEFAULT NULL,
+          `duration` int(11) NOT NULL,
+          `college_id` int(11) NOT NULL,
+          `module_id` int(11) DEFAULT NULL,
+          `no_of_attempts` int(11) DEFAULT 1,
+          `is_active` BOOLEAN DEFAULT TRUE,
+          `created_by` int(11) NOT NULL,
+          `updated_by` int(11) DEFAULT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );";
+
+        $sql8_1 = "
+        CREATE TABLE `test_settings_navigation` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `test_id` INT NOT NULL,
+          `next_test_id` INT DEFAULT NULL,
+          `prev_test_id` INT DEFAULT NULL,
+          `enable_finish_button` BOOLEAN DEFAULT FALSE,
+          `show_next_on_last_question` BOOLEAN DEFAULT FALSE
+        );";
+
+        $sql8_2 = "
+        CREATE TABLE `test_settings_security` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `test_id` INT NOT NULL,
+          `disable_copy_paste` BOOLEAN DEFAULT FALSE,
+          `shuffle_questions` BOOLEAN DEFAULT FALSE,
+          `plagiarism_check` BOOLEAN DEFAULT FALSE,
+          `force_full_screen` BOOLEAN DEFAULT FALSE
+        );";
+
+        $sql8_3 = "
+        CREATE TABLE `test_settings_monitoring` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `test_id` INT NOT NULL,
+          `capture_tab_change` BOOLEAN DEFAULT FALSE,
+          `capture_user_image` BOOLEAN DEFAULT FALSE,
+          `enable_time_tracking` BOOLEAN DEFAULT FALSE,
+          `record_user_session` BOOLEAN DEFAULT FALSE
+        );";
+
+        $sql8_4 = "
+        CREATE TABLE `test_settings_ui` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `test_id` INT NOT NULL,
+          `show_tab_change_warning` BOOLEAN DEFAULT FALSE,
+          `close_after_tab_change` BOOLEAN DEFAULT FALSE,
+          `close_after_tab_count` INT DEFAULT NULL,
+          `show_instructions_on_start` BOOLEAN DEFAULT FALSE,
+          `hide_score_after_title` BOOLEAN DEFAULT FALSE,
+          `show_report_on_finish` BOOLEAN DEFAULT FALSE,
+          `hide_test_end_time` BOOLEAN DEFAULT FALSE,
+          `auto_submit` BOOLEAN DEFAULT FALSE,
+          `hide_problem_menu` BOOLEAN DEFAULT FALSE
+        );";
+
+        $sql9 = "  
+            CREATE TABLE courses (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            college_id int(11) NOT NULL,
+            course_code varchar(10) DEFAULT NULL,
+            start_date datetime DEFAULT NULL,
+            end_date datetime DEFAULT NULL,
+            name varchar(255) NOT NULL,
+            tag text DEFAULT NULL,
+            description text DEFAULT NULL,
+            course_expiry date DEFAULT NULL,
+            department varchar(100) DEFAULT NULL,
+            attempts int(11) DEFAULT 0,
+            show_explanation tinyint(1) DEFAULT 0,
+            explanation_start_date datetime DEFAULT NULL,
+            explanation_end_date datetime DEFAULT NULL,
+            is_active tinyint(1) DEFAULT 1,
+            created_by int(11) DEFAULT NULL,
+            updated_by int(11) DEFAULT NULL,
+            created_at timestamp NOT NULL DEFAULT current_timestamp(),
+            updated_at timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+          )";
+
+        $sql10_1 = "
+          CREATE TABLE `private_tests` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `challenge_id` TEXT NULL,
+            `challenge_link` TEXT NULL,
+            `title` VARCHAR(255) NOT NULL,
+            `instructions` TEXT NOT NULL,
+            `start_date` datetime DEFAULT NULL,
+            `end_date` datetime DEFAULT NULL,
+            `duration` int(11) NOT NULL,
+            `module_id` int(11) DEFAULT NULL,
+            `is_active` BOOLEAN DEFAULT TRUE,
+            `created_by` int(11) NOT NULL,
+            `updated_by` int(11) DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          );";
+
+        $sql10_1_1 = "
+          CREATE TABLE `private_test_settings_navigation` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `test_id` INT NOT NULL,
+            `next_test_id` INT DEFAULT NULL,
+            `prev_test_id` INT DEFAULT NULL,
+            `enable_finish_button` BOOLEAN DEFAULT FALSE,
+            `show_next_on_last_question` BOOLEAN DEFAULT FALSE
+          );";
+
+        $sql10_1_2 = "
+          CREATE TABLE `private_test_settings_security` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `test_id` INT NOT NULL,
+            `disable_copy_paste` BOOLEAN DEFAULT FALSE,
+            `shuffle_questions` BOOLEAN DEFAULT FALSE,
+            `plagiarism_check` BOOLEAN DEFAULT FALSE,
+            `force_full_screen` BOOLEAN DEFAULT FALSE
+          );";
+
+        $sql10_1_3 = "
+          CREATE TABLE `private_test_settings_monitoring` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `test_id` INT NOT NULL,
+            `capture_tab_change` BOOLEAN DEFAULT FALSE,
+            `capture_user_image` BOOLEAN DEFAULT FALSE,
+            `enable_time_tracking` BOOLEAN DEFAULT FALSE,
+            `record_user_session` BOOLEAN DEFAULT FALSE
+          );";
+
+        $sql10_1_4 = "
+          CREATE TABLE `private_test_settings_ui` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `test_id` INT NOT NULL,
+            `show_tab_change_warning` BOOLEAN DEFAULT FALSE,
+            `close_after_tab_change` BOOLEAN DEFAULT FALSE,
+            `close_after_tab_count` INT DEFAULT NULL,
+            `show_instructions_on_start` BOOLEAN DEFAULT FALSE,
+            `hide_score_after_title` BOOLEAN DEFAULT FALSE,
+            `show_report_on_finish` BOOLEAN DEFAULT FALSE,
+            `hide_test_end_time` BOOLEAN DEFAULT FALSE,
+            `auto_submit` BOOLEAN DEFAULT FALSE,
+            `hide_problem_menu` BOOLEAN DEFAULT FALSE
+          );";
+
+        $sql10_1_5 = "
+          CREATE TABLE `private_test_questions` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `test_id` INT NOT NULL,
+            `question_id` INT NOT NULL,
+            `question_order` INT NOT NULL,
+            `is_active` BOOLEAN DEFAULT TRUE,
+            `created_by` INT NOT NULL,
+            `updated_by` INT DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          );";
+
+        $sql10_2 = "
+          CREATE TABLE `private_question_bank` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `question_title` varchar(255) NOT NULL,
+              `question_content` text NOT NULL, 
+              `type` int(11) NOT NULL,
+              `sub_type` int(11) NOT NULL,
+              `score` int(11) NOT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `difficulty_level` varchar(60) DEFAULT NULL,
+              `tags` text DEFAULT NULL,
+              `selected_languages` text DEFAULT NULL,
+              `fill_blank_answer` text DEFAULT NULL,
+              `ignore_case` tinyint(1) DEFAULT 0,
+              `created_by` int(11) NOT NULL,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $sql10_3 = "
+          CREATE TABLE `private_answer_options` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `question_id` int(11) NOT NULL,
+              `option_text` text NOT NULL,
+              `is_correct` tinyint(1) DEFAULT 0,
+              `explanation` text DEFAULT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+              PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $sql10_4 = "
+          CREATE TABLE `private_question_test_cases` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `question_id` int(11) NOT NULL,
+              `input` text NOT NULL,
+              `output` text NOT NULL,
+              `visibility` tinyint(1) NOT NULL,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $sql11 = "
+                CREATE TABLE groups (
+                id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                college_id INT(11) NOT NULL,
+                group_name VARCHAR(50) NOT NULL,
+                group_description TEXT NOT NULL,
+                group_expiry DATE  NULL,
+                created_by INT(11) NOT NULL,
+                updated_by INT(11) NOT NULL,
+                is_active INT(11) NOT NULL DEFAULT 1,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP()
+              );";
+
+        $sql12 = "
+                CREATE TABLE course_departments (
+                id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                course_id INT(11) NOT NULL,
+                department_id INT(11) NOT NULL,
+                college_id INT(11) NOT NULL,
+                created_by INT(11) NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP()
+            );";
+
+        $sql13 = "
+            CREATE TABLE `answer_options` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `question_id` int(11) NOT NULL,
+              `option_text` text NOT NULL,
+              `is_correct` tinyint(1) DEFAULT 0,
+              `explanation` text DEFAULT NULL,
+              `college_id` int(11) DEFAULT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql14 = "
+            CREATE TABLE `course_groups` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `course_id` int(11) NOT NULL,
+              `group_id` int(11) NOT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql15 = "
+            CREATE TABLE `course_students` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `course_id` int(11) NOT NULL,
+              `student_id` int(11) NOT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql16 = "
+            CREATE TABLE `group_members` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `group_id` int(11) NOT NULL,
+              `student_id` int(11) NOT NULL,
+              `college_id` int(11) NOT NULL,
+              `created_by` int(11) NOT NULL,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql17 = "
+            CREATE TABLE `question_bank` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `question_title` varchar(255) NOT NULL,
+              `question_content` text NOT NULL, 
+              `type` int(11) NOT NULL,
+              `sub_type` int(11) NOT NULL,
+              `score` int(11) NOT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `college_id` int(11) DEFAULT NULL,
+              `department` varchar(50) DEFAULT NULL,
+              `difficulty_level` varchar(60) DEFAULT NULL,
+              `tags` text DEFAULT NULL,
+              `selected_languages` text DEFAULT NULL,
+              `fill_blank_answer` text DEFAULT NULL,
+              `explanation` text DEFAULT NULL,
+              `ignore_case` tinyint(1) DEFAULT 0,
+              `created_by` int(11) NOT NULL,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+              PRIMARY KEY (`id`),
+              KEY `idx_question_college` (`college_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql18_1 = "
+              CREATE TABLE `question_types` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `type` varchar(30) NOT NULL,
+                  `is_active` tinyint(1) NOT NULL,
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+              ";
+
+        $sql18_2 = "
+              CREATE TABLE `question_sub_types` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `type_id` int(11) NOT NULL,
+                  `sub_type` varchar(30) NOT NULL,
+                  `is_active` tinyint(1) NOT NULL,
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+              ";
+
+        $sql18_3 = "
+              CREATE TABLE `question_difficulty_level` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `level` varchar(30) NOT NULL,
+                  `is_active` tinyint(1) NOT NULL,
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+              ";
+
+        $sql18_4 = "
+              CREATE TABLE `question_test_cases` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `question_id` int(11) NOT NULL,
+                  `input` text NOT NULL,
+                  `output` text NOT NULL,
+                  `visibility` tinyint(1) NOT NULL,
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+              ";
+
+        $sql19_1 = "
+            INSERT INTO `question_types` (`id`, `type`, `is_active`, `created_at`, `updated_at`) 
+            VALUES 
+            (1, 'MCQ', 1, '2025-03-18 16:14:16', '2025-03-18 16:14:16'),
+            (2, 'CODE', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (3, 'FILL IN THE BLANK', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50');
+            ";
+
+        $sql19_2 = "
+            INSERT INTO `question_sub_types` (`id`, `type_id`, `sub_type`, `is_active`, `created_at`, `updated_at`) 
+            VALUES 
+            (1, 1, 'MCQ-SINGLE ANSWER', 1, '2025-03-18 16:14:16', '2025-03-18 16:14:16'),
+            (2, 1, 'MCQ-MULTIPLE ANSWER', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (3, 2, 'PROGRAMMING LANGUAGE', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (4, 2, 'WEB LANGUAGE', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (5, 2, 'DATABASE', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50');
+            ";
+
+        $sql19_3 = "
+            INSERT INTO `question_difficulty_level` (`id`, `level`, `is_active`, `created_at`, `updated_at`) 
+            VALUES 
+            (1, 'Easy', 1, '2025-03-18 16:14:16', '2025-03-18 16:14:16'),
+            (2, 'Medium', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (3, 'Hard', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50');
+            ";
+
+        $sql22 = "
+                CREATE TABLE `test_questions` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `test_id` INT NOT NULL,
+              `question_id` INT NOT NULL,
+              `question_order` INT NOT NULL,
+              `is_active` BOOLEAN DEFAULT TRUE,
+              `created_by` INT NOT NULL,
+              `updated_by` INT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );";
+
+        $sql23 = "
+            ALTER TABLE `test_questions`
+            ADD CONSTRAINT `test_questions_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE,
+            ADD CONSTRAINT `test_questions_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `question_bank` (`id`) ON DELETE CASCADE;
+            ";
+
+        $sql24 = "
+            CREATE TABLE `course_tests` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `course_id` int(11) NOT NULL,
+              `test_id` int(11) NOT NULL,
+              `module_id` int(11) NOT NULL,
+              `start_date` datetime DEFAULT NULL,
+              `end_date` datetime DEFAULT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql25 = " 
+            CREATE TABLE test_modules (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `name` varchar(255) NOT NULL,
+              `description` text NOT NULL,
+              `is_active` tinyint(1) DEFAULT 1,
+              `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        // Seed Data for test_modules table ( Apitudue, programming, verbal, grammamer, calculations.. ).
+        $sql26 = "
+            INSERT INTO `test_modules` (`id`, `name`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
+            (1, 'Apitudue', 'Apitudue', 1, '2025-03-18 16:14:16', '2025-03-18 16:14:16'),
+            (2, 'Programming', 'Programming', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (3, 'Verbal', 'Verbal', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (4, 'Grammamer', 'Grammamer', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50'),
+            (5, 'Calculations', 'Calculations', 1, '2025-03-19 12:07:50', '2025-03-19 12:07:50');
+            ";
+
+        $sql29 = " 
+              CREATE TABLE `student_test_progress` ( 
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `student_id` int(11) NOT NULL,
+                `test_id` int(11) NOT NULL,
+                `attempt_count` int(11) NOT NULL DEFAULT 0,
+                `test_status` ENUM('not_started', 'in_progress', 'completed') NOT NULL DEFAULT 'not_started',
+                `start_time` DATETIME DEFAULT NULL,
+                `end_time` DATETIME DEFAULT NULL,
+                `score` DECIMAL(5,2) NULL,
+                `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql30 = "
+            CREATE TABLE `student_test_questions` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `student_test_progress_id` int(11) NOT NULL,
+                `question_id` int(11) NOT NULL,
+                `answer` text NOT NULL,
+                `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql31 = " 
+            CREATE TABLE `student_test_answers` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `student_test_progress_id` int(11) NOT NULL,
+                `question_id` int(11) NOT NULL,
+                `answer` text NOT NULL,
+                `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+
+        $sql32 = " 
+          CREATE TABLE `student_test_submission` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `student_id` int(11) NOT NULL,
+            `test_id` int(11) NOT NULL,
+            `course_id` int(11) NOT NULL,
+            `module_id` int(11) NOT NULL,
+            `challenge_id` varchar(255) NOT NULL,
+            `challenge_user_id` varchar(255) NOT NULL,
+            `total_score` decimal(5,2) NOT NULL DEFAULT 0.00,
+            `earned_score` decimal(5,2) NOT NULL DEFAULT 0.00,
+            `percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
+            `submission_time` datetime NOT NULL,
+            `tab_changes` int(11) NOT NULL DEFAULT 0,
+            `finished` tinyint(1) NOT NULL DEFAULT 0,
+            `details` text DEFAULT NULL,
+            `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_student_test` (`student_id`, `test_id`),
+            KEY `test_id` (`test_id`),
+            KEY `student_id` (`student_id`),
+            CONSTRAINT `student_test_submission_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `student_test_submission_ibfk_2` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; ";
+          
+          $sql33 = " 
+          CREATE TABLE `student_solutions` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `student_id` int(11) NOT NULL,
+            `test_id` int(11) NOT NULL,
+            `course_id` int(11) NOT NULL,
+            `module_id` int(11) NOT NULL,
+            `problem_type` int(11) NOT NULL,
+            `question_id` int(11) NOT NULL,
+            `problem_id` varchar(255) NOT NULL,
+            `language` varchar(50) NOT NULL,
+            `solution` text NOT NULL,
+            `score` decimal(5,2) NOT NULL DEFAULT 0.00,
+            `max_score` decimal(5,2) NOT NULL DEFAULT 0.00,
+            `submission_time` datetime NOT NULL,
+            `time_spent` int(11) NOT NULL DEFAULT 0,
+            `meta` text NOT NULL,
+            `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (`id`),
+            KEY `test_id` (`test_id`),
+            KEY `student_id` (`student_id`),
+            KEY `question_id` (`question_id`),
+            CONSTRAINT `student_solutions_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `student_solutions_ibfk_2` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `student_solutions_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `question_bank` (`id`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+          $sql34 = " 
+          CREATE TABLE `course_modules` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `name` varchar(255) NOT NULL,
+            `course_id` int(11) NOT NULL,
+            `description` text NOT NULL,
+            `is_active` tinyint(1) NOT NULL DEFAULT 1,
+            `college_id` int(11) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+          $sql35 = "
+          CREATE TABLE `special_courses` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `course_id` int(11) NOT NULL,
+            `to_college_id` int(11) NOT NULL,
+            `shared_by` int(11) NOT NULL,
+            `is_active` tinyint(1) DEFAULT 1,
+            `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+          $sql36= "
+          CREATE TABLE `test_sections` (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `section_name` VARCHAR(255) NOT NULL,
+            `is_active` TINYINT(1) DEFAULT 1,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
+        // Execute the queries one by one
+        try {
+
+            // Execute first table creation
+            echo $this->db->query( $sql1 )?'login_requests table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql2 )?'owner table created successfully.<br>': 'Error creating table: '. $this->db->_error_message();
+
+            echo $this->db->query( $sql3 )?'Default owner inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql4 )?'colleges inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql5 )?'Departement inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql6 )?'Staffs inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql7 )?'Students inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql8 )?'Tests table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql8_1 )?'Test navigation settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql8_2 )?'Test security settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql8_3 )?'Test monitoring settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql8_4 )?'Test UI settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql9 )?'Cource inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql10_1 )?'private_tests table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_1_1 )?'Private test navigation settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_1_2 )?'Private test security settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_1_3 )?'Private test monitoring settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_1_4 )?'Private test UI settings table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql10_2 )?'private_question_bank table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_3 )?'private_answer_options table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql10_4 )?'private_question_test_cases table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql11 )?'Groups inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql12 )?'Members Applicable Groups table inserted successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql13 )?'answer_options table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql14 )?'course_groups table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql15 )?'course_students table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql16 )?'group_members table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql17 )?'question_bank table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql18_1 )?'question_types table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql18_2 )?'question_sub_types table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql18_3 )?'question_difficulty_level table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql18_4 )?'question_test_cases table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql19_1 )?'question_types data inserted successfully.<br>':'Error inserting data: ' . $this->db->_error_message();
+            echo $this->db->query( $sql19_2 )?'question_sub_types data inserted successfully.<br>':'Error inserting data: ' . $this->db->_error_message();
+            echo $this->db->query( $sql19_3 )?'question_difficulty_level data inserted successfully.<br>':'Error inserting data: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql22 )?'test_questions table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql23 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql24 )?'test_questions foreign keys added successfully.<br>':' Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql25 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql26 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+
+            echo $this->db->query( $sql29 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql30 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql31 )?'test_questions foreign keys added successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql32 )?'test_submissions table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql33 )?'test_submissions table created successfully.<br>':'Error creating table: ' . $this->db->_error_message();
+            echo $this->db->query( $sql34 )?'course_modules table created successfully.<br>':'Error creating table: '. $this->db->_error_message();
+            echo $this->db->query( $sql35 )?'special_courses table created successfully.<br>':'Error creating table: '. $this->db->_error_message();
+            echo $this->db_query( $sql36 ) ? 'test_sections table created successfully . <br>':'Error creating table: '. $this->db->_error_message();
+
+        } catch ( Exception $e ) {
+            $this->db->rollBack();
+            echo 'Failed: ' . $e->getMessage();
+        }
+    }
+
+
+    private function add_new_columns()
+    {
+        // Add new columns to existing tables
+        // Example
+
+        $this->db->query("ALTER TABLE course_tests ADD COLUMN explanation_start_date datetime DEFAULT NULL");
+        $this->db->query("ALTER TABLE course_tests ADD COLUMN explanation_end_date datetime DEFAULT NULL");
+        $this->db->query("ALTER TABLE course_tests ADD COLUMN show_explanation tinyint(1) DEFAULT 0");
+        $this->db->query("ALTER TABLE course_tests ADD COLUMN result_cache  text DEFAULT NULL");
+        $this->db->query("ALTER TABLE course_tests ADD COLUMN level INT DEFAULT 0");
+        $this->db->query("ALTER TABLE tests ADD COLUMN negative_mark_value INT DEFAULT 0");
+      //$this->db->query("ALTER TABLE course_tests ADD COLUMN pass_score DECIMAL(5,2) DEFAULT 0");
+        $this->db->query("ALTER TABLE question_bank ADD COLUMN file_path  text DEFAULT NULL");
+        $this->db->query("ALTER TABLE courses ADD COLUMN course_type  tinyint DEFAULT 1");
+        $this->db->query("ALTER TABLE courses ADD COLUMN course_mode  tinyint DEFAULT 1");
+        $this->db->query("ALTER TABLE student_test_submission ADD COLUMN attempts INT DEFAULT 1");
+        $this->db->query("ALTER TABLE student_test_submission ADD COLUMN sync_count INT DEFAULT 0");
+        $this->db->query("ALTER TABLE test_settings_security ADD COLUMN shuffle_answer_options tinyint DEFAULT 0");
+        $this->db->query("ALTER TABLE tests ADD COLUMN is_new_tab tinyint DEFAULT 0");
+        $this->db->query("ALTER TABLE test_settings_ui ADD COLUMN enable_sections tinyint DEFAULT 0 ");
+        $this->db->query("ALTER TABLE test_questions ADD COLUMN section_id INT DEFAULT NULL AFTER test_id");
+    }
+
+
+    private function add_new_tables()
+    {
+        $this->db->query("CREATE TABLE sync_logs (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              type VARCHAR(50) NOT NULL,
+              status VARCHAR(20) NOT NULL,
+              message TEXT,
+              data TEXT,
+              created_at DATETIME NOT NULL
+          );");
+
+        // Insert default row
+        $this->db->insert('test_sections', ['section_name' => '$@#UNASSIGNED_QAS#@$']);
+
+   }
+
+    private function modify_existing_columns()
+    {
+        // Modify existing columns
+        // Example:
+        // $this->db->query("ALTER TABLE table_name MODIFY COLUMN existing_column VARCHAR(500)");
+    }
+
+    private function add_new_indexes()
+    {
+        // Add new indexes
+        // Example:
+        // $this->db->query("ALTER TABLE table_name ADD INDEX index_name (column_name)");
+    }
+
+    private function add_new_foreign_keys()
+    {
+        // Add new foreign keys
+        // Example:
+        // $this->db->query("ALTER TABLE table_name ADD CONSTRAINT fk_name FOREIGN KEY (column) REFERENCES other_table(id)");
+    }
+
+    // Helper method to check if a column exists
+    private function column_exists($table, $column)
+    {
+        $query = $this->db->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+        return $query->num_rows() > 0;
+    }
+
+    // Helper method to check if an index exists
+    private function index_exists($table, $index)
+    {
+        $query = $this->db->query("SHOW INDEX FROM `$table` WHERE Key_name = '$index'");
+        return $query->num_rows() > 0;
+    }
+
+    // Helper method to check if a foreign key exists
+    private function foreign_key_exists($table, $constraint)
+    {
+        $query = $this->db->query("
+            SELECT CONSTRAINT_NAME 
+            FROM information_schema.TABLE_CONSTRAINTS 
+            WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = '$table'
+            AND CONSTRAINT_NAME = '$constraint'
+            AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+        ");
+        return $query->num_rows() > 0;
+    }
+}

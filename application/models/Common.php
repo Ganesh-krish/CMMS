@@ -12,9 +12,10 @@ class common extends CI_Model {
     }
 
     public function load_view($view,$data=[]){ 
-        $this->load->view("sidebar",["active"=>true]);
+        // Default loader; views that need sidebar vars should pass them via $data
+        $this->load->view("faculty/faculty/sidebar",$data);
         $this->load->view($view,$data);
-        $this->load->view("footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
 	public function check_user_session()

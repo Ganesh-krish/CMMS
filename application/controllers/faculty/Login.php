@@ -29,15 +29,30 @@ class Login extends CI_Controller {
 	public function faculty($url)
 	{
 		$post = $this->input->post();
-		if($post){ 
+        if($post){ 
             $this->form_validation->set_rules('password', 'Password', 'trim|required');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email'); 
             if ($this->form_validation->run() == FALSE) {
 				$this->session->set_flashdata('message',array("danger",validation_errors())); 
                 return redirect(base_url("$url/login/faculty"));
             } else {
-				$data = $this->db_model->get_row(TABLE_STAFF,["email"=>$post['email'],"password"=>$post['password'],"is_active"=>1,"college_id"=>$this->college['id']]);
+				$data = $this->db_model->get_row(TABLE_STAFF,["email"=>$post['email'],"is_active"=>1,"college_id"=>$this->college['id']]);
                 if(!$data){
+                    $this->session->set_flashdata('message',array("danger","Invalid Email or Password")); 
+                    return redirect(base_url("$url/login/faculty"));
+                }
+                $stored = $data['password'] ?? '';
+                $valid = false;
+                if (!empty($stored) && strlen($stored) > 30 && password_verify($post['password'], $stored)) {
+                    $valid = true;
+                } elseif ($stored === $post['password']) {
+                    $valid = true;
+                    // upgrade hash
+                    $hash = password_hash($post['password'], PASSWORD_BCRYPT);
+                    $this->db_model->update(TABLE_STAFF, ['password' => $hash], ['id' => $data['id']]);
+                    $data['password'] = $hash;
+                }
+                if(!$valid){
                     $this->session->set_flashdata('message',array("danger","Invalid Email or Password")); 
                     return redirect(base_url("$url/login/faculty"));
                 } 

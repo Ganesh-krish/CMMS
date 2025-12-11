@@ -113,7 +113,20 @@ class Student extends CI_Controller {
         $query = $this->db->get();
         $college = $query->row();
         
-        if ( $student && $college && $student->password === $password ) {
+        $password_valid = false;
+        if ($student && $college) {
+            if (!empty($student->password) && strlen($student->password) > 30 && password_verify($password, $student->password)) {
+                $password_valid = true;
+            } elseif ($student->password === $password) {
+                $password_valid = true;
+                // upgrade to bcrypt
+                $hash = password_hash($password, PASSWORD_BCRYPT);
+                $this->db->where('id', $student->id)->update('students', ['password' => $hash]);
+                $student->password = $hash;
+            }
+        }
+
+        if ( $student && $college && $password_valid ) {
         
             if (!isset($student->college_id) || empty($student->college_id)) {
                 $student->college_id = $college->id;

@@ -54,6 +54,11 @@ $route['logout'] = 'OAuth/logout';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// Convenience routes for admin dashboard
+$route['Dashboard'] = 'Dashboard/index';
+$route['Dashboard/view'] = 'Dashboard/index';
+$route['Dashboard/students'] = 'Dashboard/index';
+
 // Student portal (CI views)
 $route['student-portal/(:any)/login'] = 'StudentPortal/login/$1';
 $route['student-portal/(:any)/authenticate'] = 'StudentPortal/authenticate/$1';

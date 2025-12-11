@@ -82,7 +82,37 @@ class Dashboard extends CI_Controller {
             return;
         }
 
-        // Normal view render for initial load
-        $this->common->load_view("dashboard/index");
+        // Normal view render for initial load (reuse faculty layout with safe defaults)
+        $url_key = 'admin';
+        // Ensure session data exists for sidebar expectations
+        $this->session->set_userdata($url_key, [
+            'designation' => DESIGNATION_PRINCIPAL,
+            'name' => $this->user_session['name'] ?? 'Admin'
+        ]);
+
+        $data = [
+            'classname' => 'dashboard',
+            'sidebar_href' => base_url('Dashboard'),
+            'url' => $url_key,
+            // Dashboard metrics (set safe defaults)
+            'total_students' => 0,
+            'total_courses' => 0,
+            'active_tests' => 0,
+            'total_questions' => 0,
+            'code_questions' => 0,
+            'mcq_questions' => 0,
+            'easy_questions_percent' => 0,
+            'medium_questions_percent' => 0,
+            'hard_questions_percent' => 0,
+            'department_batch_table' => [
+                'years' => [],
+                'departments' => []
+            ],
+            'manage_student_url' => base_url('Dashboard')
+        ];
+
+        $this->load->view('faculty/faculty/sidebar', $data);
+        $this->load->view('faculty/faculty/dashboard', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 }

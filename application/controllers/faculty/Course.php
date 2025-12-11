@@ -14,12 +14,24 @@ class Course extends CI_Controller
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_college_by_url($this->url);
-        $this->session_data = $this->session->userdata($this->url);
-        $this->permissions = $this->common->get_access_permissions(
-            $this->session_data
-        );
+
+        // Allow super admin access via /admin without faculty session
+        if ($this->url === 'admin') {
+            $this->college = $this->db_model->get_row(TABLE_COLLEGE, ['id' => SINGLE_COLLEGE_ID]);
+            $this->session_data = [
+                'id' => 0,
+                'designation' => DESIGNATION_PRINCIPAL,
+                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
+            ];
+            $this->permissions = ['read' => 'all', 'modify' => 'all'];
+        } else {
+            $this->common->check_user_session($this->url);
+            $this->college = $this->common->get_college_by_url($this->url);
+            $this->session_data = $this->session->userdata($this->url);
+            $this->permissions = $this->common->get_access_permissions(
+                $this->session_data
+            );
+        }
         // if ( $this->session_data[ 'designation' ] != DESIGNATION_STAFF ) {
         //     $this->common->redirect_route( $this->session_data[ 'designation' ], $this->url );
         // }

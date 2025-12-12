@@ -95,13 +95,14 @@ defined('SINGLE_COLLEGE_ID') or define('SINGLE_COLLEGE_ID', 1);
 
 
 
-defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "colleges");
+defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "college");
 defined('TABLE_DEPARTMENT')      or define('TABLE_DEPARTMENT', "departments");
-defined('TABLE_REQUEST')      or define('TABLE_REQUEST', "login_requests");
 defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
-defined('TABLE_STAFF')      or define('TABLE_STAFF', "staffs");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
 defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
+defined('TABLE_COURSE_ENROLLMENTS')      or define('TABLE_COURSE_ENROLLMENTS', "course_enrollments");
+defined('TABLE_COURSE_MODULES')      or define('TABLE_COURSE_MODULES', "course_modules");
+
 
 
 define('COURSE_TYPES', json_encode([
@@ -118,4 +119,9 @@ define('COURSE_MODES', json_encode([
 defined('ROLE_SUPERADMIN')  or define('ROLE_SUPERADMIN', 1);
 defined('ROLE_ADMIN')       or define('ROLE_ADMIN', 2);
 defined('ROLE_STAFF')       or define('ROLE_STAFF', 3);
+
+// Backward-compat designation aliases (legacy code paths)
+defined('DESIGNATION_PRINCIPAL') or define('DESIGNATION_PRINCIPAL', ROLE_SUPERADMIN);
+defined('DESIGNATION_HOD')       or define('DESIGNATION_HOD', ROLE_ADMIN);
+defined('DESIGNATION_STAFF')     or define('DESIGNATION_STAFF', ROLE_STAFF);
 

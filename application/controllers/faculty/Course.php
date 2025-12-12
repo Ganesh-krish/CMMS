@@ -26,7 +26,7 @@ class Course extends CI_Controller
             $this->permissions = ['read' => 'all', 'modify' => 'all'];
         } else {
             $this->common->check_user_session($this->url);
-            $this->college = $this->common->get_college_by_url($this->url);
+            $this->college = $this->common->get_default_college();
             $this->session_data = $this->session->userdata($this->url);
             $this->permissions = $this->common->get_access_permissions(
                 $this->session_data

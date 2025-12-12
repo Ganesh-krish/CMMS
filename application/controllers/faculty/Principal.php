@@ -7,16 +7,28 @@ class Principal extends CI_Controller {
     private $session_data;
 	function __construct() {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('faculty/common', 'faculty_common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_college_by_url($this->url);
-        $this->session_data = $this->session->userdata($this->url);
-
-        if($this->session_data['designation'] != DESIGNATION_PRINCIPAL){
-            $this->common->redirect_route($this->session_data['designation'],$this->url);
+        // Support single-college admin access without an existing session
+        if ($this->url === 'admin') {
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = [
+                'id' => 0,
+                'role' => ROLE_SUPERADMIN,
+                'designation' => DESIGNATION_PRINCIPAL,
+                'department' => null,
+                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
+            ];
+        } else {
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+            $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            if($role !== ROLE_SUPERADMIN && $role !== DESIGNATION_PRINCIPAL){
+                $this->faculty_common->redirect_route($role,$this->url);
+            }
         }
     }
     public function index()
@@ -28,125 +40,42 @@ class Principal extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url . "/principal");
         
         // Get current college and staff/department info
-        $college_id = $this->college['id'];
-        $staff_id = $this->session_data['id'];
-        $department = $this->session_data['department'];
+        $college_id = $this->college['id'] ?? SINGLE_COLLEGE_ID;
+        $staff_id = $this->session_data['id'] ?? 0;
+        $department = $this->session_data['department'] ?? null;
         
         // Get counts for stat cards
-        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, [
-            "is_active" => true, 
-            "college_id" => $college_id, 
-            // "department" => $department
-        ]));
+        $data["total_students"] = count($this->db_model->get_all(
+            TABLE_STUDENT,
+            array_merge(["is_active" => true], $this->college_filter(TABLE_STUDENT, $college_id))
+        ));
         
-        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, [
-            "is_active" => true, 
-            "college_id" => $college_id,
-            // "department" => $department,
-            // 'created_by' => $staff_id
-        ]));
+        $data["total_courses"] = count($this->db_model->get_all(
+            TABLE_COURCES,
+            array_merge(["is_active" => true], $this->college_filter(TABLE_COURCES, $college_id))
+        ));
         
-        $data["active_tests"] = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('start_date <=', date('Y-m-d H:i:s'))
-            // ->where('end_date >=', date('Y-m-d H:i:s'))
-            // ->where('created_by', $staff_id)
-            ->count_all_results(TABLE_TESTS);
+        // Tests module removed: keep metric zero
+        $data["active_tests"] = 0;
             
         $data["total_departments"] = 1; // Only showing own department
         
-        // Get question bank statistics
-        $data["total_questions"] = count($this->db_model->get_all(TABLE_QUESTION_BANK, [
-            "is_active" => true, 
-            "college_id" => $college_id,
-            // "created_by" => $staff_id
-        ]));
+        // Question bank module removed: zeroed metrics
+        $data["total_questions"] = 0;
+        $data["code_questions"] = 0;
+        $data["mcq_questions"] = 0;
+        $data["easy_questions_percent"] = 0;
+        $data["medium_questions_percent"] = 0;
+        $data["hard_questions_percent"] = 0;
         
-        // Get questions by type
-        $data["code_questions"] = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('created_by', $staff_id)
-            ->where('type', 2) // Code questions
-            ->count_all_results(TABLE_QUESTION_BANK);
-        
-        $data["mcq_questions"] = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('created_by', $staff_id)
-            ->where('type', 1) // MCQ questions
-            ->count_all_results(TABLE_QUESTION_BANK);
-        
-        // Calculate question difficulty distribution
-        $difficulty_easy = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('created_by', $staff_id)
-            ->where('difficulty_level', 1) // Easy level
-            ->count_all_results(TABLE_QUESTION_BANK);
-            
-        $difficulty_medium = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('created_by', $staff_id)
-            ->where('difficulty_level', 2) // Medium level
-            ->count_all_results(TABLE_QUESTION_BANK);
-            
-        $difficulty_hard = $this->db->where('college_id', $college_id)
-            ->where('is_active', 1)
-            // ->where('created_by', $staff_id)
-            ->where('difficulty_level', 3) // Hard level
-            ->count_all_results(TABLE_QUESTION_BANK);
-        
-        $total = $data["total_questions"] > 0 ? $data["total_questions"] : 1; // Avoid division by zero
-        
-        $data["easy_questions_percent"] = round(($difficulty_easy / $total) * 100);
-        $data["medium_questions_percent"] = round(($difficulty_medium / $total) * 100);
-        $data["hard_questions_percent"] = round(($difficulty_hard / $total) * 100);
-        
-        // Get recent tests
-        $data["recent_tests"] = $this->db->select('t.*, m.name as module_name')
-            ->from(TABLE_TESTS . ' t')
-            ->join(TABLE_TEST_MODULES . ' m', 'm.id = t.module_id', 'left')
-            ->where('t.college_id', $college_id)
-            // ->where('t.created_by', $staff_id)
-            ->where('t.is_active', 1)
-            ->order_by('t.created_at', 'DESC')
-            ->limit(5)
-            ->get()
-            ->result();
-        
-        // Get test performance data (for line chart)
-        // Assuming student_test_submission has the test results
-        $test_performance = $this->db->select('DATE(sts.submission_time) as date, AVG(sts.percentage) as avg_score')
-            ->from(TABLE_STUDENT_TEST_SUBMISSION . ' sts')
-            ->join(TABLE_TESTS . ' t', 't.id = sts.test_id')
-            ->where('t.college_id', $college_id)
-            // ->where('t.created_by', $staff_id)
-            ->group_by('DATE(sts.submission_time)')
-            ->order_by('DATE(sts.submission_time)', 'ASC')
-            ->limit(14) // Last 14 days with data
-            ->get()
-            ->result_array();
+        // Tests module removed: provide empty placeholders
+        $data["recent_tests"] = [];
+        $test_performance = [];
 
-            $question_types = $this->db->select('qt.id, qt.type, COUNT(qb.id) as count')
-            ->from(TABLE_QUESTION_TYPES . ' qt')
-            ->join(TABLE_QUESTION_BANK . ' qb', 'qb.type = qt.id', 'left')
-            ->where('qt.is_active', 1)
-            ->where('qb.is_active', 1)
-            ->where('qb.college_id', $college_id)
-            // ->where_in('qb.created_by', $this->permissions['read'])
-            ->group_by('qt.id, qt.type')
-            ->get()
-            ->result();
+        $question_types = [];
 
         // Get question subtypes and their counts
-        $question_subtypes = $this->db->select('qst.id, qst.sub_type, qst.type_id, COUNT(qb.id) as count')
-            ->from(TABLE_QUESTION_SUB_TYPES . ' qst')
-            ->join(TABLE_QUESTION_BANK . ' qb', 'qb.sub_type = qst.id', 'left')
-            ->where('qst.is_active', 1)
-            ->where('qb.is_active', 1)
-            ->where('qb.college_id', $college_id)
-            // ->where_in('qb.created_by', $this->permissions['read'])
-            ->group_by('qst.id, qst.sub_type, qst.type_id')
-            ->get()
-            ->result();
+        $question_subtypes = [];
 
         // Prepare data for question types chart
         $data['question_types'] = [];
@@ -194,12 +123,15 @@ class Principal extends CI_Controller {
         $data["department_student_counts"] = [$data["total_students"]];
         
         // Get course enrollment data
-        $courses = $this->db->select('c.id, c.name')
+        $courses_q = $this->db->select('c.id, c.name')
             ->from(TABLE_COURCES . ' c')
-            ->where('c.college_id', $college_id)
             ->where('c.department', $department)
             ->where('c.created_by', $staff_id)
-            ->where('c.is_active', 1)
+            ->where('c.is_active', 1);
+        if ($this->has_college_column(TABLE_COURCES)) {
+            $courses_q->where('c.college_id', $college_id);
+        }
+        $courses = $courses_q
             ->limit(10)
             ->get()
             ->result_array();
@@ -215,59 +147,25 @@ class Principal extends CI_Controller {
             $data["course_enrollments"][] = $enrollments;
         }
         
-        // Calculate test completion statistics
-        $total_test_attempts = $this->db->count_all_results(TABLE_STUDENT_TEST_SUBMISSION);
-        $completed_tests = $this->db->where('finished', 1)
-            ->count_all_results(TABLE_STUDENT_TEST_SUBMISSION);
+        // Tests module removed: zeroed metrics
+        $data["test_completion_rate"] = 0;
+        $data["avg_test_score"] = 0;
+        $data["test_pass_rate"] = 0;
+        $data["test_module_stats"] = [];
             
-        $data["test_completion_rate"] = $total_test_attempts > 0 ? round(($completed_tests / $total_test_attempts) * 100) : 0;
-        
-        // Calculate average test score
-        $avg_score = $this->db->select_avg('percentage')
-            ->from(TABLE_STUDENT_TEST_SUBMISSION)
-            ->join(TABLE_TESTS . ' t', 't.id = ' . TABLE_STUDENT_TEST_SUBMISSION . '.test_id')
-            ->where('t.created_by', $staff_id)
-            ->get()
-            ->row();
-            
-        $data["avg_test_score"] = $avg_score ? round($avg_score->percentage) : 0;
-        
-        // Calculate pass rate (assuming 40% is passing)
-        $passed_tests = $this->db->where('percentage >=', 40)
-            ->join(TABLE_TESTS . ' t', 't.id = ' . TABLE_STUDENT_TEST_SUBMISSION . '.test_id')
-            ->where('t.created_by', $staff_id)
-            ->count_all_results(TABLE_STUDENT_TEST_SUBMISSION);
-            
-        $data["test_pass_rate"] = $total_test_attempts > 0 ? round(($passed_tests / $total_test_attempts) * 100) : 0;
-        
-        // Get test module statistics
-        $data["test_module_stats"] = $this->db->select('m.name as module_name, AVG(sts.percentage) as avg_score, COUNT(sts.id) as attempts')
-            ->from(TABLE_STUDENT_TEST_SUBMISSION . ' sts')
-            ->join(TABLE_TESTS . ' t', 't.id = sts.test_id')
-            ->join(TABLE_TEST_MODULES . ' m', 'm.id = t.module_id', 'left')
-            ->where('t.college_id', $college_id)
-            ->where('t.created_by', $staff_id)
-            ->group_by('m.id, m.name')
-            ->order_by('attempts', 'DESC')
-            ->limit(5)
-            ->get()
-            ->result();
-            
-        // Get groups statistics
-        $data["total_groups"] = $this->db->where('college_id', $college_id)
-            ->where('created_by', $staff_id)
-            ->where('is_active', 1)
-            ->count_all_results(TABLE_GROUPS);
+        // Groups module removed: zeroed metrics
+        $data["total_groups"] = 0;
 
         // Get all distinct batch years from students table
-        $batch_years = $this->db->select('batch')
+        $batch_years_q = $this->db->select('batch')
             ->distinct()
             ->from(TABLE_STUDENT)
-            ->where('college_id', $college_id)
             ->where('is_active', 1)
-            ->order_by('batch', 'DESC') // Show most recent batches first
-            ->get()
-            ->result_array();
+            ->order_by('batch', 'DESC'); // Show most recent batches first
+        if ($this->has_college_column(TABLE_STUDENT)) {
+            $batch_years_q->where('college_id', $college_id);
+        }
+        $batch_years = $batch_years_q->get()->result_array();
 
         // Extract just the years from the results
         $years = array_column($batch_years, 'batch');
@@ -275,12 +173,13 @@ class Principal extends CI_Controller {
         // $years = array_slice($years, 0, 5);
 
         // Get student counts by department and batch year
-        $departments = $this->db->select('id, name')
+        $departments_q = $this->db->select('id, name')
             ->from(TABLE_DEPARTMENT)
-            ->where('college_id', $college_id)
-            ->where('is_active', 1)
-            ->get()
-            ->result_array();
+            ->where('is_active', 1);
+        if ($this->has_college_column(TABLE_DEPARTMENT)) {
+            $departments_q->where('college_id', $college_id);
+        }
+        $departments = $departments_q->get()->result_array();
 
         $department_batch_counts = [];
 
@@ -292,11 +191,13 @@ class Principal extends CI_Controller {
             ];
             
             foreach ($years as $year) {
-                $count = $this->db->where('college_id', $college_id)
-                    ->where('department', $dept['id'])
+                $count_q = $this->db->where('department', $dept['id'])
                     ->where('batch', $year)
-                    ->where('is_active', 1)
-                    ->count_all_results(TABLE_STUDENT);
+                    ->where('is_active', 1);
+                if ($this->has_college_column(TABLE_STUDENT)) {
+                    $count_q->where('college_id', $college_id);
+                }
+                $count = $count_q->count_all_results(TABLE_STUDENT);
                     
                 $dept_data['batches'][$year] = $count;
                 $dept_data['total'] += $count;
@@ -315,22 +216,29 @@ class Principal extends CI_Controller {
 
         // var_dump($data);die;
         
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/dashboard', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/dashboard', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     public function view(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
+        $data["add_url"] = base_url($this->url."/principal/add");
         $class["classname"] = "principal";
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/principal");
-        $data["principal"] = $this->db_model->get_all(TABLE_STAFF,["id !="=>$this->session_data['id'],"is_active"=>true,"college_id"=>$this->college['id'],"designation"=>DESIGNATION_PRINCIPAL]);
+        $data["principal"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active" => true,
+                "role" => ROLE_SUPERADMIN
+            ]
+        );
 
-		$this->load->view('faculty/sidebar',$class); 
-		$this->load->view('faculty/principal',$data); 
-		$this->load->view('faculty/footer'); 
+		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/principal',$data); 
+		$this->load->view('faculty/faculty/footer'); 
     }
 
     public function hod(){
@@ -339,13 +247,19 @@ class Principal extends CI_Controller {
         $class["classname"] = "hod";
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/principal");
-        $data["hod"] = $this->db_model->get_all(TABLE_STAFF,["is_active"=>true,"college_id"=>$this->college['id'],"designation"=>DESIGNATION_HOD]);
+        $data["hod"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active" => true,
+                "role" => ROLE_ADMIN
+            ]
+        );
 
         foreach ($data["hod"] as $key => $value) {
-            $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department'], 'college_id' => $this->college['id']]);
+            $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department']]);
             $data["hod"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
-		$this->load->view('faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/sidebar',$class); 
 		$this->load->view('faculty/hod',$data); 
 		$this->load->view('faculty/footer'); 
     }
@@ -356,14 +270,20 @@ class Principal extends CI_Controller {
         $class["classname"] = "staff";
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/principal");
-        $data["staff"] = $this->db_model->get_all(TABLE_STAFF,["is_active"=>true,"college_id"=>$this->college['id'],"designation"=>DESIGNATION_STAFF]);
+        $data["staff"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active" => true,
+                "role" => ROLE_STAFF
+            ]
+        );
 
         foreach ($data["staff"] as $key => $value) {
-            $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department'], 'college_id' => $this->college['id']]);
+            $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department']]);
             $data["staff"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
 
-		$this->load->view('faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/sidebar',$class); 
 		$this->load->view('faculty/staff',$data); 
 		$this->load->view('faculty/footer'); 
     }
@@ -380,7 +300,7 @@ class Principal extends CI_Controller {
         $data["groups"] = $this->db_model->get_all(TABLE_GROUPS,$group_conditions);
         $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']);
         // var_dump($data["groups"]);die;
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('groups/view', $data);
         $this->load->view('faculty/footer');
     }
@@ -424,7 +344,7 @@ class Principal extends CI_Controller {
 
 
         $data['groups'] = $this->db_model->get_all(TABLE_GROUPS,["is_active"=>true,"college_id"=>$this->college['id']]);
-		$this->load->view('faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/sidebar',$class); 
 		$this->load->view('faculty/students',$data); 
 		$this->load->view('faculty/footer'); 
     }
@@ -492,7 +412,7 @@ class Principal extends CI_Controller {
             ];
 
             // Upload to Cloudinary using the correct method
-            $image_url = $this->common->upload_to_cloudinary('image', 'college');
+            $image_url = $this->faculty_common->upload_to_cloudinary('image', 'college');
 
             // Clean up temporary file
             if (file_exists($temp_file)) {
@@ -507,6 +427,25 @@ class Principal extends CI_Controller {
             }
         }
         return null; // Return false if decoding fails
+    }
+
+    /**
+     * Utility: check if the given table has a college_id column.
+     */
+    private function has_college_column($table)
+    {
+        if (!$this->db->table_exists($table)) {
+            return false;
+        }
+        return $this->db->field_exists('college_id', $table);
+    }
+
+    /**
+     * Utility: return a filter array for college_id if the table supports it.
+     */
+    private function college_filter($table, $college_id)
+    {
+        return $this->has_college_column($table) ? ['college_id' => $college_id] : [];
     }
 
 
@@ -541,7 +480,7 @@ class Principal extends CI_Controller {
         $data["college"] = $this->db_model->get_row(TABLE_COLLEGE, ["id" => $this->college['id'], "is_active" => true]);
         $data['logo'] = $data["college"]['logo'];
         $data['banner'] = $data["college"]['banner'];
-        $this->load->view('faculty/sidebar', $class); 
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('faculty/profile', $data); 
         $this->load->view('faculty/footer');
         }

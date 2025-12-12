@@ -43,7 +43,7 @@ class User extends CI_Controller {
         // Get all batches for dropdown
         $batches = $this->db_model->get_all(TABLE_STUDENT, ["college_id" => $college_id, "is_active" => 1]);
         $data["batches"] = array_unique(array_column($batches, 'batch'));
-        $data["login_url"] = STUDENT_PORTAL_BASE_URL . '/' . $data['college']['site_url'] . "/login";
+        $data["login_url"] = STUDENT_PORTAL_BASE_URL . '/democollege/login';
         $data['selected_student_batch'] = $this->input->get('batch');
         $data['selected_dept_batch'] = $this->input->get('department_batch');
 

@@ -251,7 +251,7 @@
                 <div class="sidenav-divider mt-0"></div>
                 <ul class="sidenav-inner py-1 ps ps--active-y">
 <?php
-    $designation = $this->session->userdata($url)['designation'] ?? DESIGNATION_PRINCIPAL;
+    $designation = $this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN;
     $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
 ?>
                     <li class="sidenav-item <?php if ($classname == "home") {
@@ -262,49 +262,20 @@
                             <div>Dashboard</div>
                         </a>
                     </li>
-                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL])): ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
                         <li class="sidenav-item">
                             <a href="javascript:void(0)" class="sidenav-link">
                                 <i class="sidenav-icon feather icon-users"></i>
                                 <div>Faculty Master</div>
                             </a>
-                            <ul class="submenu" style="display:block;">
-                                <li><a href="<?= base_url("admin/principal") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
-                                <li><a href="<?= base_url("admin/hod") ?>" class="sidenav-link">HOD (Admin)</a></li>
-                                <li><a href="<?= base_url("admin/staff") ?>" class="sidenav-link">Staff (Faculty)</a></li>
+                            <ul class="submenu" style="list-style:none; padding-left:20px; margin:5px 0; background:transparent;">
+                                <li class="py-1"><a href="<?= base_url("admin/principal/view") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
+                                <li class="py-1"><a href="<?= base_url("admin/hod") ?>" class="sidenav-link">HOD (Admin)</a></li>
+                                <li class="py-1"><a href="<?= base_url("admin/staff") ?>" class="sidenav-link">Staff (Faculty)</a></li>
                             </ul>
                         </li>
-                        <li class="sidenav-item <?php if ($classname == "principal") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= "$sidebar_href/view" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-user"></i>
-                                <div>Principal</div>
-                            </a>
-                        </li>
-                        
                     <?php endif; ?>
-                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
-                        <li class="sidenav-item <?php if ($classname == "hod") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= "$sidebar_href/hod" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-user"></i>
-                                <div>Hod</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
-                        <li class="sidenav-item <?php if ($classname == "staff") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= "$sidebar_href/staff" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-user"></i>
-                                <div>Faculty</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "students") {
                                                     echo "active";
@@ -317,7 +288,7 @@
                     <?php endif; ?>
 
                     <!-- <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "groups") {
                                                     echo "active";
@@ -330,7 +301,7 @@
                     <?php endif; ?> -->
 
                     <?php 
-                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "courses") {
                                                     echo "active";
@@ -343,7 +314,7 @@
                     <?php endif; ?>
 
                     <?php 
-                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "allcourses") {
                                                     echo "active";
@@ -357,7 +328,7 @@
 
 
                     <?php 
-                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "questions") {
                                                     echo "active";
@@ -371,7 +342,7 @@
 
 
                     <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "test") {
                                                     echo "active";
@@ -385,7 +356,7 @@
 
 
                     <!-- <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "reports") {
                                                     echo "active";
@@ -401,7 +372,7 @@
 
                     
                     <!-- <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "questions") {
                                                     echo "active";
@@ -421,7 +392,7 @@
                         </li>
                     <?php endif; ?> -->
 
-                    <?php if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL])): ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
                         <li class="sidenav-item <?php if ($classname == "profile") {
                                                     echo "active";
                                                 } ?>">

@@ -29,8 +29,7 @@ class College extends CI_Controller
 
     public function index($id = null)
     {
-        $url = $this->uri->segment(1);
-        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "site_url" => $url]);
+        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "id" => SINGLE_COLLEGE_ID]);
     
         if (!$college) {
                 $this->_send_response(404, [

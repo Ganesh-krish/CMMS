@@ -18,6 +18,13 @@ class common extends CI_Model {
         $this->load->view("faculty/faculty/footer");
     }
 
+    public function get_default_college() {
+        return $this->db_model->get_row(TABLE_COLLEGE, [
+            "is_active" => 1,
+            "id" => SINGLE_COLLEGE_ID
+        ]);
+    }
+
 	public function check_user_session()
 	{  
         if(empty($this->user_session)){ 

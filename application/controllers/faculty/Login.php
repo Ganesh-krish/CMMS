@@ -12,14 +12,8 @@ class Login extends CI_Controller {
 			return redirect(base_url(""));
 		} 
 
-        // if($this->session->userdata($url)){
-        //     return redirect(base_url("$url/principal"));
-        // }
-		$this->college = $this->db_model->get_row(TABLE_COLLEGE,["is_active"=>1,"site_url"=>$url]); 
-
-        if(!$this->college){
-            redirect(base_url(""));
-        }
+        // Single-college mode: always use the default college by ID
+		$this->college = $this->common->get_default_college();
     }
 	public function index()
 	{
@@ -29,7 +23,7 @@ class Login extends CI_Controller {
 	public function faculty($url)
 	{
 		$post = $this->input->post();
-        if($post){ 
+		if($post){ 
             $this->form_validation->set_rules('password', 'Password', 'trim|required');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email'); 
             if ($this->form_validation->run() == FALSE) {

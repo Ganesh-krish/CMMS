@@ -86,7 +86,7 @@ class Dashboard extends CI_Controller {
         $url_key = 'admin';
         // Ensure session data exists for sidebar expectations
         $this->session->set_userdata($url_key, [
-            'designation' => DESIGNATION_PRINCIPAL,
+            'role' => ROLE_SUPERADMIN,
             'name' => $this->user_session['name'] ?? 'Admin'
         ]);
 

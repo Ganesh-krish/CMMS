@@ -14,7 +14,7 @@ class Groups extends CI_Controller
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
         $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_college_by_url($this->url);
+        $this->college = $this->common->get_default_college();
         $this->session_data = $this->session->userdata($this->url);
         // if ($this->session_data['designation'] != DESIGNATION_STAFF) {
         //     $this->common->redirect_route($this->session_data['designation'], $this->url);

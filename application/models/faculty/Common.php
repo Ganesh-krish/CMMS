@@ -125,7 +125,7 @@ class common extends CI_Model {
         if(empty($session)){  
             redirect( base_url("$url/login/faculty")); 
         }
-        $college = $this->get_college_by_url($url);
+        $college = $this->get_default_college();
         if(empty($college)){
             redirect( base_url("$url/login/faculty")); 
         }
@@ -146,8 +146,8 @@ class common extends CI_Model {
         $this->session->set_userdata($url, $user);
 	} 
 
-    public function get_college_by_url($url){
-       $college =  $this->db_model->get_row(TABLE_COLLEGE,["is_active"=>1,"site_url"=>$url]);
+    public function get_default_college(){
+       $college =  $this->db_model->get_row(TABLE_COLLEGE,["is_active"=>1,"id"=>SINGLE_COLLEGE_ID]);
         return $college;
     }
 
@@ -157,7 +157,7 @@ class common extends CI_Model {
         if(empty($session)){  
             return redirect(base_url(""));
         }
-        $college = $this->get_college_by_url($url);
+        $college = $this->get_default_college();
         if(empty($college)){
             return redirect(base_url(""));
         }

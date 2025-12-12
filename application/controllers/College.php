@@ -33,7 +33,6 @@ class College extends CI_Controller {
 		if($post){
 			$data = array(
 				'name' => $this->input->post('name'),
-				'site_url' => $this->input->post('site_url'),
 				'established_year' => $this->input->post('established_year'),
 				'address' => $this->input->post('address'),
 				'description' => $this->input->post('description'),

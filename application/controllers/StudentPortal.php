@@ -17,7 +17,7 @@ class StudentPortal extends CI_Controller
 
     private function resolve_college($slug)
     {
-        $college = $this->faculty_common->get_college_by_url($slug);
+        $college = $this->faculty_common->get_default_college();
         if (!$college) {
             show_error('College not found', 404);
         }

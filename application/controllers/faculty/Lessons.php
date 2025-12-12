@@ -19,7 +19,7 @@ class Lessons extends CI_Controller
             DESIGNATION_HOD,
             DESIGNATION_STAFF
         ]);
-        $this->college = $this->common->get_college_by_url($this->url);
+        $this->college = $this->common->get_default_college();
     }
 
     private function respond($status, $data = [], $code = 200)

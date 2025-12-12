@@ -44,6 +44,11 @@
             </form>
         </div> -->
         <div class="card p-2">
+            <div class="d-flex justify-content-end mb-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPrincipalModal">
+                    <i class="feather icon-plus"></i> Add Principal
+                </button>
+            </div>
             <!-- <div style="display: flex; justify-content:space-between; align-items: center;
             border-bottom: 0 solid rgba(24, 28, 33, 0.13);
             border-color: rgba(24, 28, 33, 0.13);
@@ -63,7 +68,7 @@
                             <th>Email</th>
                             <th>Phone Number</th>
                             <th>Created At</th>
-                            <th>Reset Password</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -97,8 +102,13 @@
                                             echo "-";
                                         } ?>
                                     </td>
-                                    <td>
-                                        <button type="button" onclick="model_open(<?=$row['id']?>)"  class="btn btn-warning btn-sm" ><i class="feather icon-edit"></i>&nbsp;Reset Password </button>
+                                    <td class="d-flex gap-1" style="flex-wrap: wrap;">
+                                        <a href="<?= base_url($url.'/principal/edit/'.$row['id']) ?>" class="btn btn-sm btn-info">Edit</a>
+                                        <a href="<?= base_url($url.'/principal/delete/'.$row['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this principal?');">Delete</a>
+                                        <a href="<?= base_url($url.'/principal/role_switch/'.$row['id']) ?>" class="btn btn-sm btn-secondary">Role Switch</a>
+                                        <button type="button" onclick="model_open(<?= $row['id'] ?>)" class="btn btn-warning btn-sm">
+                                            Reset Password
+                                        </button>
                                     </td>
                                 </tr>
                         <?php }
@@ -129,6 +139,42 @@
             </div>
         </div>
         <div class="modal-footer">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPrincipalModal" tabindex="-1" aria-labelledby="addPrincipalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPrincipalLabel">Add Principal</h5>
+            </div>
+            <div class="ml-4 m-2">
+                <form action="<?= $add_url ?>" method="POST">
+                    <div class="p-4">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="phone_number" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

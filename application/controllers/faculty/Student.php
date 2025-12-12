@@ -107,11 +107,7 @@ class Student extends CI_Controller {
         $query = $this->db->get();
         $student = $query->row();
     
-        $this->db->select('site_url, id');
-        $this->db->from( 'colleges' );
-        $this->db->where( 'site_url', $this->url );
-        $query = $this->db->get();
-        $college = $query->row();
+        $college = $this->db_model->get_row(TABLE_COLLEGE, ["id" => SINGLE_COLLEGE_ID, "is_active" => 1]);
         
         $password_valid = false;
         if ($student && $college) {
@@ -129,7 +125,7 @@ class Student extends CI_Controller {
         if ( $student && $college && $password_valid ) {
         
             if (!isset($student->college_id) || empty($student->college_id)) {
-                $student->college_id = $college->id;
+                $student->college_id = $college['id'];
             }
 
 
@@ -171,7 +167,7 @@ class Student extends CI_Controller {
                     )
                 )
             );
-            $this->session->set_userdata(isset($college->site_url) ? $college->site_url . '_student' : '', $student);
+            $this->session->set_userdata($this->url . '_student', $student);
         } else {
             http_response_code( 401 );
             $response = array(
@@ -357,11 +353,7 @@ class Student extends CI_Controller {
             return;
         }
         if (!isset($student->college_id) || empty($student->college_id)) {
-            $this->db->select('id');
-            $this->db->from('colleges');
-            $this->db->where('site_url', $this->url);
-            $query = $this->db->get();
-            $college = $query->row();
+            $student->college_id = SINGLE_COLLEGE_ID;
         }
         $course_ids = $this->get_student_course_ids($student);
         if (empty($course_ids)) {
@@ -1586,8 +1578,7 @@ class Student extends CI_Controller {
     }
 
     public function logo(){
-        $url = $this->uri->segment(1);
-        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "site_url" => $url]);
+        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "id" => SINGLE_COLLEGE_ID]);
         
         if (!$college || empty($college['logo'])) {
             http_response_code(404);
@@ -1608,8 +1599,7 @@ class Student extends CI_Controller {
     }
 
     public function banner(){
-        $url = $this->uri->segment(1);
-        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "site_url" => $url]);
+        $college = $this->db_model->get_row(TABLE_COLLEGE, ["is_active" => 1, "id" => SINGLE_COLLEGE_ID]);
         
         if (!$college || empty($college['banner'])) {
             http_response_code(404);

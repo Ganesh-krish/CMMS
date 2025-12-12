@@ -91,49 +91,18 @@ defined('RedirectURL')      or define('RedirectURL', "OAuth/verify");
 
 defined('DB_INSTALL_KEY')      or define('DB_INSTALL_KEY', "YInTXhwPxaMwSGGZ9DQtVkuTk4OoZguJ");
 defined('STUDENT_PORTAL_BASE_URL')      or define('STUDENT_PORTAL_BASE_URL','');
-defined('ONE_COMPILER_API_KEY') or define('ONE_COMPILER_API_KEY', '');
 defined('SINGLE_COLLEGE_ID') or define('SINGLE_COLLEGE_ID', 1);
 
-defined('DESIGNATION_PRINCIPAL')      or define('DESIGNATION_PRINCIPAL', 1);
-defined('DESIGNATION_HOD')      or define('DESIGNATION_HOD', 2);
-defined('DESIGNATION_STAFF')      or define('DESIGNATION_STAFF', 3);
 
 
 defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "colleges");
 defined('TABLE_DEPARTMENT')      or define('TABLE_DEPARTMENT', "departments");
 defined('TABLE_REQUEST')      or define('TABLE_REQUEST', "login_requests");
-defined('TABLE_OWNER')      or define('TABLE_OWNER', "owner");
+defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
 defined('TABLE_STAFF')      or define('TABLE_STAFF', "staffs");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
 defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
-defined('TABLE_SPECIAL_COURCES')      or define('TABLE_SPECIAL_COURCES', "special_courses");
-defined('TABLE_STUDENT_TEST_SUBMISSION') or define('TABLE_STUDENT_TEST_SUBMISSION', "student_test_submission");
-defined('TABLE_BATCHES') or define('TABLE_BATCHES', "batches");
-defined('TABLE_MODULE_SCHEDULES') or define('TABLE_MODULE_SCHEDULES', "module_schedules");
-defined('TABLE_ENROLLMENTS') or define('TABLE_ENROLLMENTS', "enrollments");
-defined('TABLE_PROGRESS_LOGS') or define('TABLE_PROGRESS_LOGS', "progress_logs");
-defined('TABLE_INSTRUMENTS') or define('TABLE_INSTRUMENTS', "instruments");
-defined('TABLE_INSTRUMENT_TRANSACTIONS') or define('TABLE_INSTRUMENT_TRANSACTIONS', "instrument_transactions");
-defined('TABLE_INSTRUMENT_MAINTENANCE') or define('TABLE_INSTRUMENT_MAINTENANCE', "instrument_maintenance");
-defined('TABLE_NOTIFICATIONS') or define('TABLE_NOTIFICATIONS', "notifications");
 
-defined("TABLE_QUESTION_TYPE") or define("TABLE_QUESTION_TYPE", "question_types");
-defined("TABLE_QUESTION_BANK") or define("TABLE_QUESTION_BANK","private_question_bank");
-defined('TABLE_ANSWER_OPTIONS')      or define('TABLE_ANSWER_OPTIONS', "private_answer_options");
-
-defined('TABLE_QUESTION_SUB_TYPES') or define('TABLE_QUESTION_SUB_TYPES', "question_sub_types");
-defined('TABLE_QUESTION_DIFFICULTY_LEVEL') or define('TABLE_QUESTION_DIFFICULTY_LEVEL', "question_difficulty_level");
-defined('TABLE_QUESTION_TEST_CASES') or define('TABLE_QUESTION_TEST_CASES', "private_question_test_cases");
-
-
-defined("TABLE_TEST_MODULES") or define("TABLE_TEST_MODULES","test_modules");
-defined("TABLE_PRIVATE_TESTS") or define("TABLE_PRIVATE_TESTS","private_tests");
-
-defined("TABLE_PRIVATE_TEST_SETTINGS_NAVIGATION") or define("TABLE_PRIVATE_TEST_SETTINGS_NAVIGATION", "private_test_settings_navigation");
-defined("TABLE_PRIVATE_TEST_SETTINGS_SECURITY") or define("TABLE_PRIVATE_TEST_SETTINGS_SECURITY", "private_test_settings_security");
-defined("TABLE_PRIVATE_TEST_SETTINGS_MONITORING") or define("TABLE_PRIVATE_TEST_SETTINGS_MONITORING", "private_test_settings_monitoring");
-defined("TABLE_PRIVATE_TEST_SETTINGS_UI") or define("TABLE_PRIVATE_TEST_SETTINGS_UI", "private_test_settings_ui");
-defined("TABLE_PRIVATE_TEST_QUESTIONS") or define("TABLE_PRIVATE_TEST_QUESTIONS","private_test_questions");
 
 define('COURSE_TYPES', json_encode([
     1 => ['name' => 'Courses', 'color' => ''],
@@ -146,4 +115,7 @@ define('COURSE_MODES', json_encode([
     2 => ['name' => 'Gamification', 'color' => '#62D493']
 ]));
 
+defined('ROLE_SUPERADMIN')  or define('ROLE_SUPERADMIN', 1);
+defined('ROLE_ADMIN')       or define('ROLE_ADMIN', 2);
+defined('ROLE_STAFF')       or define('ROLE_STAFF', 3);
 

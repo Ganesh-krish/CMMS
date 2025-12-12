@@ -240,9 +240,9 @@
             <!-- [ Layout sidenav ] Start -->
             <div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical bg-white logo-white">
                 <!-- Brand demo (see assets/css/demo/demo.css) -->
-                <div class="app-brand demo">
+    <div class="app-brand demo">
                     <!-- <span class="app-brand-logo demo"> -->
-                    <img src="<?= base_url('assets/images/logo.svg') ?>" alt="Brand Logo" width="100px" height="100px">                    </span>
+                    <img src="<?= base_url('assets/img/logo.svg') ?>" alt="Brand Logo" width="100px" height="100px">                    </span>
                     <!-- <a href="" class="app-brand-text demo sidenav-text font-weight-normal ml-2">Drillu</a> -->
                     <a href="javascript:" class="layout-sidenav-toggle sidenav-link text-large ml-auto">
                         <i class="ion ion-md-menu align-middle"></i>
@@ -250,15 +250,30 @@
                 </div>
                 <div class="sidenav-divider mt-0"></div>
                 <ul class="sidenav-inner py-1 ps ps--active-y">
+<?php
+    $designation = $this->session->userdata($url)['designation'] ?? DESIGNATION_PRINCIPAL;
+    $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
+?>
                     <li class="sidenav-item <?php if ($classname == "home") {
                                                 echo "active";
                                             } ?>">
-                        <a href="<?= $sidebar_href ?>" class="sidenav-link ">
+                        <a href="<?= $sidebar_href ?? $fallbackHref ?>" class="sidenav-link ">
                             <i class="sidenav-icon feather icon-home"></i>
                             <div>Dashboard</div>
                         </a>
                     </li>
-                    <?php if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL])): ?>
+                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL])): ?>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <i class="sidenav-icon feather icon-users"></i>
+                                <div>Faculty Master</div>
+                            </a>
+                            <ul class="submenu" style="display:block;">
+                                <li><a href="<?= base_url("admin/principal") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
+                                <li><a href="<?= base_url("admin/hod") ?>" class="sidenav-link">HOD (Admin)</a></li>
+                                <li><a href="<?= base_url("admin/staff") ?>" class="sidenav-link">Staff (Faculty)</a></li>
+                            </ul>
+                        </li>
                         <li class="sidenav-item <?php if ($classname == "principal") {
                                                     echo "active";
                                                 } ?>">
@@ -269,7 +284,7 @@
                         </li>
                         
                     <?php endif; ?>
-                    <?php if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
+                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
                         <li class="sidenav-item <?php if ($classname == "hod") {
                                                     echo "active";
                                                 } ?>">
@@ -279,7 +294,7 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
+                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD])): ?>
                         <li class="sidenav-item <?php if ($classname == "staff") {
                                                     echo "active";
                                                 } ?>">
@@ -289,7 +304,7 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    <?php if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "students") {
                                                     echo "active";
@@ -315,7 +330,7 @@
                     <?php endif; ?> -->
 
                     <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "courses") {
                                                     echo "active";
@@ -328,7 +343,7 @@
                     <?php endif; ?>
 
                     <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "allcourses") {
                                                     echo "active";
@@ -342,7 +357,7 @@
 
 
                     <?php 
-                    if (in_array($this->session->userdata($url)['designation'], [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
+                    if (in_array($designation, [DESIGNATION_PRINCIPAL, DESIGNATION_HOD, DESIGNATION_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "questions") {
                                                     echo "active";

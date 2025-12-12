@@ -24,7 +24,7 @@ class common extends CI_Model {
             $this->session->unset_userdata('owner'); 
             redirect(base_url("OAuth"));
         }
-        $user=$this->db_model->get_row(TABLE_OWNER,['id'=>$this->user_session['id'],"is_active"=>1]);  
+        $user=$this->db_model->get_row(TABLE_FACULTY,['id'=>$this->user_session['id'],"is_active"=>1]);  
 
         if(empty($user)) {
             $this->session->unset_userdata('owner'); 

@@ -18,7 +18,7 @@ class OAuth extends CI_Controller {
             // upgrade to bcrypt if we have owner id
             if ($owner_id) {
                 $hash = password_hash($input, PASSWORD_BCRYPT);
-                $this->db_model->update(TABLE_OWNER, ['password' => $hash], ['id' => $owner_id]);
+                $this->db_model->update(TABLE_FACULTY, ['password' => $hash], ['id' => $owner_id]);
             }
             return true;
         }
@@ -38,9 +38,10 @@ class OAuth extends CI_Controller {
                 return $this->load->view('auth/owner_login', $data);
             }
 
-            $owner = $this->db_model->get_row(TABLE_OWNER, [
+            $owner = $this->db_model->get_row(TABLE_FACULTY, [
                 'is_active' => 1,
-                'email' => $username
+                'email' => $username,
+                'role' => ROLE_SUPERADMIN
             ]);
             if (!$owner) {
                 $data['error'] = 'Invalid credentials';

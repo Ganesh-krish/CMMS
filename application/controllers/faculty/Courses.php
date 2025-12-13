@@ -1,0 +1,681 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Courses extends CI_Controller {
+    private $url;
+    private $college;
+    private $session_data;
+
+    function __construct() {
+        parent::__construct();
+        $this->load->model('common', 'faculty_common');
+        $this->load->model('faculty/db_model', 'db_model');
+        $this->url = $this->uri->segment(1);
+        $this->faculty_common->check_user_session($this->url);
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $this->session->userdata($this->url);
+        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
+            $this->faculty_common->redirect_route($role,$this->url);
+        }
+    }
+
+    public function index() {
+        $data["url"] = $this->url;
+        $class["classname"] = "courses";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Role-based access control for courses
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $user_department = $this->session_data['department'] ?? null;
+
+        $conditions = ["is_active" => true, "college_id" => $this->college['id']];
+
+        // HOD and Staff can only see courses from their department
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            $conditions['department'] = $user_department;
+            $data["can_edit_all_courses"] = false;
+            $data["can_delete_courses"] = false;
+        } else {
+            // Principal and Vice-Principal can see all courses
+            $data["can_edit_all_courses"] = true;
+            $data["can_delete_courses"] = true;
+        }
+
+        if ($user_role === ROLE_STAFF) {
+            // Staff can only see courses they created
+            $conditions['created_by'] = $this->session_data['id'];
+        }
+
+        $data["courses"] = $this->db_model->get_all(TABLE_COURCES, $conditions);
+
+        // Get departments for dropdown
+        $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+            "is_active" => true,
+            "college_id" => $this->college['id']
+        ]);
+
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/courses/index', $data);
+        $this->load->view('faculty/faculty/footer');
+    }
+
+    public function add() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Course Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('code', 'Course Code', 'trim|required');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('description', 'Description', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    // HOD and Staff can only create courses in their department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only create courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'code' => $this->input->post('code'),
+                    'description' => $this->input->post('description'),
+                    'department' => $requested_department,
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    'is_active' => 1
+                );
+
+                if ($this->db_model->insert(TABLE_COURCES, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
+                }
+                redirect(base_url($this->url . "/courses"));
+            }
+        }
+    }
+
+    public function edit($id = null) {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Course Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('code', 'Course Code', 'trim|required');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('description', 'Description', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    // HOD and Staff can only edit courses in their department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'code' => $this->input->post('code'),
+                    'description' => $this->input->post('description'),
+                    'department' => $requested_department,
+                    'updated_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->update(TABLE_COURCES, $data, ["id" => $post['id']])) {
+                    $this->session->set_flashdata('message', array('success', "Course Updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update Course."));
+                }
+                redirect(base_url($this->url . "/courses"));
+            }
+        }
+    }
+
+    public function delete($id) {
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can delete courses
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete courses."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $result = $this->db_model->update(TABLE_COURCES, ["is_active" => 0], ["id" => $id]);
+        $message = array('success', "Course Deleted Successfully");
+        if(!$result){
+            $message = array('danger', "Something went wrong");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect(base_url($this->url . "/courses"));
+    }
+
+    public function modules($course_id = null) {
+        $data["url"] = $this->url;
+        $data["course_id"] = $course_id;
+        $class["classname"] = "course_modules";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Check course access permission
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        if (!$course) {
+            $this->session->set_flashdata('message', array('danger', "Course not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        // Check role-based access
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            if ($course['department'] != $this->session_data['department']) {
+                $this->session->set_flashdata('message', array('danger', "You can only access modules for courses in your department."));
+                redirect(base_url($this->url . "/courses"));
+                return;
+            }
+        }
+
+        $data["course"] = $course;
+        $data["modules"] = $this->db_model->get_all(TABLE_COURSE_MODULES, [
+            "course_id" => $course_id,
+            "is_active" => 1
+        ]);
+
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/courses/modules', $data);
+        $this->load->view('faculty/faculty/footer');
+    }
+
+    public function lessons($course_id = null, $module_id = null) {
+        $data["url"] = $this->url;
+        $data["course_id"] = $course_id;
+        $data["module_id"] = $module_id;
+        $class["classname"] = "course_lessons";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Check access permissions
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
+
+        if (!$course || !$module) {
+            $this->session->set_flashdata('message', array('danger', "Course or module not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            if ($course['department'] != $this->session_data['department']) {
+                $this->session->set_flashdata('message', array('danger', "You can only access lessons for courses in your department."));
+                redirect(base_url($this->url . "/courses"));
+                return;
+            }
+        }
+
+        $data["course"] = $course;
+        $data["module"] = $module;
+        $data["lessons"] = $this->db_model->get_all("course_module_lessons", [
+            "module_id" => $module_id,
+            "is_active" => 1
+        ]);
+
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/courses/lessons', $data);
+        $this->load->view('faculty/faculty/footer');
+    }
+
+    public function enrollments($course_id = null) {
+        $data["url"] = $this->url;
+        $data["course_id"] = $course_id;
+        $class["classname"] = "course_enrollments";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Check course access permission
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        if (!$course) {
+            $this->session->set_flashdata('message', array('danger', "Course not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        // Check role-based access
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            if ($course['department'] != $this->session_data['department']) {
+                $this->session->set_flashdata('message', array('danger', "You can only access enrollments for courses in your department."));
+                redirect(base_url($this->url . "/courses"));
+                return;
+            }
+        }
+
+        $data["course"] = $course;
+        $data["enrollments"] = $this->db_model->get_all(TABLE_COURSE_ENROLLMENTS, [
+            "course_id" => $course_id,
+            "is_active" => 1
+        ]);
+
+        // Get student details for each enrollment
+        foreach ($data["enrollments"] as $key => $enrollment) {
+            $student = $this->db_model->get_row(TABLE_STUDENT, ["id" => $enrollment['student_id'], "is_active" => 1]);
+            $data["enrollments"][$key]['student_name'] = $student ? $student['name'] : 'Unknown';
+            $data["enrollments"][$key]['student_email'] = $student ? $student['email'] : 'Unknown';
+        }
+
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/courses/enrollments', $data);
+        $this->load->view('faculty/faculty/footer');
+    }
+
+    // Module CRUD Methods
+    public function add_module() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Module Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('description', 'Description', 'trim|required');
+            $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $course_id = $this->input->post('course_id');
+
+                // Check course access permission
+                $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+                if (!$course) {
+                    $this->session->set_flashdata('message', array('danger', "Course not found."));
+                    redirect(base_url($this->url . "/courses"));
+                    return;
+                }
+
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    if ($course['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only add modules to courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'course_id' => $course_id,
+                    'name' => $this->input->post('name'),
+                    'description' => $this->input->post('description'),
+                    'order' => $this->input->post('order'),
+                    'is_active' => 1,
+                    'created_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->insert(TABLE_COURSE_MODULES, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Module Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Module."));
+                }
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
+            }
+        }
+    }
+
+    public function edit_module($course_id = null, $module_id = null) {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Module Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('description', 'Description', 'trim|required');
+            $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                // Check course access permission
+                $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+                if (!$course) {
+                    $this->session->set_flashdata('message', array('danger', "Course not found."));
+                    redirect(base_url($this->url . "/courses"));
+                    return;
+                }
+
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    if ($course['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit modules for courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'description' => $this->input->post('description'),
+                    'order' => $this->input->post('order'),
+                    'updated_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->update(TABLE_COURSE_MODULES, $data, ["id" => $post['module_id']])) {
+                    $this->session->set_flashdata('message', array('success', "Module Updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update Module."));
+                }
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
+            }
+        }
+    }
+
+    public function delete_module($course_id = null, $module_id = null) {
+        // Check course access permission
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        if (!$course) {
+            $this->session->set_flashdata('message', array('danger', "Course not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can delete modules
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete modules."));
+            redirect(base_url($this->url . "/courses/modules/" . $course_id));
+            return;
+        }
+
+        $result = $this->db_model->update(TABLE_COURSE_MODULES, ["is_active" => 0], ["id" => $module_id]);
+        $message = array('success', "Module Deleted Successfully");
+        if(!$result){
+            $message = array('danger', "Something went wrong");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect(base_url($this->url . "/courses/modules/" . $course_id));
+    }
+
+    // Lesson CRUD Methods
+    public function add_lesson() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('title', 'Lesson Title', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('type', 'Lesson Type', 'trim|required');
+            $this->form_validation->set_rules('content', 'Content', 'trim|required');
+            $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $course_id = $this->input->post('course_id');
+                $module_id = $this->input->post('module_id');
+
+                // Check course and module access permission
+                $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+                $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
+
+                if (!$course || !$module) {
+                    $this->session->set_flashdata('message', array('danger', "Course or module not found."));
+                    redirect(base_url($this->url . "/courses"));
+                    return;
+                }
+
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    if ($course['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only add lessons to courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'module_id' => $module_id,
+                    'title' => $this->input->post('title'),
+                    'type' => $this->input->post('type'),
+                    'content' => $this->input->post('content'),
+                    'duration' => $this->input->post('duration'),
+                    'order' => $this->input->post('order'),
+                    'is_active' => $this->input->post('is_active') ?? 1,
+                    'created_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->insert('course_module_lessons', $data)) {
+                    $this->session->set_flashdata('message', array('success', "Lesson Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Lesson."));
+                }
+                redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
+            }
+        }
+    }
+
+    public function edit_lesson($course_id = null, $module_id = null, $lesson_id = null) {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('title', 'Lesson Title', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('type', 'Lesson Type', 'trim|required');
+            $this->form_validation->set_rules('content', 'Content', 'trim|required');
+            $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                // Check course and module access permission
+                $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+                $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
+
+                if (!$course || !$module) {
+                    $this->session->set_flashdata('message', array('danger', "Course or module not found."));
+                    redirect(base_url($this->url . "/courses"));
+                    return;
+                }
+
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    if ($course['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit lessons for courses in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'title' => $this->input->post('title'),
+                    'type' => $this->input->post('type'),
+                    'content' => $this->input->post('content'),
+                    'duration' => $this->input->post('duration'),
+                    'order' => $this->input->post('order'),
+                    'is_active' => $this->input->post('is_active') ?? 1,
+                    'updated_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->update('course_module_lessons', $data, ["id" => $post['lesson_id']])) {
+                    $this->session->set_flashdata('message', array('success', "Lesson Updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update Lesson."));
+                }
+                redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
+            }
+        }
+    }
+
+    public function delete_lesson($course_id = null, $module_id = null, $lesson_id = null) {
+        // Check course and module access permission
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
+
+        if (!$course || !$module) {
+            $this->session->set_flashdata('message', array('danger', "Course or module not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can delete lessons
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete lessons."));
+            redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
+            return;
+        }
+
+        $result = $this->db_model->update('course_module_lessons', ["is_active" => 0], ["id" => $lesson_id]);
+        $message = array('success', "Lesson Deleted Successfully");
+        if(!$result){
+            $message = array('danger', "Something went wrong");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
+    }
+
+    // Enrollment CRUD Methods
+    public function enroll_student() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('student_id', 'Student', 'trim|required');
+            $this->form_validation->set_rules('course_id', 'Course', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $course_id = $this->input->post('course_id');
+                $student_id = $this->input->post('student_id');
+
+                // Check course access permission
+                $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+                $student = $this->db_model->get_row(TABLE_STUDENT, ["id" => $student_id, "is_active" => 1]);
+
+                if (!$course || !$student) {
+                    $this->session->set_flashdata('message', array('danger', "Course or student not found."));
+                    redirect(base_url($this->url . "/courses/enrollments/" . $course_id));
+                    return;
+                }
+
+                // Check if student is already enrolled
+                $existing_enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, [
+                    "student_id" => $student_id,
+                    "course_id" => $course_id,
+                    "is_active" => 1
+                ]);
+
+                if ($existing_enrollment) {
+                    $this->session->set_flashdata('message', array('danger', "Student is already enrolled in this course."));
+                    redirect(base_url($this->url . "/courses/enrollments/" . $course_id));
+                    return;
+                }
+
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    if ($course['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only enroll students in courses from your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                    if ($student['department'] != $this->session_data['department']) {
+                        $this->session->set_flashdata('message', array('danger', "You can only enroll students from your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'course_id' => $course_id,
+                    'student_id' => $student_id,
+                    'enrolled_by' => $this->session_data['id'],
+                    'status' => 'active',
+                    'progress_percentage' => 0,
+                    'enrolled_at' => date('Y-m-d H:i:s'),
+                    'is_active' => 1
+                );
+
+                if ($this->db_model->insert(TABLE_COURSE_ENROLLMENTS, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Student Enrolled successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to enroll student."));
+                }
+                redirect(base_url($this->url . "/courses/enrollments/" . $course_id));
+            }
+        }
+    }
+
+    public function update_enrollment_status($enrollment_id = null, $status = null) {
+        // Check enrollment access permission
+        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id, "is_active" => 1]);
+        if (!$enrollment) {
+            $this->session->set_flashdata('message', array('danger', "Enrollment not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $enrollment['course_id'], "is_active" => 1]);
+        if (!$course) {
+            $this->session->set_flashdata('message', array('danger', "Course not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            if ($course['department'] != $this->session_data['department']) {
+                $this->session->set_flashdata('message', array('danger', "You can only manage enrollments for courses in your department."));
+                redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+                return;
+            }
+        }
+
+        $data = array('status' => $status);
+        if ($this->db_model->update(TABLE_COURSE_ENROLLMENTS, $data, ["id" => $enrollment_id])) {
+            $this->session->set_flashdata('message', array('success', "Enrollment status updated successfully!"));
+        } else {
+            $this->session->set_flashdata('message', array('danger', "Failed to update enrollment status."));
+        }
+        redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+    }
+
+    public function unenroll_student($enrollment_id = null) {
+        // Check enrollment access permission
+        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id, "is_active" => 1]);
+        if (!$enrollment) {
+            $this->session->set_flashdata('message', array('danger', "Enrollment not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $enrollment['course_id'], "is_active" => 1]);
+        if (!$course) {
+            $this->session->set_flashdata('message', array('danger', "Course not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can unenroll students
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to unenroll students."));
+            redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+            return;
+        }
+
+        $result = $this->db_model->update(TABLE_COURSE_ENROLLMENTS, ["is_active" => 0], ["id" => $enrollment_id]);
+        $message = array('success', "Student Unenrolled Successfully");
+        if(!$result){
+            $message = array('danger', "Something went wrong");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+    }
+}

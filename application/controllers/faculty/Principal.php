@@ -474,40 +474,58 @@ class Principal extends CI_Controller {
     }
 
 
-    public function profile(){ 
-    $post = $this->input->post();
-    if($post){
-        $post_image = $this->process_cropped_image('croppedImageData1');
-        $post_image_2 = $this->process_cropped_image('croppedImageData2');   
+    public function profile(){
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'College Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('address', 'Address', 'trim|required');
+            $this->form_validation->set_rules('phone', 'Phone', 'trim|required');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
 
-        $data = []; 
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            }
 
+            $post_image = $this->process_cropped_image('croppedImageData1');
+            $post_image_2 = $this->process_cropped_image('croppedImageData2');
 
-        if($post_image){
-            $data['logo'] = $post_image;
-        }
+            $data = [
+                'name' => $this->input->post('name'),
+                'address' => $this->input->post('address'),
+                'phone' => $this->input->post('phone'),
+                'email' => $this->input->post('email'),
+                'website' => $this->input->post('website'),
+                'description' => $this->input->post('description'),
+                'updated_by' => $this->session_data['id']
+            ];
 
-        if($post_image_2){
-            $data['banner'] = $post_image_2;
-        }
+            if($post_image){
+                $data['logo'] = $post_image;
+            }
 
-        if(!empty($data)) {
-            $this->db_model->update(TABLE_COLLEGE, $data, ["id" => $this->college['id'], "is_active" => true]);
-            $this->session->set_flashdata('message', [0, 'Profile updated successfully!']);
-        }
-        
-        return redirect(base_url($this->url."/principal/profile"));
-    } else { 
-        $class["classname"] = "profile";
-        $class["url"] =  $this->url; 
-        $class["sidebar_href"] = base_url($this->url."/principal");
+            if($post_image_2){
+                $data['banner'] = $post_image_2;
+            }
 
-        $data["college"] = $this->db_model->get_row(TABLE_COLLEGE, ["id" => $this->college['id'], "is_active" => true]);
-        $data['logo'] = $data["college"]['logo'];
-        $data['banner'] = $data["college"]['banner'];
-        $this->load->view('faculty/faculty/sidebar', $class);
-        $this->load->view('faculty/faculty/profile', $data);
-        $this->load->view('faculty/faculty/footer');
+            if ($this->db_model->update(TABLE_COLLEGE, $data, ["id" => $this->college['id'], "is_active" => true])) {
+                $this->session->set_flashdata('message', array('success', 'College details updated successfully!'));
+            } else {
+                $this->session->set_flashdata('message', array('danger', 'Failed to update college details.'));
+            }
+
+            return redirect(base_url($this->url."/principal/profile"));
+        } else {
+            $class["classname"] = "profile";
+            $class["url"] =  $this->url;
+            $class["sidebar_href"] = base_url($this->url."/principal");
+
+            $data["college"] = $this->db_model->get_row(TABLE_COLLEGE, ["id" => $this->college['id'], "is_active" => true]);
+            $data['logo'] = $data["college"]['logo'];
+            $data['banner'] = $data["college"]['banner'];
+            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('faculty/settings', $data);
+            $this->load->view('faculty/faculty/footer');
         }
     }
 

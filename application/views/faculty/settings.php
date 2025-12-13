@@ -108,7 +108,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <h4 class="text-primary">
-                            <?php echo $this->db_model->count_rows(TABLE_FACULTY, ["college_id" => $college['id'], "is_active" => 1]); ?>
+                            <?php echo $this->db_model->count(TABLE_FACULTY, ["college_id" => $college['id'], "is_active" => 1]); ?>
                         </h4>
                         <p class="mb-0">Total Faculty</p>
                     </div>
@@ -118,7 +118,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <h4 class="text-success">
-                            <?php echo $this->db_model->count_rows(TABLE_STUDENT, ["college_id" => $college['id'], "is_active" => 1]); ?>
+                            <?php echo $this->db_model->count(TABLE_STUDENT, ["college_id" => $college['id'], "is_active" => 1]); ?>
                         </h4>
                         <p class="mb-0">Total Students</p>
                     </div>
@@ -128,7 +128,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <h4 class="text-info">
-                            <?php echo $this->db_model->count_rows(TABLE_COURCES, ["college_id" => $college['id'], "is_active" => 1]); ?>
+                            <?php echo $this->db_model->count(TABLE_COURCES, ["college_id" => $college['id'], "is_active" => 1]); ?>
                         </h4>
                         <p class="mb-0">Total Courses</p>
                     </div>
@@ -138,7 +138,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <h4 class="text-warning">
-                            <?php echo $this->db_model->count_rows(TABLE_DEPARTMENT, ["college_id" => $college['id'], "is_active" => 1]); ?>
+                            <?php echo $this->db_model->count(TABLE_DEPARTMENT, ["college_id" => $college['id'], "is_active" => 1]); ?>
                         </h4>
                         <p class="mb-0">Total Departments</p>
                     </div>

@@ -97,7 +97,6 @@ defined('SINGLE_COLLEGE_ID') or define('SINGLE_COLLEGE_ID', 1);
 
 defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "college");
 defined('TABLE_DEPARTMENT')      or define('TABLE_DEPARTMENT', "departments");
-defined('TABLE_BATCHES')      or define('TABLE_BATCHES', "batches");
 defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
 defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
@@ -109,6 +108,10 @@ defined('TABLE_INSTRUMENTS')               or define('TABLE_INSTRUMENTS', "instr
 defined('TABLE_INSTRUMENT_ISSUES')         or define('TABLE_INSTRUMENT_ISSUES', "instrument_issues");
 defined('TABLE_INSTRUMENT_MAINTENANCE')    or define('TABLE_INSTRUMENT_MAINTENANCE', "instrument_maintenance");
 defined('TABLE_INSTRUMENT_CATEGORIES')     or define('TABLE_INSTRUMENT_CATEGORIES', "instrument_categories");
+
+// Groups Tables
+defined('TABLE_GROUPS')                    or define('TABLE_GROUPS', "groups");
+defined('TABLE_MEMGROUPS')                 or define('TABLE_MEMGROUPS', "memgroups");
 
 // Announcement Tables
 defined('TABLE_ANNOUNCEMENTS')             or define('TABLE_ANNOUNCEMENTS', "announcements");

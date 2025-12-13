@@ -1,11 +1,11 @@
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-0">HOD</h4>
+        <h4 class="font-weight-bold py-3 mb-0">Department Administrator</h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
                 <!-- <li class="breadcrumb-item">Purchase</li> -->
-                <li class="breadcrumb-item">HOD</li>
+                <li class="breadcrumb-item">Department Administrator</li>
             </ol>
         </div>
         <?php if ($this->session->flashdata('message')) { ?>
@@ -46,7 +46,7 @@
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHodModal">
-                    <i class="feather icon-plus"></i> Add HOD
+                    <i class="feather icon-plus"></i> Add Department Administrator
                 </button>
             </div>
             <!-- <div style="display: flex; justify-content:space-between; align-items: center;
@@ -158,7 +158,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addHodLabel">Add HOD</h5>
+                <h5 class="modal-title" id="addHodLabel">Add Department Administrator</h5>
             </div>
             <div class="ml-4 m-2">
                 <form action="<?= $add_url ?>" method="POST">

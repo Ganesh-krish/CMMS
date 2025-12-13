@@ -238,9 +238,57 @@ class Principal extends CI_Controller {
             ]
         );
 
-		$this->load->view('faculty/faculty/sidebar',$class); 
-		$this->load->view('faculty/faculty/principal',$data); 
-		$this->load->view('faculty/faculty/footer'); 
+        $data["vice_principal"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active" => true,
+                "role" => ROLE_VICE_PRINCIPAL
+            ]
+        );
+
+        // Get Department Administrators (HODs)
+        $data["department_admins"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active" => true,
+                "role" => ROLE_HOD
+            ]
+        );
+
+        // Load departments for dropdown
+        $college_id = $this->college['id'] ?? SINGLE_COLLEGE_ID;
+
+        // First try to load departments for current college
+        $data["departments"] = $this->db_model->get_all(
+            TABLE_DEPARTMENT,
+            ["is_active" => true, "college_id" => $college_id]
+        );
+
+        // If no departments found for current college, try loading all departments
+        if (empty($data["departments"])) {
+            $data["departments"] = $this->db_model->get_all(
+                TABLE_DEPARTMENT,
+                ["is_active" => true]
+            );
+        }
+
+        // If still no departments, create some default ones for testing
+        if (empty($data["departments"])) {
+            $data["departments"] = [
+                ["id" => 1, "name" => "Computer Science"],
+                ["id" => 2, "name" => "Information Technology"],
+                ["id" => 3, "name" => "Electronics"],
+                ["id" => 4, "name" => "Mechanical Engineering"],
+                ["id" => 5, "name" => "Civil Engineering"]
+            ];
+        }
+
+        $data["add_vice_principal_url"] = base_url($this->url."/principal/add_vice_principal");
+        $data["add_department_admin_url"] = base_url($this->url."/principal/add_department_admin");
+
+		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('faculty/faculty/principal',$data);
+		$this->load->view('faculty/faculty/footer');
     }
 
     public function vice_principal(){
@@ -269,8 +317,9 @@ class Principal extends CI_Controller {
     public function hod(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
+        $data["add_url"] = base_url($this->url."/principal/add_hod");
         $class["classname"] = "hod";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
         $data["hod"] = $this->db_model->get_all(
             TABLE_FACULTY,
@@ -292,8 +341,9 @@ class Principal extends CI_Controller {
     public function staff(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
+        $data["add_url"] = base_url($this->url."/principal/add_staff");
         $class["classname"] = "staff";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
         $data["staff"] = $this->db_model->get_all(
             TABLE_FACULTY,
@@ -308,7 +358,13 @@ class Principal extends CI_Controller {
             $data["staff"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
 
-		$this->load->view('faculty/faculty/sidebar',$class); 
+        // Load departments for dropdown
+        $data["departments"] = $this->db_model->get_all(
+            TABLE_DEPARTMENT,
+            ["is_active" => true, "college_id" => $this->college['id']]
+        );
+
+		$this->load->view('faculty/faculty/sidebar',$class);
 		$this->load->view('faculty/faculty/staff',$data);
 		$this->load->view('faculty/faculty/footer'); 
     }
@@ -529,9 +585,9 @@ class Principal extends CI_Controller {
         }
     }
 
-    public function batch_dept(){
+    public function departments(){
         $data["url"] = $this->url;
-        $class["classname"] = "batch_dept";
+        $class["classname"] = "departments";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
 
@@ -541,14 +597,8 @@ class Principal extends CI_Controller {
             "college_id" => $this->college['id']
         ]);
 
-        // Get batches
-        $data["batches"] = $this->db_model->get_all(TABLE_BATCHES, [
-            "is_active" => true,
-            "college_id" => $this->college['id']
-        ]);
-
         $this->load->view('faculty/faculty/sidebar',$class);
-        $this->load->view('faculty/faculty/batch_dept',$data);
+        $this->load->view('faculty/faculty/departments',$data);
         $this->load->view('faculty/faculty/footer');
     }
 
@@ -599,6 +649,38 @@ class Principal extends CI_Controller {
         }
     }
 
+    public function add() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone_number'),
+                    'role' => ROLE_SUPERADMIN,
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    "is_active" => 1,
+                    'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
+                );
+
+                if ($this->db_model->insert(TABLE_FACULTY, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Administrator Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Administrator."));
+                }
+                redirect(base_url($this->url . "/principal/view"));
+            }
+        }
+    }
+
     public function delete_department($id) {
         $result = $this->db_model->update(TABLE_DEPARTMENT, ["is_active" => 0], ["id" => $id]);
         $message = array('success', "Department Deleted Successfully");
@@ -615,7 +697,7 @@ class Principal extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
@@ -624,21 +706,54 @@ class Principal extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone' => $this->input->post('phone'),
-                    'department' => $this->input->post('department'),
+                    'phone' => $this->input->post('phone_number'),
                     'role' => ROLE_VICE_PRINCIPAL,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
                     "is_active" => 1,
-                    'password' => password_hash('123456', PASSWORD_DEFAULT) // Default password
+                    'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
                 );
 
                 if ($this->db_model->insert(TABLE_FACULTY, $data)) {
-                    $this->session->set_flashdata('message', array('success', "Vice-Principal Created successfully!"));
+                    $this->session->set_flashdata('message', array('success', "Assistant Administrator Created successfully!"));
                 } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to create Vice-Principal."));
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Assistant Administrator."));
                 }
-                redirect(base_url($this->url . "/principal/vice_principal"));
+                redirect(base_url($this->url . "/principal/view"));
+            }
+        }
+    }
+
+    public function add_department_admin() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone_number'),
+                    'department' => $this->input->post('department'),
+                    'role' => ROLE_HOD,
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    "is_active" => 1,
+                    'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
+                );
+
+                if ($this->db_model->insert(TABLE_FACULTY, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Department Administrator Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Department Administrator."));
+                }
+                redirect(base_url($this->url . "/principal/view"));
             }
         }
     }
@@ -682,63 +797,123 @@ class Principal extends CI_Controller {
         redirect(base_url($this->url . "/principal/vice_principal"));
     }
 
-    // Batch CRUD Methods
-    public function add_batch() {
+    public function add_hod() {
         $post = $this->input->post();
         if($post){
-            $this->form_validation->set_rules('name', 'Batch Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $data = array(
                     'name' => $this->input->post('name'),
-                    'year' => $this->input->post('year'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'department' => $this->input->post('department'),
+                    'role' => ROLE_HOD,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
-                    "is_active" => 1
+                    "is_active" => 1,
+                    'password' => password_hash('123456', PASSWORD_DEFAULT) // Default password
                 );
-                if ($this->db_model->insert(TABLE_BATCHES, $data)) {
-                    $this->session->set_flashdata('message', array('success', "Batch Created successfully!"));
+
+                if ($this->db_model->insert(TABLE_FACULTY, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Department Administrator Created successfully!"));
                 } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to create Batch."));
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Department Administrator."));
                 }
-                redirect(base_url($this->url . "/principal/batch_dept"));
+                redirect(base_url($this->url . "/principal/hod"));
             }
         }
     }
 
-    public function edit_batch($id) {
+    public function edit_hod($id = null) {
         $post = $this->input->post();
         if($post){
-            $this->form_validation->set_rules('name', 'Batch Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $data = array(
                     'name' => $this->input->post('name'),
-                    'year' => $this->input->post('year'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'department' => $this->input->post('department'),
                     'updated_by' => $this->session_data['id']
                 );
-                if ($this->db_model->update(TABLE_BATCHES, $data, ["id" => $id])) {
-                    $this->session->set_flashdata('message', array('success', "Batch Updated successfully!"));
+
+                if ($this->db_model->update(TABLE_FACULTY, $data, ["id" => $id])) {
+                    $this->session->set_flashdata('message', array('success', "Department Administrator Updated successfully!"));
                 } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to update Batch."));
+                    $this->session->set_flashdata('message', array('danger', "Failed to update Department Administrator."));
                 }
-                redirect(base_url($this->url . "/principal/batch_dept"));
+                redirect(base_url($this->url . "/principal/view"));
             }
+        } else {
+            // Load data for editing
+            $data["hod"] = $this->db_model->get_row(TABLE_FACULTY, ["id" => $id]);
+            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => true]);
+            $data["url"] = $this->url;
+
+            $class["classname"] = "hod_edit";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url . "/principal");
+
+            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('faculty/hod/edit', $data);
+            $this->load->view('faculty/faculty/footer');
         }
     }
 
-    public function delete_batch($id) {
-        $result = $this->db_model->update(TABLE_BATCHES, ["is_active" => 0], ["id" => $id]);
-        $message = array('success', "Batch Deleted Successfully");
+    public function delete_hod($id) {
+        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
+        $message = array('success', "Department Administrator Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");
         }
         $this->session->set_flashdata('message', $message);
-        redirect(base_url($this->url . "/principal/batch_dept"));
+        redirect(base_url($this->url . "/principal/view"));
     }
+
+    public function add_staff() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'department' => $this->input->post('department'),
+                    'role' => ROLE_STAFF,
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    "is_active" => 1,
+                    'password' => password_hash('123456', PASSWORD_DEFAULT) // Default password
+                );
+
+                if ($this->db_model->insert(TABLE_FACULTY, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Instructor Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Instructor."));
+                }
+                redirect(base_url($this->url . "/principal/staff"));
+            }
+        }
+    }
+
 
 }

@@ -1,11 +1,11 @@
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-0">Vice-Principal</h4>
+        <h4 class="font-weight-bold py-3 mb-0">Assistant Administrator</h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
                 <!-- <li class="breadcrumb-item">Purchase</li> -->
-                <li class="breadcrumb-item">Vice-Principal</li>
+                <li class="breadcrumb-item">Assistant Administrator</li>
             </ol>
         </div>
         <?php if ($this->session->flashdata('message')) { ?>
@@ -17,7 +17,7 @@
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVicePrincipalModal">
-                    <i class="feather icon-plus"></i> Add Vice-Principal
+                    <i class="feather icon-plus"></i> Add Assistant Administrator
                 </button>
             </div>
             <div class="table-responsive">
@@ -79,7 +79,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addVicePrincipalModalLabel">Add Vice-Principal</h5>
+                <h5 class="modal-title" id="addVicePrincipalModalLabel">Add Assistant Administrator</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="<?= base_url($url . '/principal/add_vice_principal') ?>">
@@ -108,7 +108,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Add Vice-Principal</button>
+                    <button type="submit" class="btn btn-primary">Add Assistant Administrator</button>
                 </div>
             </form>
         </div>

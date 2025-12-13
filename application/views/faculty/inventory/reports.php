@@ -240,7 +240,7 @@
                                 <p class="mb-0 small">Pending</p>
                             </div>
                             <div class="col-6">
-                                <h4 class="text-success"><?php echo $this->db_model->count_rows(TABLE_INSTRUMENT_MAINTENANCE, ["status" => "completed"]); ?></h4>
+                                <h4 class="text-success"><?php echo $this->db_model->count(TABLE_INSTRUMENT_MAINTENANCE, ["status" => "completed"]); ?></h4>
                                 <p class="mb-0 small">Completed</p>
                             </div>
                         </div>
@@ -259,7 +259,7 @@
                                 <p class="mb-0 small">Currently Issued</p>
                             </div>
                             <div class="col-6">
-                                <h4 class="text-info"><?php echo $this->db_model->count_rows(TABLE_INSTRUMENT_ISSUES, ["status" => "returned"]); ?></h4>
+                                <h4 class="text-info"><?php echo $this->db_model->count(TABLE_INSTRUMENT_ISSUES, ["status" => "returned"]); ?></h4>
                                 <p class="mb-0 small">Total Returns</p>
                             </div>
                         </div>

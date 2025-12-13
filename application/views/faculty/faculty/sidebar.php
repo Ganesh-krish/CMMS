@@ -34,7 +34,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-multiselect/bootstrap-multiselect.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.css">
@@ -263,26 +262,32 @@
                         </a>
                     </li>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
-                        <li class="sidenav-item">
-                            <a href="javascript:void(0)" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-users"></i>
-                                <div>Faculty Master</div>
+                        <li class="sidenav-item <?php if ($classname == "principal") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url($url . "/principal/view") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-user-check"></i>
+                                <div>Administrator</div>
                             </a>
-                            <ul class="submenu" style="list-style:none; padding-left:20px; margin:5px 0; background:transparent;">
-                                <li class="py-1"><a href="<?= base_url($url . "/principal/view") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
-                                <li class="py-1"><a href="<?= base_url($url . "/principal/vice_principal") ?>" class="sidenav-link">Vice-Principal (Admin)</a></li>
-                                <li class="py-1"><a href="<?= base_url($url . "/principal/hod") ?>" class="sidenav-link">HOD (Department Admin)</a></li>
-                                <li class="py-1"><a href="<?= base_url($url . "/principal/staff") ?>" class="sidenav-link">Staff (Instructor)</a></li>
-                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>
+                        <li class="sidenav-item <?php if ($classname == "staff") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url($url . "/principal/staff") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-users"></i>
+                                <div>Instructor</div>
+                            </a>
                         </li>
                     <?php endif; ?>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
-                        <li class="sidenav-item <?php if ($classname == "batch_dept") {
+                        <li class="sidenav-item <?php if ($classname == "departments") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= base_url($url . "/principal/batch_dept") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-layers"></i>
-                                <div>Batch & Dept</div>
+                            <a href="<?= base_url($url . "/principal/departments") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-home"></i>
+                                <div>Departments</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -325,8 +330,8 @@
                                                     echo "active";
                                                 } ?>">
                             <a href="<?= "$sidebar_href/students" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-users"></i>
-                                <div>Students</div>
+                                <i class="sidenav-icon feather icon-graduation-cap"></i>
+                                <div>Learner</div>
                             </a>
                         </li>
                     <?php endif; ?>

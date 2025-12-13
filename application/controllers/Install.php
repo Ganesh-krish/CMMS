@@ -60,7 +60,7 @@ class Install extends CI_Controller
             'course_enrollments',
             'course_modules',
             'courses',
-            'batches',
+            'memgroups',
             'groups',
             'students',
             'faculty',
@@ -91,6 +91,8 @@ class Install extends CI_Controller
                 `logo` varchar(255) DEFAULT NULL,
                 `banner` varchar(255) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`)
@@ -132,6 +134,8 @@ class Install extends CI_Controller
                 `joining_date` date DEFAULT NULL,
                 `file_path` varchar(255) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
@@ -158,6 +162,8 @@ class Install extends CI_Controller
                 `joining_date` date DEFAULT NULL,
                 `file_path` varchar(255) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
@@ -168,27 +174,6 @@ class Install extends CI_Controller
         ");
         echo "Created table: students <br>";
 
-        // Batches table
-        $this->db->query("
-            CREATE TABLE `batches` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `name` varchar(100) NOT NULL,
-                `college_id` int(11) NOT NULL,
-                `department_id` int(11) DEFAULT NULL,
-                `start_date` date DEFAULT NULL,
-                `end_date` date DEFAULT NULL,
-                `is_active` tinyint(1) NOT NULL DEFAULT 1,
-                `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                KEY `college_id` (`college_id`),
-                KEY `department_id` (`department_id`),
-                CONSTRAINT `fk_batches_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `fk_batches_department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        ");
-        echo "Created table: batches <br>";
-
         // Groups table
         $this->db->query("
             CREATE TABLE `groups` (
@@ -197,21 +182,45 @@ class Install extends CI_Controller
                 `description` text,
                 `college_id` int(11) NOT NULL,
                 `department_id` int(11) DEFAULT NULL,
-                `batch_id` int(11) DEFAULT NULL,
+                `batch` varchar(50) DEFAULT NULL,
                 `created_by` int(11) NOT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 KEY `college_id` (`college_id`),
                 KEY `department_id` (`department_id`),
-                KEY `batch_id` (`batch_id`),
                 CONSTRAINT `fk_groups_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `fk_groups_department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
-                CONSTRAINT `fk_groups_batch_id` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`) ON DELETE SET NULL
+                CONSTRAINT `fk_groups_department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
         echo "Created table: groups <br>";
+
+        // Memgroups table (Group Members)
+        $this->db->query("
+            CREATE TABLE `memgroups` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `group_id` int(11) NOT NULL,
+                `student_id` int(11) NOT NULL,
+                `college_id` int(11) NOT NULL,
+                `added_by` int(11) DEFAULT NULL,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
+                `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unique_group_student` (`group_id`, `student_id`),
+                KEY `group_id` (`group_id`),
+                KEY `student_id` (`student_id`),
+                KEY `college_id` (`college_id`),
+                CONSTRAINT `fk_memgroups_group_id` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
+                CONSTRAINT `fk_memgroups_student_id` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+                CONSTRAINT `fk_memgroups_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        echo "Created table: memgroups <br>";
 
         // Courses table
         $this->db->query("
@@ -226,6 +235,7 @@ class Install extends CI_Controller
                 `college_id` int(11) NOT NULL,
                 `department_id` int(11) DEFAULT NULL,
                 `created_by` int(11) NOT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -246,6 +256,8 @@ class Install extends CI_Controller
                 `name` varchar(255) NOT NULL,
                 `description` text,
                 `order` int(11) NOT NULL DEFAULT 0,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -265,6 +277,8 @@ class Install extends CI_Controller
                 `enrolled_by` int(11) NOT NULL,
                 `progress_percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
                 `status` enum('enrolled','in_progress','completed','dropped') NOT NULL DEFAULT 'enrolled',
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `enrolled_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `completed_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -286,6 +300,8 @@ class Install extends CI_Controller
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `name` varchar(100) NOT NULL,
                 `description` text,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -311,6 +327,7 @@ class Install extends CI_Controller
                 `notes` text,
                 `college_id` int(11) NOT NULL,
                 `created_by` int(11) NOT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -337,6 +354,8 @@ class Install extends CI_Controller
                 `condition_on_issue` text,
                 `condition_on_return` text,
                 `notes` text,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
@@ -365,6 +384,8 @@ class Install extends CI_Controller
                 `cost` decimal(10,2) DEFAULT NULL,
                 `parts_used` text,
                 `notes` text,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
@@ -388,6 +409,8 @@ class Install extends CI_Controller
                 `college_id` int(11) NOT NULL,
                 `priority` enum('normal','high') NOT NULL DEFAULT 'normal',
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                `created_by` int(11) DEFAULT NULL,
+                `updated_by` int(11) DEFAULT NULL,
                 `created_at` datetime NOT NULL,
                 `updated_at` datetime NOT NULL,
                 PRIMARY KEY (`id`),
@@ -429,11 +452,12 @@ class Install extends CI_Controller
 
         // Insert default departments
         $departments = [
-            ['name' => 'Computer Science', 'college_id' => $college_id, 'created_by' => 1],
-            ['name' => 'Information Technology', 'college_id' => $college_id, 'created_by' => 1],
-            ['name' => 'Electronics', 'college_id' => $college_id, 'created_by' => 1],
-            ['name' => 'Mechanical Engineering', 'college_id' => $college_id, 'created_by' => 1],
-            ['name' => 'Civil Engineering', 'college_id' => $college_id, 'created_by' => 1]
+            ['name' => 'Instrumental Music', 'college_id' => $college_id, 'created_by' => 1],
+            ['name' => 'Vocal Music', 'college_id' => $college_id, 'created_by' => 1],
+            ['name' => 'Percussion', 'college_id' => $college_id, 'created_by' => 1],
+            ['name' => 'Western Music', 'college_id' => $college_id, 'created_by' => 1],
+            ['name' => 'Indian Classical Music', 'college_id' => $college_id, 'created_by' => 1],
+            ['name' => 'Music Theory & Composition', 'college_id' => $college_id, 'created_by' => 1]
         ];
 
         foreach ($departments as $dept) {

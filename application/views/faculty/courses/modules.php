@@ -46,7 +46,7 @@
                             $i = 1;
                             foreach ($modules as $module) {
                                 // Count lessons for this module
-                                $lessons_count = $this->db_model->count_rows('course_module_lessons', [
+                                $lessons_count = $this->db_model->count('course_module_lessons', [
                                     'module_id' => $module['id'],
                                     'is_active' => 1
                                 ]);

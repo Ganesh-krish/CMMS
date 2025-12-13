@@ -299,8 +299,8 @@ class Inventory extends CI_Controller
         $data["categories"] = $this->inventory->get_instrument_categories();
 
         // Additional dashboard stats
-        $data["total_students"] = $this->db_model->count_rows(TABLE_STUDENT, ["college_id" => $this->college['id'], "is_active" => 1]);
-        $data["total_staff"] = $this->db_model->count_rows(TABLE_FACULTY, ["college_id" => $this->college['id'], "is_active" => 1]);
+        $data["total_students"] = $this->db_model->count(TABLE_STUDENT, ["college_id" => $this->college['id'], "is_active" => 1]);
+        $data["total_staff"] = $this->db_model->count(TABLE_FACULTY, ["college_id" => $this->college['id'], "is_active" => 1]);
 
         // Student performance metrics
         $data["student_performance"] = $this->get_student_performance_stats($this->college['id']);
@@ -308,6 +308,17 @@ class Inventory extends CI_Controller
         $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('faculty/inventory/reports', $data);
         $this->load->view('faculty/faculty/footer');
+    }
+
+    private function json_response($status, $data = [], $http_code = 200)
+    {
+        $this->output
+            ->set_status_header($http_code)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode([
+                'status' => $status,
+                'data' => $data
+            ]));
     }
 
     private function get_student_performance_stats($college_id) {
@@ -357,6 +368,8 @@ class Inventory extends CI_Controller
         ];
     }
 
+    public function create_api()
+    {
         $payload = [
             'name' => $this->input->post('name'),
             'category' => $this->input->post('category'),

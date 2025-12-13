@@ -1,11 +1,11 @@
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-0">Faculty</h4>
+        <h4 class="font-weight-bold py-3 mb-0">Instructor</h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
                 <!-- <li class="breadcrumb-item">Purchase</li> -->
-                <li class="breadcrumb-item">Faculty</li>
+                <li class="breadcrumb-item">Instructor</li>
             </ol>
         </div>
         <?php if ($this->session->flashdata('message')) { ?>
@@ -46,7 +46,7 @@
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
-                    <i class="feather icon-plus"></i> Add Staff
+                    <i class="feather icon-plus"></i> Add Instructor
                 </button>
             </div>
             <!-- <div style="display: flex; justify-content:space-between; align-items: center;
@@ -156,7 +156,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addStaffLabel">Add Staff</h5>
+                <h5 class="modal-title" id="addStaffLabel">Add Instructor</h5>
             </div>
             <div class="ml-4 m-2">
                 <form action="<?= $add_url ?>" method="POST">
@@ -175,7 +175,25 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Department</label>
-                            <input type="text" name="department" class="form-control">
+                            <select name="department" class="form-control select2" required>
+                                <option value="">Select Department</option>
+                                <?php
+                                if (!empty($departments)) {
+                                    foreach ($departments as $dept) { ?>
+                                        <option value="<?= $dept['id'] ?>"><?= $dept['name'] ?></option>
+                                    <?php }
+                                } else {
+                                    // Fallback: Show default departments if none loaded from DB
+                                    ?>
+                                    <option value="1">Computer Science</option>
+                                    <option value="2">Information Technology</option>
+                                    <option value="3">Electronics</option>
+                                    <option value="4">Mechanical Engineering</option>
+                                    <option value="5">Civil Engineering</option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
@@ -204,6 +222,28 @@
     }
 </script>
 
+<!-- Initialize Select2 only when modal is shown -->
+<script>
+$('#addStaffModal').on('shown.bs.modal', function() {
+    // Small delay to ensure modal is fully rendered
+    setTimeout(function() {
+        $('.select2').select2({
+            placeholder: "Select Department",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#addStaffModal')
+        });
+    }, 100);
+});
+
+// Clean up Select2 when modal is hidden
+$('#addStaffModal').on('hidden.bs.modal', function() {
+    if ($('.select2').hasClass('select2-hidden-accessible')) {
+        $('.select2').select2('destroy');
+    }
+});
+</script>
+
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
@@ -213,5 +253,21 @@
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+
+<style>
+/* Fix Select2 dropdown z-index issue in modals */
+.select2-container--open .select2-dropdown {
+    z-index: 1060 !important; /* Above Bootstrap modals */
+}
+
+/* Ensure Select2 dropdown is properly positioned within modal */
+.modal .select2-container {
+    z-index: auto;
+}
+
+/* Additional fix for Select2 in Bootstrap 5 modals */
+.select2-dropdown {
+    z-index: 1060 !important;
+}
+</style>

@@ -391,7 +391,7 @@ class Inventory extends CI_Controller
         return $this->json_response('success', ['id' => $id], 201);
     }
 
-    public function update($id)
+    public function update_api($id)
     {
         if ($this->input->method() !== 'post') {
             return $this->json_response('error', 'Invalid method', 405);
@@ -420,7 +420,7 @@ class Inventory extends CI_Controller
         return $this->json_response('success', ['id' => $id]);
     }
 
-    public function issue()
+    public function issue_api()
     {
         if ($this->input->method() !== 'post') {
             return $this->json_response('error', 'Invalid method', 405);

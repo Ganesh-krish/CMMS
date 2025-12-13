@@ -220,10 +220,14 @@ class db_model extends CI_Model
 
 
     public function get_groupMembers($college_id=null,$created_by=null){
-        $this->db->select('COALESCE(count(mg.student_id), 0) AS students, g.id, g.group_name, g.group_expiry, g.created_at');
+        return $this->get_groupMembers_test($college_id, $created_by);
+    }
+
+    public function get_groupMembers_test($college_id=null,$created_by=null){
+        $this->db->select('COALESCE(count(mg.student_id), 0) AS students, g.id, g.name as group_name, g.group_expiry, g.created_at');
         $this->db->from('groups as g');
         $this->db->join(TABLE_MEMGROUPS . ' AS mg', 'g.id = mg.group_id AND (mg.college_id = ' . $this->db->escape($college_id) . ' OR ' . $this->db->escape($college_id) . ' IS NULL)', 'LEFT');
-        
+
         if(is_array($created_by) && !empty($created_by)){
             $this->db->where_in('g.created_by', $created_by);
         }elseif($created_by != null){
@@ -232,7 +236,7 @@ class db_model extends CI_Model
 
         $this->db->where('g.is_active', 1);
         $this->db->where('g.college_id',$college_id);
-        $this->db->group_by('g.id, g.group_name, g.group_expiry, g.created_at');
+        $this->db->group_by('g.id, g.name, g.group_expiry, g.created_at');
         return $this->db->get()->result_array();
     }
 

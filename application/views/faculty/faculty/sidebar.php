@@ -252,6 +252,7 @@
 <?php
     $designation = $this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN;
     $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
+    $url = $url ?: 'admin'; // Default to 'admin' if url is empty
 ?>
                     <li class="sidenav-item <?php if ($classname == "home") {
                                                 echo "active";
@@ -349,59 +350,6 @@
                         </li>
                     <?php endif; ?> -->
 
-                    <?php 
-                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "courses") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/course") ?>" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>My Courses</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php 
-                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "allcourses") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/allcourses") ?>" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>All Courses</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-
-                    <?php 
-                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "questions") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/question") ?>" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>Question Bank</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-
-                    <?php 
-                    if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "test") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/test") ?>" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>Test</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
 
 
                     <!-- <?php 
@@ -450,8 +398,16 @@
                                 <div>Settings Page</div>
                             </a>
                         </li>
-                        
+
                     <?php endif; ?>
+
+                    <!-- Logout Menu Item -->
+                    <li class="sidenav-item">
+                        <a href="<?= base_url("logout") ?>" class="sidenav-link">
+                            <i class="sidenav-icon feather icon-log-out"></i>
+                            <div>Logout</div>
+                        </a>
+                    </li>
                 </ul>
             </div>
 

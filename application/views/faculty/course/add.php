@@ -110,32 +110,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                 <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="course_type">Course Type</label>
-                                <select class="form-select select2" id="course_type" name="course_type">
-                                    <?php foreach ($course_types as $type_name => $key): ?>
-                                        <option value="<?= $key['id'] ?>" <?= isset($course) && $course['course_type'] == $key['id'] ? 'selected' : '' ?>>
-                                        <?= $type_name ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                        </div>
-                    </div>
-                 <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="course_mode">Course Mode</label>
-                                <select class="form-control select2" id="course_mode" name="course_mode">
-                                    <?php foreach ($course_modes as $type_name => $key): ?>
-                                        <option value="<?= $key['id'] ?>" <?= isset($course) && $course['course_mode'] == $key['id'] ? 'selected' : '' ?>>
-                                        <?= $type_name ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                        </div>
-                    </div>
-                </div>                    
                 <!-- Student Selection Section -->
                 <div class="card mt-4">
                     <div class="card-header">

@@ -13,12 +13,26 @@ class Groups extends CI_Controller
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->common->check_user_session($this->url);
+
+        // Handle both faculty and admin sessions
+        if ($this->url === 'admin' || empty($this->session->userdata($this->url))) {
+            // Admin session - use owner session
+            $this->common->check_user_session(); // Validate session
+            $admin_session = $this->session->userdata('owner');
+            $this->session_data = [
+                'id' => $admin_session['id'] ?? null,
+                'name' => $admin_session['name'] ?? 'Admin',
+                'role' => ROLE_SUPERADMIN,
+                'designation' => DESIGNATION_PRINCIPAL,
+                'department' => null // Admin can see all departments
+            ];
+        } else {
+            // Faculty session
+            $this->common->check_user_session($this->url);
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
         $this->college = $this->common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
-        // if ($this->session_data['designation'] != DESIGNATION_STAFF) {
-        //     $this->common->redirect_route($this->session_data['designation'], $this->url);
-        // }
     }
     public function index($cource_id=null)
     {
@@ -32,9 +46,9 @@ class Groups extends CI_Controller
         $data["department"] = $this->session_data['department'];
         $data["tests"] = $this->db_model->get_all(TABLE_TESTS,["is_active"=>1,"cource_id"=>$cource_id,"college_id"=>$this->college['id'],"created_by"=>$this->session_data['id']]);
 
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('test/view', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
   
     public function view_students($cource_id=null,$test_id=null)
@@ -50,54 +64,71 @@ class Groups extends CI_Controller
         $data["test_id"] = $test_id;
         $data["questions"] = $this->db_model->get_all(TABLE_QUESTIONS, ["is_active" => true, "college_id" => $this->college['id']]);
         $data["tests"] = $this->db_model->get_row(TABLE_TESTS,["id"=>$test_id,"is_active"=>1,"college_id"=>$this->college['id'],"created_by"=>$this->session_data['id']]);
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('test/view_students', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
     public function add()
     {
-      
         $post = $this->input->post();
         if ($post) {
             $this->form_validation->set_rules('group_name', 'Group Name', 'trim|required|min_length[3]|max_length[50]');
-        
+
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect(base_url($this->url.'/groups/add'));
             } else {
                 $data = [
-                    'group_name' => $this->input->post('group_name'),
+                    'name' => $this->input->post('group_name'),
                     'created_by' => $this->session_data['id'],
                     'college_id' => $this->college['id'],
                 ];
                 $this->db_model->insert(TABLE_GROUPS, $data);
                 $this->session->set_flashdata('message', array('success', "Group created successfully!"));
 
-                $path = $map[$this->session_data["designation"]] ?? "hod";
-                redirect(base_url($this->url.'/'.$path .'/students'));
+                // Redirect based on user role
+                if ($this->session_data['role'] === ROLE_SUPERADMIN) {
+                    // Admin user - redirect to students page
+                    redirect(base_url('Dashboard/students'));
+                } else {
+                    // Faculty user - redirect based on designation
+                    $map = [
+                        DESIGNATION_STAFF => "staff",
+                        DESIGNATION_PRINCIPAL => "principal",
+                    ];
+                    $path = $map[$this->session_data["designation"]] ?? "hod";
+                    redirect(base_url($this->url.'/'.$path .'/students'));
+                }
             }
         } else {
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] =  $this->url;
             $data["title"] = "Add Group";
-            $class["sidebar_href"] = base_url($this->url . "/staff");
             $data["college_id"] = $this->college['id'];
             $data["department"] = $this->session_data['department'];
-            $map = [
-                DESIGNATION_STAFF => "staff",
-                DESIGNATION_PRINCIPAL => "principal",
-            ];
-            $path = $map[$this->session_data["designation"]] ?? "hod";
-            $class["sidebar_href"] = base_url($this->url . "/" . $path);
-            
+
+            // Set sidebar href based on user role
+            if ($this->session_data['role'] === ROLE_SUPERADMIN) {
+                // Admin user
+                $class["sidebar_href"] = base_url('Dashboard/students');
+            } else {
+                // Faculty user
+                $map = [
+                    DESIGNATION_STAFF => "staff",
+                    DESIGNATION_PRINCIPAL => "principal",
+                ];
+                $path = $map[$this->session_data["designation"]] ?? "hod";
+                $class["sidebar_href"] = base_url($this->url . "/" . $path);
+            }
+
             $desination_mapper = [
                 DESIGNATION_STAFF => 'staff',
                 DESIGNATION_HOD => 'hod',
                 DESIGNATION_PRINCIPAL => 'principal'
             ];
-                
-            $data['designation'] = $desination_mapper[$this->session_data['designation']];
+
+            $data['designation'] = $desination_mapper[$this->session_data['designation']] ?? 'principal';
             $conditions = ["is_active" => true, 
             "college_id" => $this->college['id'],
             ];
@@ -109,9 +140,9 @@ class Groups extends CI_Controller
 
 
             // $data["staff"] = $this->db_model->get_all(TABLE_STUDENT,$conditions);
-            $this->load->view('faculty/sidebar', $class);
-            $this->load->view('groups/add',$data);
-            $this->load->view('faculty/footer');
+            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('faculty/groups/add',$data);
+            $this->load->view('faculty/faculty/footer');
         }
     }
     public function edit($group_id)
@@ -125,7 +156,7 @@ class Groups extends CI_Controller
                 return redirect(base_url($this->url.'/groups/add'));
             } else {
                 $data = array(
-                    'group_name' => $this->input->post('group_name'),
+                    'name' => $this->input->post('group_name'),
                     'updated_by' => $this->session_data['id'],
                 );
 
@@ -161,9 +192,9 @@ class Groups extends CI_Controller
             // $data["staff"] = $this->db_model->get_all(TABLE_STUDENT, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department']]);
             // $data["studentIds"] = $studentIds;
 
-            $this->load->view('faculty/sidebar', $class);
-            $this->load->view('groups/add',$data);
-            $this->load->view('faculty/footer');
+            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('faculty/groups/add',$data);
+            $this->load->view('faculty/faculty/footer');
         }
     }
 
@@ -193,9 +224,9 @@ class Groups extends CI_Controller
             $data["students"] = [];
         }
         
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('groups/group_students', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/groups/group_students', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     public function addMemberstoGroup() {

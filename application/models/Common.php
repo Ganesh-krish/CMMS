@@ -46,11 +46,11 @@ class common extends CI_Model {
         // Faculty session (by url segment)
         $session = $this->session->userdata($url);
         if(empty($session)){  
-            redirect( base_url("$url/login/faculty")); 
+            redirect( base_url("OAuth")); 
         }
         $college = $this->get_default_college();
         if(empty($college)){
-            redirect( base_url("$url/login/faculty")); 
+            redirect( base_url("OAuth")); 
         }
         
         // Check if faculty exists
@@ -61,7 +61,7 @@ class common extends CI_Model {
         
         if(empty($user)) {
             $this->session->unset_userdata($url); 
-            redirect( base_url("$url/login/faculty")); 
+            redirect( base_url("OAuth")); 
         }
         
         $this->session->unset_userdata($url); 
@@ -71,14 +71,14 @@ class common extends CI_Model {
     public function redirect_route($designation,$url){
         // Handle null designation
         if($designation === null){
-            redirect( base_url("$url/login/faculty"));
+            redirect( base_url("OAuth"));
             return;
         }
 
         switch ($designation) {
             case ROLE_SUPERADMIN:
             case DESIGNATION_PRINCIPAL:
-                redirect( base_url("$url/principal"));
+                redirect( base_url("OAuth"));
                 break;
             case ROLE_ADMIN:
             case DESIGNATION_HOD:
@@ -89,7 +89,7 @@ class common extends CI_Model {
                 redirect( base_url("$url/staff"));
                 break;
             default:
-                redirect( base_url("$url/login/faculty"));
+                redirect( base_url("OAuth"));
                 break;
         }
     }

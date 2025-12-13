@@ -48,13 +48,13 @@ class Rbac
     {
         $session = $this->faculty($collegeSlug);
         if (!$session) {
-            redirect(base_url("$collegeSlug/login/faculty"));
+            redirect(base_url("OAuth"));
         }
 
         if ($allowedDesignations) {
             $allowed = is_array($allowedDesignations) ? $allowedDesignations : [$allowedDesignations];
             if (!in_array($session['designation'], $allowed, true)) {
-                redirect(base_url("$collegeSlug/login/faculty"));
+                redirect(base_url("OAuth"));
             }
         }
         return $session;

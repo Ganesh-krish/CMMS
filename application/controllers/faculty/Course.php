@@ -1183,7 +1183,7 @@ class Course extends CI_Controller
 
         // Get students via groups
         $group_students = $this->db
-            ->select('s.*, g.group_name as group_name, CONCAT("Group: ", g.group_name) as source')
+            ->select('s.*, g.name as group_name, CONCAT("Group: ", g.name) as source')
             ->from("course_groups cg")
             ->join("groups g", "g.id = cg.group_id")
             ->join("group_members gm", "gm.group_id = g.id")

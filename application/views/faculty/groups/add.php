@@ -37,8 +37,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="group_name">Group Name</label>
-                            <input type="text" class="form-control" id="group_name" name="group_name" value="<?php if (isset($groups['group_name'])) {
-                                                                                                                    echo $groups['group_name'];
+                            <input type="text" class="form-control" id="group_name" name="group_name" value="<?php if (isset($groups['name'])) {
+                                                                                                                    echo $groups['name'];
                                                                                                                 } ?>" required>
                         </div>
                     </div>

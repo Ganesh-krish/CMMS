@@ -44,7 +44,13 @@
             </form>
         </div> -->
         <div class="card p-2">
-            
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Student Management</h5>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    <i class="feather icon-plus"></i> Add Student
+                </button>
+            </div>
+
             <!-- Filter for Department and Batch -->
             <div class="card-body">
                 <div class="form-row align-items-center">
@@ -78,96 +84,18 @@
                 <table id="student_table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select_all"></th>
-                            <th>S.No</th>
+                            <th>ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Phone Number</th>
-                            <th>Registration No</th>
+                            <th>Phone</th>
+                            <th>Roll No</th>
                             <th>Department</th>
                             <th>Batch</th>
-                            <th>Joining Date</th>
-                            <th>Expire Date</th>
-                            <th>Created At</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($staff)) {
-                            $no = 0;
-                            foreach ($staff as $row) {
-                                $no++ ?>
-                                <tr>
-                                    <td></td>
-                                    <td data-id="<?php if (isset($row['id'])) {
-                                                        echo $row['id'];
-                                                    } ?>"> <?= $no; ?></td>
-                                    <td><?php if (isset($row['name'])) {
-                                            echo $row['name'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['email'])) {
-                                            echo $row['email'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['phone_number'])) {
-                                            echo $row['phone_number'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['registration_number'])) {
-                                            echo $row['registration_number'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['department'])) {
-                                            echo $row['department'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-
-                                    <td><?php if (isset($row['batch'])) {
-                                            echo $row['batch'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-
-                                    <td><?php if (isset($row['joining_date'])) {
-                                            echo $this->common->display_date($row['joining_date']);
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['expire_date'])) {
-                                            echo $this->common->display_date($row['expire_date']);
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td><?php if (isset($row['created_at'])) {
-                                            echo $this->common->display_date($row['created_at']);
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>
-                                    <td>
-                                        <button type="button" onclick="model_open(<?= $row['id'] ?>)" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Reset Password </button>
-                                        <a href="<?= base_url($url.'/course/student_overall_test_report/'.$row['id']) ?>" 
-                                               class="btn btn-success btn-sm">
-                                                <i class="feather icon-bar-chart-2"></i> Results
-                                            </a>
-                                    </td>
-                                </tr>
-                        <?php }
-                        } ?>
+                        <!-- Data will be loaded via AJAX for server-side processing -->
                     </tbody>
                 </table>
                 <div class="row g-3">
@@ -364,164 +292,75 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        var table = $('#student_table').DataTable({
-            dom: 'Bfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            columnDefs: [{
-                orderable: false,
-                className: 'select-checkbox', // DataTables auto adds checkboxes
-                targets: 0
-            }],
-            select: {
-                style: 'multi',
-                selector: 'td:first-child '
-            },
-            order: [
-                [1, 'asc']
-            ]
-        });
-
-        // filter  if department is selected or  batch is selected using query string
-        var url = new URL(window.location.href);
-        var department = url.searchParams.get('department');
-        var batch = url.searchParams.get('batch');
-        if (department) {
-            $('#department').val(department);
-        }
-        if (batch) {
-            $('#batch').val(batch);
-        }
-
-        $('#department').on('change', function() {
-            var department = $(this).val();
-            if(!department){
-                var url = new URL(window.location.href);
-                url.searchParams.delete('department');
-                window.location.href = url;
-            }else {
-                var url = new URL(window.location.href);
-                url.searchParams.set('department', department);
-                window.location.href = url;
-            }
-        });
-
-        $('#batch').on('change', function() {
-            var batch = $(this).val();
-            if(!batch){
-            var url = new URL(window.location.href);
-            url.searchParams.delete('batch');
-            window.location.href = url;
-            }else {
-                var url = new URL(window.location.href);
-                url.searchParams.set('batch', batch);
-                window.location.href = url;
-
-            }
-        });
-
-
-        // Handle "Select All" checkbox
-        $('#select_all').on('click', function() {
-            if (this.checked) {
-                table.rows().select(); // Select all rows
-            } else {
-                table.rows().deselect(); // Deselect all rows
-            }
-        });
-
-        table.on('select deselect', function() {
-            var allSelected = table.rows({
-                selected: true
-            }).count() === table.rows().count();
-            $('#select_all').prop('checked', allSelected);
-        });
-
-        $('.delete-group').on('click', function (e) {
-            e.preventDefault(); // Prevent default anchor behavior
-
-            const groupId = $(this).data('id');
-
-            if (confirm('Are you sure you want to delete?')) {
-                $.ajax({
-                    url: "<?= base_url($url . '/groups/delete_group/') ?>",
-                    type: 'POST', 
-                    data: { id: groupId },
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response.status === 'success') {
-                        alert(response.message);
-                        location.reload();
-                        } else {
-                            alert(response.message || 'Deletion failed.');
-                        }
-                    },
-                    error: function () {
-                        alert('AnError occurred while deleting the group.');
-                    }
-                });
-            }
-        });
-        $('#addToGroupBtn').click(function() {
-            let selectedData = table.rows({
-                selected: true
-            }).nodes();
-            let studentIds = [];
-
-            // Extract Student IDs from DataTable
-            $(selectedData).each(function() {
-                let studentId = $(this).find('td:eq(1)').attr('data-id'); // Get from 'data-id'
-                if (studentId) {
-                    studentIds.push(studentId);
-                }
-            });
-
-
-
-            let groupId = $('#groupSelect').val(); // Get selected group ID
-
-            if (studentIds.length === 0) {
-                alert("Please select at least one student.");
-                return;
-            }
-
-            if (groupId === "" || groupId === null) {
-                alert("Please select a group.");
-                return;
-            }
-
-
-
-            $.ajax({
-                url: "<?= base_url($url . '/groups/addMemberstoGroup/') ?>",
-                type: "POST",
-                data: {
-                    student_ids: studentIds,
-                    group_id: groupId
-                },
-                dataType: "json",
-                success: function(response) {
-                    alert(response.message);
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText); 
-                    alert("Error: " + xhr.responseText);
-                }
-            });
-        });
-    });
-
-
-    function model_open(id) {
-        var resetModel = new bootstrap.Modal(document.getElementById('resetpassword'));
-        document.getElementById("reset_id").value = id;
-        resetModel.show();
-
-        $('#resetpassword').on('shown.bs.modal', function() {
-            $('#password').focus();
-        });
+$(document).ready(function() {
+    // Check if DataTable is already initialized and destroy it
+    if ($.fn.DataTable.isDataTable('#student_table')) {
+        $('#student_table').DataTable().destroy();
+        $('#student_table').empty(); // Clear any existing content
     }
+
+    // Small delay to ensure DOM is ready
+    setTimeout(function() {
+        // Initialize DataTable
+        $('#student_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "<?= base_url('Dashboard/students') ?>",
+                "type": "GET",
+                "data": function(d) {
+                    // Add any additional data if needed
+                    return d;
+                }
+            },
+            "columns": [
+                { "data": 0, "name": "id" }, // ID
+                { "data": 1, "name": "name" }, // Name
+                { "data": 2, "name": "email" }, // Email
+                { "data": 3, "name": "phone" }, // Phone
+                { "data": 4, "name": "roll_no" }, // Roll No
+                { "data": 5, "name": "department" }, // Department
+                { "data": 6, "name": "batch" }, // Batch
+                { "data": 7, "orderable": false, "searchable": false } // Actions
+            ],
+            "pageLength": 10,
+            "responsive": true,
+            "order": [[1, 'asc']], // Order by name by default
+            "language": {
+                "processing": "Loading...",
+                "search": "Search students:",
+                "lengthMenu": "Show _MENU_ students per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ students",
+                "infoEmpty": "No students found",
+                "emptyTable": "No students available"
+            },
+            "initComplete": function() {
+                console.log('DataTable initialized successfully');
+            },
+            "error": function(xhr, error, thrown) {
+                console.error('DataTable error:', error, thrown);
+            }
+        });
+    }, 100); // Small delay
+});
+
+// Initialize Select2 for department dropdowns
+$('.select2').select2({
+    placeholder: "Select Department",
+    allowClear: true,
+    width: '100%'
+});
+
+// Re-initialize Select2 when modals are shown
+$('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
+    setTimeout(function() {
+        $('.select2').select2({
+            placeholder: "Select Department",
+            allowClear: true,
+            width: '100%'
+        });
+    }, 100);
+});
 </script>
 
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
@@ -535,6 +374,212 @@
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
 <!-- Select Plugin for Row Selection -->
 <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStudentLabel">Add Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('Dashboard/students') ?>" method="POST">
+                <input type="hidden" name="action" value="create">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="roll_no" class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" id="roll_no" name="roll_no">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="department" class="form-label">Department *</label>
+                            <select class="form-control select2" id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <?php if (!empty($departments)) {
+                                    foreach ($departments as $dept) { ?>
+                                        <option value="<?= $dept['id'] ?>"><?= $dept['name'] ?></option>
+                                    <?php }
+                                } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="batch" class="form-label">Batch</label>
+                            <input type="text" class="form-control" id="batch" name="batch" placeholder="e.g., 2023-2024">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStudentLabel">Edit Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('Dashboard/students') ?>" method="POST">
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" id="edit_student_id" name="id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="edit_name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_phone_number" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="edit_phone_number" name="phone_number">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_roll_no" class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" id="edit_roll_no" name="roll_no">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_department" class="form-label">Department *</label>
+                            <select class="form-control select2" id="edit_department" name="department" required>
+                                <option value="">Select Department</option>
+                                <?php if (!empty($departments)) {
+                                    foreach ($departments as $dept) { ?>
+                                        <option value="<?= $dept['id'] ?>"><?= $dept['name'] ?></option>
+                                    <?php }
+                                } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_batch" class="form-label">Batch</label>
+                            <input type="text" class="form-control" id="edit_batch" name="batch" placeholder="e.g., 2023-2024">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script> -->
+
+<style>
+/* Fix Select2 dropdown z-index issue in modals */
+.select2-container--open .select2-dropdown {
+    z-index: 1060 !important; /* Above Bootstrap modals */
+}
+
+/* Ensure Select2 dropdown is properly positioned within modal */
+.modal .select2-container {
+    z-index: auto;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    // Prevent multiple initializations
+    if ($.fn.DataTable.isDataTable('#student_table')) {
+        $('#student_table').DataTable().destroy();
+        $('#student_table').empty(); // Clear any existing content
+    }
+
+
+    // Initialize Select2 for department dropdowns
+    $('.select2').select2({
+        placeholder: "Select Department",
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Re-initialize Select2 when modals are shown
+    $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
+        setTimeout(function() {
+            $('.select2').select2({
+                placeholder: "Select Department",
+                allowClear: true,
+                width: '100%'
+            });
+        }, 100);
+    });
+});
+
+function editStudent(id) {
+    // Fetch student data via AJAX and populate edit modal
+    $.get('<?= base_url('Dashboard/get_student/') ?>' + id)
+        .done(function(data) {
+            const student = JSON.parse(data);
+            $('#edit_student_id').val(student.id);
+            $('#edit_name').val(student.name);
+            $('#edit_email').val(student.email);
+            $('#edit_phone_number').val(student.phone);
+            $('#edit_roll_no').val(student.roll_no);
+            $('#edit_department').val(student.department).trigger('change');
+            $('#edit_batch').val(student.batch);
+
+            $('#editStudentModal').modal('show');
+        })
+        .fail(function() {
+            alert('Failed to load student data');
+        });
+}
+
+function deleteStudent(id) {
+    if (confirm('Are you sure you want to delete this student?')) {
+        const form = $('<form>', {
+            'method': 'POST',
+            'action': '<?= base_url('Dashboard/students') ?>'
+        });
+
+        form.append($('<input>', {
+            'type': 'hidden',
+            'name': 'action',
+            'value': 'delete'
+        }));
+
+        form.append($('<input>', {
+            'type': 'hidden',
+            'name': 'id',
+            'value': id
+        }));
+
+        $('body').append(form);
+        form.submit();
+    }
+});
+</script>

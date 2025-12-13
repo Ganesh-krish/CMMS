@@ -254,31 +254,14 @@
                     <p class="form-subtitle">Sign in to continue to your account</p>
                 </div>
                 
-                <!-- Flash message display -->
-                <?php if($this->session->flashdata('message')): ?>
-                    <div class="alert alert-<?php echo $this->session->flashdata('message')[0] ?>">
-                        <?php echo $this->session->flashdata('message')[1] ?>
-                    </div>
-                <?php endif; ?>
-                
-                <form method="post" action="<?= base_url("$url/login/faculty") ?>" id="loginForm">
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="password-field">
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-                            <button type="button" class="password-toggle" id="passwordToggle">
-                                <i class="fa-solid fa-eye-slash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn-login">Sign In</button>
-                </form>
+                <!-- Redirecting to OAuth login -->
+                <script>
+                    window.location.href = '<?= base_url("OAuth") ?>';
+                </script>
+                <div class="alert alert-info text-center">
+                    <h4>Redirecting to Login...</h4>
+                    <p>If you're not redirected automatically, <a href="<?= base_url('OAuth') ?>">click here</a>.</p>
+                </div>
                 
                 <div class="footer">
                     <p>&copy; <span id="currentYear">2024</span> DrillU. All rights reserved.</p>

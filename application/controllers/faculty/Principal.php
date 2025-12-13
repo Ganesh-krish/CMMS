@@ -391,7 +391,7 @@ class Principal extends CI_Controller {
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password_student");
         $class["classname"] = "students";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
         $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']);
 

@@ -57,7 +57,7 @@ $route['translate_uri_dashes'] = FALSE;
 // Convenience routes for admin dashboard
 $route['Dashboard'] = 'Dashboard/index';
 $route['Dashboard/view'] = 'Dashboard/index';
-$route['Dashboard/students'] = 'Dashboard/index';
+$route['Dashboard/students'] = 'Dashboard/students';
 
 // Student portal (CI views)
 $route['student-portal/(:any)/login'] = 'StudentPortal/login/$1';
@@ -66,9 +66,10 @@ $route['student-portal/(:any)/dashboard'] = 'StudentPortal/dashboard/$1';
 $route['student-portal/(:any)/logout'] = 'StudentPortal/logout/$1';
 
 // Faculty/Student portals (migrated from college app)
-$route['(:any)/login/faculty'] = 'faculty/Login/faculty/$1'; 
+// $route['(:any)/login/faculty'] = 'faculty/Login/faculty/$1'; // Removed as requested 
 $route['(:any)/college'] = 'faculty/College'; 
-$route['(:any)/logout'] = 'faculty/Login/logout/$1'; 
+// $route['(:any)/logout'] = 'faculty/Login/logout/$1'; // Faculty logout
+$route['logout'] = 'OAuth/logout'; // OAuth logout 
 $route['(:any)/principal'] = 'faculty/Principal';
 $route['(:any)/principal/view'] = 'faculty/Principal/view';
 $route['(:any)/principal/vice_principal'] = 'faculty/Principal/vice_principal';

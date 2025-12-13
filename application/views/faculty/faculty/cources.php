@@ -86,39 +86,11 @@ echo '</style>';
                                                 echo "-";
                                             } ?>
                                             </td>   
-                                        <td>
-                                        <?php 
-                                            echo isset($row['name']) ? htmlspecialchars($row['name']) : "-";
-
-                                            $typeMap = unserialize(COURSE_TYPES);
-                                            $modeMap = unserialize(COURSE_MODES);
-                                          
-                                            $typeTag = '';
-                                            $modeTag = '';
-                                            // Safely fetch IDs from row
-                                            $courseTypeId = isset($row['course_type']) ? (int)$row['course_type'] : null;
-                                            $courseModeId = isset($row['course_mode']) ? (int)$row['course_mode'] : null;
-
-                                            // Type chip based on ID (skip id=1 for 'Courses')
-                                            foreach ($typeMap as $label => $info) {
-                                                if (isset($info['id']) && $info['id'] === $courseTypeId && $info['id'] !== 1) {
-                                                    $class = strtolower(preg_replace('/[^a-z0-9]+/', '-', $label));
-                                                    $short = ($info['id'] === 2) ? 'Comp...' : 'Labs...';
-                                                    $typeTag = '<span class="label-chip ' . $class . '" title="' . htmlspecialchars($label) . '">' . $short . '</span>';
-                                                    break;
-                                                }
-                                            }
-
-                                            // Mode chip based on ID (only show for Gamification, id = 2)
-                                            foreach ($modeMap as $label => $info) {
-                                                if (isset($info['id']) && $info['id'] === $courseModeId && $info['id'] === 2) {
-                                                    $class = strtolower(preg_replace('/[^a-z0-9]+/', '-', $label));
-                                                    $modeTag = '<span class="label-chip ' . $class . '" title="' . htmlspecialchars($label) . '">Game</span>';
-                                                    break;
-                                                }
-                                            }
-                                            echo ' ' . $typeTag . ' ' . $modeTag;
-                                        ?>
+                                        <td><?php if (isset($row['name'])) {
+                                                echo $row['name'];
+                                            } else {
+                                                echo "-";
+                                            } ?>
                                         </td>
 
                                         <td><?php if (isset($row['description'])) {

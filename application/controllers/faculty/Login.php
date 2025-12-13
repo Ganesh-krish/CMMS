@@ -28,12 +28,12 @@ class Login extends CI_Controller {
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email'); 
             if ($this->form_validation->run() == FALSE) {
 				$this->session->set_flashdata('message',array("danger",validation_errors())); 
-                return redirect(base_url("$url/login/faculty"));
+                return redirect(base_url("OAuth"));
             } else {
 				$data = $this->db_model->get_row(TABLE_FACULTY,["email"=>$post['email'],"is_active"=>1]);
                 if(!$data){
                     $this->session->set_flashdata('message',array("danger","Invalid Email or Password")); 
-                    return redirect(base_url("$url/login/faculty"));
+                    return redirect(base_url("OAuth"));
                 }
                 $stored = $data['password'] ?? '';
                 $valid = false;
@@ -48,10 +48,10 @@ class Login extends CI_Controller {
                 }
                 if(!$valid){
                     $this->session->set_flashdata('message',array("danger","Invalid Email or Password")); 
-                    return redirect(base_url("$url/login/faculty"));
+                    return redirect(base_url("OAuth"));
                 } 
                 $this->session->set_userdata($url, $data);
-                return redirect(base_url("$url/principal")); 
+                return redirect(base_url("OAuth")); 
             }
 		}
 		$data["college_url"] = $url;
@@ -62,8 +62,8 @@ class Login extends CI_Controller {
 		$this->load->view("faculty/faculty/login",$data);
 	}
 
-	public function logout($url){ 
+	public function logout($url){
 		$this->session->unset_userdata($url);
-		redirect(base_url("$url/login/faculty"));
+		redirect(base_url("OAuth"));
 	}
 }

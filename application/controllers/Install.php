@@ -181,8 +181,7 @@ class Install extends CI_Controller
                 `name` varchar(255) NOT NULL,
                 `description` text,
                 `college_id` int(11) NOT NULL,
-                `department_id` int(11) DEFAULT NULL,
-                `batch` varchar(50) DEFAULT NULL,
+                `group_expiry` date DEFAULT NULL,
                 `created_by` int(11) NOT NULL,
                 `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -190,9 +189,7 @@ class Install extends CI_Controller
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 KEY `college_id` (`college_id`),
-                KEY `department_id` (`department_id`),
-                CONSTRAINT `fk_groups_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `fk_groups_department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
+                CONSTRAINT `fk_groups_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
         echo "Created table: groups <br>";
@@ -229,11 +226,8 @@ class Install extends CI_Controller
                 `name` varchar(255) NOT NULL,
                 `description` text,
                 `course_code` varchar(50) DEFAULT NULL,
-                `course_type` varchar(50) DEFAULT NULL,
-                `course_mode` varchar(50) DEFAULT NULL,
                 `tag` varchar(100) DEFAULT NULL,
                 `college_id` int(11) NOT NULL,
-                `department_id` int(11) DEFAULT NULL,
                 `created_by` int(11) NOT NULL,
                 `updated_by` int(11) DEFAULT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -241,9 +235,7 @@ class Install extends CI_Controller
                 `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 KEY `college_id` (`college_id`),
-                KEY `department_id` (`department_id`),
-                CONSTRAINT `fk_courses_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `fk_courses_department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
+                CONSTRAINT `fk_courses_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
         echo "Created table: courses <br>";

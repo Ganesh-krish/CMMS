@@ -44,10 +44,22 @@
             </form>
         </div> -->
         <div class="card p-2">
-            
+            <div class="d-flex justify-content-end mb-2">
+                <?php if (isset($add_url)): ?>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    <i class="feather icon-plus"></i> Add Student
+                </button>
+                <?php endif; ?>
+            </div>
+
             <!-- Filter for Department and Batch -->
             <div class="card-body">
                 <div class="form-row align-items-center">
+                    <?php
+                    $user_role = $this->session->userdata($url)['role'] ?? $this->session->userdata($url)['designation'] ?? null;
+                    $show_dept_filter = !in_array($user_role, [ROLE_HOD, ROLE_STAFF]);
+                    ?>
+                    <?php if ($show_dept_filter): ?>
                     <div class="col-md my-2">
                         <label class="form-label">Department</label>
                         <select class="form-control" id="department">
@@ -59,6 +71,7 @@
                             } ?>
                         </select>
                     </div>
+                    <?php endif; ?>
                     <div class="col-md my-2">
                         <label class="form-label">Batch</label>
                         <select class="form-control" id="batch">
@@ -68,7 +81,6 @@
                                     <option value="<?= $row ?>"><?= $row ?></option>
                             <?php }
                             } ?>
-                            }
                         </select>
                     </div>
                 </div>
@@ -158,9 +170,20 @@
                                             echo "-";
                                         } ?>
                                     </td>
-                                    <td>
-                                        <button type="button" onclick="model_open(<?= $row['id'] ?>)" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Reset Password </button>
-                                        <a href="<?= base_url($url.'/course/student_overall_test_report/'.$row['id']) ?>" 
+                                    <td class="d-flex gap-1" style="flex-wrap: wrap;">
+                                        <?php
+                                        $can_edit = (isset($can_edit_all_students) && $can_edit_all_students) ||
+                                                   (isset($can_edit_own_dept_students) && $can_edit_own_dept_students && isset($user_department) && $user_department == $row['department']) ||
+                                                   (isset($can_edit_academic_data) && $can_edit_academic_data);
+                                        if ($can_edit):
+                                        ?>
+                                        <a href="<?= base_url($url.'/principal/edit_student/'.$row['id']) ?>" class="btn btn-sm btn-info"><i class="feather icon-edit"></i> Edit</a>
+                                        <?php endif; ?>
+                                        <?php if (isset($can_delete_students) && $can_delete_students): ?>
+                                        <a href="<?= base_url($url.'/principal/delete_student/'.$row['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this student?');"><i class="feather icon-trash"></i> Delete</a>
+                                        <?php endif; ?>
+                                        <button type="button" onclick="model_open(<?= $row['id'] ?>)" class="btn btn-warning btn-sm"><i class="feather icon-lock"></i> Reset Password</button>
+                                        <a href="<?= base_url($url.'/course/student_overall_test_report/'.$row['id']) ?>"
                                                class="btn btn-success btn-sm">
                                                 <i class="feather icon-bar-chart-2"></i> Results
                                             </a>
@@ -522,7 +545,67 @@
             $('#password').focus();
         });
     }
-</script>
+    </script>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?= $add_url ?>" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="department" class="form-label">Department *</label>
+                            <select class="form-control" id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <?php if (!empty($departments)) {
+                                    foreach ($departments as $dept) { ?>
+                                        <option value="<?php echo $dept['id']; ?>"><?php echo $dept['name']; ?></option>
+                                    <?php }
+                                } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="batch" class="form-label">Batch *</label>
+                            <select class="form-control" id="batch" name="batch" required>
+                                <option value="">Select Batch</option>
+                                <?php if (!empty($batches)) {
+                                    foreach ($batches as $batch_year) { ?>
+                                        <option value="<?php echo $batch_year; ?>"><?php echo $batch_year; ?></option>
+                                    <?php }
+                                } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>

@@ -301,13 +301,11 @@ class Hod extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url."/hod");
         $data["post_url"] = base_url($this->url."/hod/reset_password");
         $data["add_url"] = base_url($this->url."/hod/add_staff");
-        $departments = explode(";", $this->session_data['other_department']);
-        array_push($departments, $this->session_data['department']);
-        $data["staff"] = $this->db_model->get_all(TABLE_FACULTY,["is_active"=>true,"role"=>ROLE_STAFF,"department"=>$departments]);
+        // HOD can only access staff from their primary department
+        $hod_department = $this->session_data['department'];
+        $data["staff"] = $this->db_model->get_all(TABLE_FACULTY,["is_active"=>true,"role"=>ROLE_STAFF,"department"=>$hod_department]);
         foreach ($data["staff"] as $key => $value) {
-            if (in_array($value['department'], $departments)) {
-                $data["staff"][$key]['department'] = $this->db_model->get_row(TABLE_DEPARTMENT,["id"=>$value['department']])['name'];
-            }
+            $data["staff"][$key]['department'] = $this->db_model->get_row(TABLE_DEPARTMENT,["id"=>$value['department']])['name'];
         }
 		$this->load->view('faculty/faculty/sidebar',$class); 
 		$this->load->view('faculty/faculty/staff',$data); 
@@ -320,14 +318,8 @@ class Hod extends CI_Controller {
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/hod");
         $data["post_url"] = base_url($this->url."/hod/reset_password_student"); 
-        $departments = explode(",", $this->session_data['other_department']);
-        array_push($departments, $this->session_data['department']);
-
-        // filter empty values
-        $departments = array_filter($departments);
-
-        // remove duplicate values
-        $departments = array_unique($departments);
+        // HOD can only access their primary department
+        $departments = [$this->session_data['department']];
 
 
         $department = $this->input->get('department');
@@ -335,10 +327,12 @@ class Hod extends CI_Controller {
 
         $conditions = ["is_active"=>true,"college_id"=>$this->college['id']];
 
-        if($department != null){
+        // HODs can only access students from their department
+        $conditions['department'] = $departments[0]; // Only their primary department
+
+        // Allow filtering within their department only
+        if($department != null && $department == $departments[0]){
             $conditions['department'] = $department;
-        }else{
-            $conditions['department'] = $departments;
         }
 
         if($batch != null){

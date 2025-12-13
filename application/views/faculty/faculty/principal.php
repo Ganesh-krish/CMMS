@@ -45,9 +45,11 @@
         </div> -->
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
+                <?php if (isset($add_url)): ?>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPrincipalModal">
                     <i class="feather icon-plus"></i> Add Principal
                 </button>
+                <?php endif; ?>
             </div>
             <!-- <div style="display: flex; justify-content:space-between; align-items: center;
             border-bottom: 0 solid rgba(24, 28, 33, 0.13);
@@ -103,9 +105,13 @@
                                         } ?>
                                     </td>
                                     <td class="d-flex gap-1" style="flex-wrap: wrap;">
+                                        <?php if (isset($can_edit_principals) && $can_edit_principals): ?>
                                         <a href="<?= base_url($url.'/principal/edit/'.$row['id']) ?>" class="btn btn-sm btn-info">Edit</a>
+                                        <?php endif; ?>
+                                        <?php if (isset($can_delete_principals) && $can_delete_principals): ?>
                                         <a href="<?= base_url($url.'/principal/delete/'.$row['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this principal?');">Delete</a>
                                         <a href="<?= base_url($url.'/principal/role_switch/'.$row['id']) ?>" class="btn btn-sm btn-secondary">Role Switch</a>
+                                        <?php endif; ?>
                                         <button type="button" onclick="model_open(<?= $row['id'] ?>)" class="btn btn-warning btn-sm">
                                             Reset Password
                                         </button>

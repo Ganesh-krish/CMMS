@@ -226,9 +226,29 @@ class Principal extends CI_Controller {
     public function view(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
-        $data["add_url"] = base_url($this->url."/principal/add");
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Access control for Principal CRUD
+        // Principal: Full access
+        // Vice-Principal: Read only
+        // HOD: Read only
+        // Staff: Read only
+        if ($user_role === ROLE_SUPERADMIN) {
+            $data["add_url"] = base_url($this->url."/principal/add");
+            $data["can_edit_principals"] = true;
+            $data["can_delete_principals"] = true;
+        } elseif ($user_role === ROLE_VICE_PRINCIPAL) {
+            $data["can_edit_principals"] = false;
+            $data["can_delete_principals"] = false;
+        } else {
+            // HOD and Staff can only read
+            $data["can_edit_principals"] = false;
+            $data["can_delete_principals"] = false;
+        }
+
         $class["classname"] = "principal";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
         $data["principal"] = $this->db_model->get_all(
             TABLE_FACULTY,
@@ -246,6 +266,24 @@ class Principal extends CI_Controller {
     public function vice_principal(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Access control for Vice-Principal CRUD
+        // Principal: Full access
+        // Vice-Principal: Full access (can manage other VPs)
+        // HOD: Read only
+        // Staff: Read only
+        if (in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $data["add_url"] = base_url($this->url."/principal/add_vice_principal");
+            $data["can_edit_vice_principals"] = true;
+            $data["can_delete_vice_principals"] = true;
+        } else {
+            // HOD and Staff can only read
+            $data["can_edit_vice_principals"] = false;
+            $data["can_delete_vice_principals"] = false;
+        }
+
         $class["classname"] = "vice_principal";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
@@ -269,7 +307,31 @@ class Principal extends CI_Controller {
     public function hod(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
-        $data["add_url"] = base_url($this->url."/principal/add_hod");
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $user_department = $this->session_data['department'] ?? null;
+
+        // Access control for HOD CRUD
+        // Principal: Full access
+        // Vice-Principal: Full access
+        // HOD: Can read all HODs but only update own profile
+        // Staff: Read only
+        if (in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $data["add_url"] = base_url($this->url."/principal/add_hod");
+            $data["can_edit_all_hods"] = true;
+            $data["can_delete_hods"] = true;
+        } elseif ($user_role === ROLE_HOD) {
+            // HOD can only edit their own profile
+            $data["can_edit_all_hods"] = false;
+            $data["can_edit_own_hod"] = true;
+            $data["user_hod_id"] = $this->session_data['id'];
+            $data["can_delete_hods"] = false;
+        } else {
+            // Staff can only read
+            $data["can_edit_all_hods"] = false;
+            $data["can_delete_hods"] = false;
+        }
+
         $class["classname"] = "hod";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
@@ -293,7 +355,32 @@ class Principal extends CI_Controller {
     public function staff(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password");
-        $data["add_url"] = base_url($this->url."/principal/add_staff");
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $user_id = $this->session_data['id'] ?? null;
+
+        // Access control for Staff CRUD
+        // Principal: Full access
+        // Vice-Principal: Full access
+        // HOD: Create staff in own department, Read all staff, Update staff in own department
+        // Staff: Read all staff, Update own profile only
+        if (in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $data["add_url"] = base_url($this->url."/principal/add_staff");
+            $data["can_edit_all_staff"] = true;
+            $data["can_delete_staff"] = true;
+        } elseif ($user_role === ROLE_HOD) {
+            $data["add_url"] = base_url($this->url."/principal/add_staff");
+            $data["can_edit_all_staff"] = false;
+            $data["can_edit_own_dept_staff"] = true;
+            $data["user_department"] = $this->session_data['department'];
+            $data["can_delete_staff"] = false;
+        } elseif ($user_role === ROLE_STAFF) {
+            $data["can_edit_all_staff"] = false;
+            $data["can_edit_own_staff"] = true;
+            $data["user_staff_id"] = $user_id;
+            $data["can_delete_staff"] = false;
+        }
+
         $class["classname"] = "staff";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
@@ -336,10 +423,34 @@ class Principal extends CI_Controller {
     public function students(){
         $data["url"] = $this->url;
         $data["post_url"] = base_url($this->url."/principal/reset_password_student");
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Access control for Student CRUD
+        // Principal: Full access
+        // Vice-Principal: Full access
+        // HOD: Create, Read, Update students in own department
+        // Staff: Read students in own department, Update academic data only
+        if (in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $data["add_url"] = base_url($this->url."/principal/add_student");
+            $data["can_edit_all_students"] = true;
+            $data["can_delete_students"] = true;
+        } elseif ($user_role === ROLE_HOD) {
+            $data["add_url"] = base_url($this->url."/principal/add_student");
+            $data["can_edit_all_students"] = false;
+            $data["can_edit_own_dept_students"] = true;
+            $data["user_department"] = $this->session_data['department'];
+            $data["can_delete_students"] = false;
+        } elseif ($user_role === ROLE_STAFF) {
+            $data["can_edit_all_students"] = false;
+            $data["can_edit_academic_data"] = true;
+            $data["can_delete_students"] = false;
+        }
+
         $class["classname"] = "students";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
-        $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']);
+        // $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']); // Temporarily disabled
 
 
         $department = $this->input->get('department');
@@ -347,8 +458,34 @@ class Principal extends CI_Controller {
 
         $conditions = ["is_active"=>true,"college_id"=>$this->college['id']];
 
-        if($department != null){
-            $conditions['department'] = $department;
+        // Role-based access control for students
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $user_department = $this->session_data['department'] ?? null;
+
+        // HOD and Staff can only see students from their department
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            $conditions['department'] = $user_department;
+            // Also filter available departments to only show their department
+            $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => true,
+                "college_id" => $this->college['id'],
+                "id" => $user_department
+            ]);
+        } else {
+            // Principal and Vice-Principal can see all departments
+            $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => true, "college_id" => $this->college['id']]);
+        }
+
+        // Apply additional filters if provided (only for Principal/Vice-Principal, or within their department for HOD/Staff)
+        if($department != null && in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])){
+            // For HOD/Staff, only allow filtering within their department
+            if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                if ($department == $user_department) {
+                    $conditions['department'] = $department;
+                }
+            } else {
+                $conditions['department'] = $department;
+            }
         }
         if($batch != null){
             $conditions['batch'] = $batch;
@@ -364,9 +501,15 @@ class Principal extends CI_Controller {
             $data["staff"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
 
-        // get all batches from student table and unique 
-
-        $data['batches'] = $this->db_model->get_all(TABLE_STUDENT,["is_active"=>true,"college_id"=>$this->college['id']]);
+        // get batches based on role-based access
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            // HOD and Staff see only batches from their department
+            $batch_conditions = ["is_active" => true, "college_id" => $this->college['id'], "department" => $user_department];
+            $data['batches'] = $this->db_model->get_all(TABLE_STUDENT, $batch_conditions);
+        } else {
+            // Principal and Vice-Principal see all batches
+            $data['batches'] = $this->db_model->get_all(TABLE_STUDENT, ["is_active" => true, "college_id" => $this->college['id']]);
+        }
         $data['batches'] = array_unique(array_column($data['batches'], 'batch'));
 
 
@@ -657,6 +800,15 @@ class Principal extends CI_Controller {
     }
 
     public function delete_vice_principal($id) {
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal can delete Vice-Principals (Vice-Principals cannot delete each other)
+        if ($user_role !== ROLE_SUPERADMIN) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete Vice-Principals."));
+            redirect(base_url($this->url . "/principal/vice_principal"));
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
         $message = array('success', "Vice-Principal Deleted Successfully");
         if(!$result){
@@ -730,6 +882,15 @@ class Principal extends CI_Controller {
     }
 
     public function delete_hod($id) {
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can delete HODs
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete HODs."));
+            redirect(base_url($this->url . "/principal/hod"));
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
         $message = array('success', "HOD Deleted Successfully");
         if(!$result){
@@ -751,11 +912,28 @@ class Principal extends CI_Controller {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions for staff creation
+                if ($user_role === ROLE_HOD) {
+                    // HOD can only create staff in their own department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only add staff to your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                } elseif ($user_role === ROLE_STAFF) {
+                    // Staff cannot create other staff
+                    $this->session->set_flashdata('message', array('danger', "You do not have permission to add staff."));
+                    return redirect($_SERVER['HTTP_REFERER']);
+                }
+
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'department' => $this->input->post('department'),
+                    'department' => $requested_department,
                     'role' => ROLE_STAFF,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
@@ -784,11 +962,31 @@ class Principal extends CI_Controller {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $user_id = $this->session_data['id'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions for staff editing
+                if ($user_role === ROLE_HOD) {
+                    // HOD can only edit staff in their own department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit staff in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                } elseif ($user_role === ROLE_STAFF) {
+                    // Staff can only edit their own profile
+                    if ($post['id'] != $user_id) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit your own profile."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'department' => $this->input->post('department'),
+                    'department' => $requested_department,
                     'updated_by' => $this->session_data['id']
                 );
 
@@ -803,6 +1001,15 @@ class Principal extends CI_Controller {
     }
 
     public function delete_staff($id) {
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Only Principal and Vice-Principal can delete staff
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete staff."));
+            redirect(base_url($this->url . "/principal/staff"));
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
         $message = array('success', "Staff Deleted Successfully");
         if(!$result){
@@ -810,6 +1017,117 @@ class Principal extends CI_Controller {
         }
         $this->session->set_flashdata('message', $message);
         redirect(base_url($this->url . "/principal/staff"));
+    }
+
+    // Student CRUD Methods
+    public function add_student() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    // HOD and Staff can only add students to their own department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only add students to your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'department' => $requested_department,
+                    'batch' => $this->input->post('batch'),
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    "is_active" => 1,
+                    'password' => password_hash('123456', PASSWORD_DEFAULT) // Default password
+                );
+
+                if ($this->db_model->insert(TABLE_STUDENT, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Student Created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create Student."));
+                }
+                redirect(base_url($this->url . "/principal/students"));
+            }
+        }
+    }
+
+    public function edit_student($id = null) {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[1]|max_length[255]');
+            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array("danger", validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+                $user_department = $this->session_data['department'] ?? null;
+                $requested_department = $this->input->post('department');
+
+                // Check role-based permissions
+                if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                    // HOD and Staff can only edit students in their own department
+                    if ($requested_department != $user_department) {
+                        $this->session->set_flashdata('message', array('danger', "You can only edit students in your department."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                }
+
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'department' => $requested_department,
+                    'batch' => $this->input->post('batch'),
+                    'updated_by' => $this->session_data['id']
+                );
+
+                if ($this->db_model->update(TABLE_STUDENT, $data, ["id" => $post['id']])) {
+                    $this->session->set_flashdata('message', array('success', "Student Updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update Student."));
+                }
+                redirect(base_url($this->url . "/principal/students"));
+            }
+        }
+    }
+
+    public function delete_student($id) {
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Global rule: Only Principal and Vice-Principal can delete
+        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+            $this->session->set_flashdata('message', array('danger', "You do not have permission to delete students."));
+            redirect(base_url($this->url . "/principal/students"));
+            return;
+        }
+
+        $result = $this->db_model->update(TABLE_STUDENT, ["is_active" => 0], ["id" => $id]);
+        $message = array('success', "Student Deleted Successfully");
+        if(!$result){
+            $message = array('danger', "Something went wrong");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect(base_url($this->url . "/principal/students"));
     }
 
     // Batch CRUD Methods

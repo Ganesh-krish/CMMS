@@ -163,10 +163,14 @@ $route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';
 // Instrument Inventory
 $route['(:any)/inventory'] = 'faculty/Inventory/index';
 $route['(:any)/inventory/create'] = 'faculty/Inventory/create';
-$route['(:any)/inventory/update/(:num)'] = 'faculty/Inventory/update/$2';
+$route['(:any)/inventory/update'] = 'faculty/Inventory/update';
+$route['(:any)/inventory/get_instrument/(:num)'] = 'faculty/Inventory/get_instrument/$2';
 $route['(:any)/inventory/issue'] = 'faculty/Inventory/issue';
-$route['(:any)/inventory/return'] = 'faculty/Inventory/return_item';
+$route['(:any)/inventory/return_item'] = 'faculty/Inventory/return_item';
 $route['(:any)/inventory/maintenance'] = 'faculty/Inventory/maintenance';
+$route['(:any)/inventory/issues'] = 'faculty/Inventory/issues';
+$route['(:any)/inventory/maintenance_logs'] = 'faculty/Inventory/maintenance_logs';
+$route['(:any)/inventory/reports'] = 'faculty/Inventory/reports';
 
 // Student routes
 $route['(:any)/student/login'] = 'faculty/Student/login';

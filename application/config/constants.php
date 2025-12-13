@@ -104,6 +104,12 @@ defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
 defined('TABLE_COURSE_ENROLLMENTS')      or define('TABLE_COURSE_ENROLLMENTS', "course_enrollments");
 defined('TABLE_COURSE_MODULES')      or define('TABLE_COURSE_MODULES', "course_modules");
 
+// Musical Instrument Inventory Tables
+defined('TABLE_INSTRUMENTS')               or define('TABLE_INSTRUMENTS', "instruments");
+defined('TABLE_INSTRUMENT_ISSUES')         or define('TABLE_INSTRUMENT_ISSUES', "instrument_issues");
+defined('TABLE_INSTRUMENT_MAINTENANCE')    or define('TABLE_INSTRUMENT_MAINTENANCE', "instrument_maintenance");
+defined('TABLE_INSTRUMENT_CATEGORIES')     or define('TABLE_INSTRUMENT_CATEGORIES', "instrument_categories");
+
 
 
 define('COURSE_TYPES', json_encode([

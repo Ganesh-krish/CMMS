@@ -45,3 +45,4 @@ class Migration_Create_courses extends CI_Migration
 
 
 
+

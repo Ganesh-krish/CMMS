@@ -39,3 +39,4 @@ class Migration_Create_departments extends CI_Migration
 
 
 
+

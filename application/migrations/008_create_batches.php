@@ -43,7 +43,7 @@ class Migration_create_batches extends CI_Migration {
                 'created_at' => array(
                     'type' => 'DATETIME',
                     'null' => TRUE,
-                    'default' => 'CURRENT_TIMESTAMP'
+                    'default' => NULL
                 ),
                 'updated_by' => array(
                     'type' => 'INT',
@@ -53,8 +53,10 @@ class Migration_create_batches extends CI_Migration {
                 'updated_at' => array(
                     'type' => 'DATETIME',
                     'null' => TRUE,
-                    'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+                    'default' => NULL
+
                 )
+                
             ));
             $this->dbforge->add_key('id', TRUE);
             $this->dbforge->create_table(TABLE_BATCHES, TRUE);

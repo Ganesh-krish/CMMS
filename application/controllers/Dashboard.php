@@ -12,7 +12,8 @@ class Dashboard extends CI_Controller {
         // Load required libraries and models
         $this->load->library('form_validation');
         $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('common', 'common');
     }
 
 	public function index() {
@@ -122,10 +123,6 @@ class Dashboard extends CI_Controller {
     }
 
     public function students() {
-        // Load required models
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/common', 'common');
-
         // Get college ID (for admin, use default college)
         $college_id = 1; // Default college ID
 
@@ -149,7 +146,8 @@ class Dashboard extends CI_Controller {
             'departments' => $this->db_model->get_all(TABLE_DEPARTMENT, ['is_active' => 1, 'college_id' => $college_id]),
             'add_student_url' => base_url('Dashboard/add_student'),
             'edit_student_url' => base_url('Dashboard/edit_student'),
-            'delete_student_url' => base_url('Dashboard/delete_student')
+            'delete_student_url' => base_url('Dashboard/delete_student'),
+            'memgroups' => method_exists($this->db_model, 'get_groupMembers') ? $this->db_model->get_groupMembers($college_id) : []
         ];
 
         // Ensure session data exists for sidebar
@@ -379,8 +377,6 @@ class Dashboard extends CI_Controller {
     }
 
     public function get_student($id) {
-        $this->load->model('faculty/db_model', 'db_model');
-
         $student = $this->db_model->get_row(TABLE_STUDENT, ['id' => $id]);
 
         if ($student) {

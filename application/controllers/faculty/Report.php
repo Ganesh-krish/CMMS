@@ -10,7 +10,7 @@ class Report extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
@@ -1806,7 +1806,7 @@ class Report extends CI_Controller
 
         $totals = [
             'students' => $this->db->where(['is_active' => 1, 'college_id' => $college_id])->count_all_results(TABLE_STUDENT),
-            'staff' => $this->db->where(['is_active' => 1, 'college_id' => $college_id])->count_all_results(TABLE_STAFF),
+            'staff' => $this->db->where(['is_active' => 1])->count_all_results(TABLE_FACULTY),
             'courses' => $this->db->where(['is_active' => 1, 'college_id' => $college_id])->count_all_results(TABLE_COURCES),
             'batches' => $this->db->table_exists(TABLE_BATCHES) ? $this->db->where('college_id', $college_id)->count_all_results(TABLE_BATCHES) : 0,
             'modules' => $this->db->table_exists('course_modules') ? $this->db->where('course_id !=', null)->count_all_results('course_modules') : 0,

@@ -10,7 +10,7 @@ class Inventory extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('Inventory_model', 'inventory');
 

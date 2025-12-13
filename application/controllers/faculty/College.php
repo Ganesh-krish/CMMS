@@ -22,7 +22,7 @@ class College extends CI_Controller
 
         parent::__construct();
         $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'common');
         
      
     }

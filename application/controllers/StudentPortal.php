@@ -10,7 +10,7 @@ class StudentPortal extends CI_Controller
     {
         parent::__construct();
         $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/common', 'faculty_common');
+        $this->load->model('common', 'faculty_common');
         $this->load->model('Lesson_model', 'lesson_model');
         $this->load->library('session');
     }

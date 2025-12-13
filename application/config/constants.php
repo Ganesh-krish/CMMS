@@ -97,6 +97,7 @@ defined('SINGLE_COLLEGE_ID') or define('SINGLE_COLLEGE_ID', 1);
 
 defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "college");
 defined('TABLE_DEPARTMENT')      or define('TABLE_DEPARTMENT', "departments");
+defined('TABLE_BATCHES')      or define('TABLE_BATCHES', "batches");
 defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
 defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
@@ -116,12 +117,18 @@ define('COURSE_MODES', json_encode([
     2 => ['name' => 'Gamification', 'color' => '#62D493']
 ]));
 
-defined('ROLE_SUPERADMIN')  or define('ROLE_SUPERADMIN', 1);
-defined('ROLE_ADMIN')       or define('ROLE_ADMIN', 2);
-defined('ROLE_STAFF')       or define('ROLE_STAFF', 3);
+// New role hierarchy for educational institution
+defined('ROLE_SUPERADMIN')      or define('ROLE_SUPERADMIN', 1);      // Principal
+defined('ROLE_VICE_PRINCIPAL')  or define('ROLE_VICE_PRINCIPAL', 2);  // Vice-Principal
+defined('ROLE_HOD')             or define('ROLE_HOD', 4);             // HOD (Department Admin)
+defined('ROLE_STAFF')           or define('ROLE_STAFF', 5);           // Staff (Instructor)
 
-// Backward-compat designation aliases (legacy code paths)
-defined('DESIGNATION_PRINCIPAL') or define('DESIGNATION_PRINCIPAL', ROLE_SUPERADMIN);
-defined('DESIGNATION_HOD')       or define('DESIGNATION_HOD', ROLE_ADMIN);
-defined('DESIGNATION_STAFF')     or define('DESIGNATION_STAFF', ROLE_STAFF);
+// Backward compatibility - ROLE_ADMIN now maps to Vice-Principal
+defined('ROLE_ADMIN')           or define('ROLE_ADMIN', ROLE_VICE_PRINCIPAL);
+
+// Designation aliases for the new hierarchy
+defined('DESIGNATION_PRINCIPAL')     or define('DESIGNATION_PRINCIPAL', ROLE_SUPERADMIN);
+defined('DESIGNATION_VICE_PRINCIPAL') or define('DESIGNATION_VICE_PRINCIPAL', ROLE_VICE_PRINCIPAL);
+defined('DESIGNATION_HOD')           or define('DESIGNATION_HOD', ROLE_HOD);
+defined('DESIGNATION_STAFF')         or define('DESIGNATION_STAFF', ROLE_STAFF);
 

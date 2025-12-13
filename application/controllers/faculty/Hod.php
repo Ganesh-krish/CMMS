@@ -7,16 +7,19 @@ class Hod extends CI_Controller {
     private $session_data;
 	function __construct() {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'faculty_common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_default_college();
+        $this->faculty_common->check_user_session($this->url);
+        $this->college = $this->faculty_common->get_default_college();
         $this->session_data = $this->session->userdata($this->url);
-        $this->permissions = $this->common->get_access_permissions($this->session_data);
-        if($this->session_data['designation'] != DESIGNATION_HOD){
-            $this->common->redirect_route($this->session_data['designation'],$this->url);
+        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        // Allow Principal, Vice-Principal, and HOD roles to access department administration
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, DESIGNATION_PRINCIPAL, DESIGNATION_VICE_PRINCIPAL, DESIGNATION_HOD];
+        if(!in_array($role, $allowed_roles)){
+            $this->faculty_common->redirect_route($role,$this->url);
         }
     }
     public function index()
@@ -262,20 +265,33 @@ class Hod extends CI_Controller {
 
         $data["manage_student_url"] = base_url($this->url."/hod/students");
         
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/dashboard', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/dashboard', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     public function hod(){
         $data["url"] = $this->url;
+        $data["post_url"] = base_url($this->url."/hod/reset_password");
+        $data["add_url"] = base_url($this->url."/hod/add");
         $class["classname"] = "hod";
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/hod");
-        $data["hod"] = $this->db_model->get_all(TABLE_STAFF,["id !="=>$this->session_data['id'],"is_active"=>true,"college_id"=>$this->college['id'],"designation"=>DESIGNATION_HOD,"department"=>explode(";", $this->session_data['other_department'])]);
-		$this->load->view('faculty/sidebar',$class); 
-		$this->load->view('faculty/hod',$data); 
-		$this->load->view('faculty/footer'); 
+        $data["hod"] = $this->db_model->get_all(
+            TABLE_FACULTY,
+            [
+                "is_active"=>true,
+                "role"=>ROLE_ADMIN
+            ]
+        );
+		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/hod',$data); 
+		$this->load->view('faculty/faculty/footer'); 
+    }
+
+    // Alias for /hod/view
+    public function view() {
+        return $this->hod();
     }
 
     public function staff(){
@@ -284,17 +300,18 @@ class Hod extends CI_Controller {
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/hod");
         $data["post_url"] = base_url($this->url."/hod/reset_password");
+        $data["add_url"] = base_url($this->url."/hod/add_staff");
         $departments = explode(";", $this->session_data['other_department']);
         array_push($departments, $this->session_data['department']);
-        $data["staff"] = $this->db_model->get_all(TABLE_STAFF,["is_active"=>true,"college_id"=>$this->college['id'],"designation"=>DESIGNATION_STAFF,"department"=>$departments]);
+        $data["staff"] = $this->db_model->get_all(TABLE_FACULTY,["is_active"=>true,"role"=>ROLE_STAFF,"department"=>$departments]);
         foreach ($data["staff"] as $key => $value) {
             if (in_array($value['department'], $departments)) {
                 $data["staff"][$key]['department'] = $this->db_model->get_row(TABLE_DEPARTMENT,["id"=>$value['department']])['name'];
             }
         }
-		$this->load->view('faculty/sidebar',$class); 
-		$this->load->view('faculty/staff',$data); 
-		$this->load->view('faculty/footer'); 
+		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('faculty/faculty/staff',$data); 
+		$this->load->view('faculty/faculty/footer'); 
     }
 
     public function students(){
@@ -353,9 +370,9 @@ class Hod extends CI_Controller {
         $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT,["id"=>$departments,"is_active"=>true,"college_id"=>$this->college['id']]);
 
 
-		$this->load->view('faculty/sidebar',$class); 
-		$this->load->view('faculty/students',$data); 
-		$this->load->view('faculty/footer'); 
+		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('faculty/faculty/students',$data);
+		$this->load->view('faculty/faculty/footer'); 
     }
 
 
@@ -375,9 +392,9 @@ class Hod extends CI_Controller {
         }
         $data["groups"] = $this->db_model->get_all(TABLE_GROUPS,$group_conditions);
         // var_dump($data["groups"]);die;
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('groups/view', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
 
 
@@ -392,7 +409,7 @@ class Hod extends CI_Controller {
             }
             $departments = explode(";", $this->session_data['other_department']);
             array_push($departments, $this->session_data['department']);
-           $update= $this->db_model->update(TABLE_STAFF,["password"=>$post['password']],["designation !="=>DESIGNATION_HOD,"is_active"=>1,"college_id"=>$this->college['id'],"id"=>$post['id'],"department"=>$departments]);
+           $update= $this->db_model->update(TABLE_FACULTY,["password"=>$post['password']],["role !="=>ROLE_ADMIN,"is_active"=>1,"id"=>$post['id'],"department"=>$departments]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));

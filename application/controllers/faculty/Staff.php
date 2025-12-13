@@ -9,7 +9,7 @@ class Staff extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
@@ -18,10 +18,11 @@ class Staff extends CI_Controller
         $this->session_data = $this->session->userdata($this->url);
         $this->permissions = $this->common->get_access_permissions($this->session_data);
 
-        // var_dump($this->permissions);die;
-
-        if ($this->session_data['designation'] != DESIGNATION_STAFF) {
-            $this->common->redirect_route($this->session_data['designation'], $this->url);
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        // Allow all faculty roles to access staff management functions
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
+        if (!in_array($role, $allowed_roles, true)) {
+            $this->common->redirect_route($role, $this->url);
         }
     }
     public function index()
@@ -345,9 +346,9 @@ class Staff extends CI_Controller
 
 
         
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/dashboard', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/dashboard', $data);
+        $this->load->view('faculty/faculty/footer');
     }
     public function staff()
     {
@@ -356,11 +357,17 @@ class Staff extends CI_Controller
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
         $data["post_url"] = base_url($this->url . "/staff/reset_password");
-        $data["staff"] = $this->db_model->get_all(TABLE_STAFF, ["is_active" => true, "college_id" => $this->college['id'], "designation" => DESIGNATION_STAFF, "department" => $this->session_data['department']]);
+        $data["staff"] = $this->db_model->get_all(TABLE_FACULTY, ["is_active" => true, "role" => ROLE_STAFF, "department" => $this->session_data['department']]);
 
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/staff', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/staff', $data);
+        $this->load->view('faculty/faculty/footer');
+    }
+
+    // Alias for /staff/view
+    public function view()
+    {
+        return $this->staff();
     }
 
     // Cource module functionality
@@ -374,9 +381,9 @@ class Staff extends CI_Controller
         $data["cources"] = $this->db_model->get_all(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'],"department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
         // var_dump($data["cources"]);die;
         $data["faculty"] = $this->db_model->get_row(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/cources', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/cources', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     
@@ -415,9 +422,9 @@ class Staff extends CI_Controller
         $data['batches'] = $this->db_model->get_all(TABLE_STUDENT,["is_active"=>true,"college_id"=>$this->college['id'],"department"=>$this->session_data['department']]);
         $data['batches'] = array_unique(array_column($data['batches'], 'batch'));
 
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('faculty/students', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/students', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     public function addMemberstoGroup() {

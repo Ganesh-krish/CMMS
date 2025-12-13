@@ -269,10 +269,21 @@
                                 <div>Faculty Master</div>
                             </a>
                             <ul class="submenu" style="list-style:none; padding-left:20px; margin:5px 0; background:transparent;">
-                                <li class="py-1"><a href="<?= base_url("admin/principal/view") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
-                                <li class="py-1"><a href="<?= base_url("admin/hod") ?>" class="sidenav-link">HOD (Admin)</a></li>
-                                <li class="py-1"><a href="<?= base_url("admin/staff") ?>" class="sidenav-link">Staff (Faculty)</a></li>
+                                <li class="py-1"><a href="<?= base_url($url . "/principal/view") ?>" class="sidenav-link">Principal (Super Admin)</a></li>
+                                <li class="py-1"><a href="<?= base_url($url . "/principal/vice_principal") ?>" class="sidenav-link">Vice-Principal (Admin)</a></li>
+                                <li class="py-1"><a href="<?= base_url($url . "/principal/hod") ?>" class="sidenav-link">HOD (Department Admin)</a></li>
+                                <li class="py-1"><a href="<?= base_url($url . "/principal/staff") ?>" class="sidenav-link">Staff (Instructor)</a></li>
                             </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
+                        <li class="sidenav-item <?php if ($classname == "batch_dept") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url($url . "/principal/batch_dept") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-layers"></i>
+                                <div>Batch & Dept</div>
+                            </a>
                         </li>
                     <?php endif; ?>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>

@@ -21,9 +21,9 @@ class User extends CI_Controller {
         $data['departments'] = $this->common->get_departments($college_id,$batch_dept_filter);
         $data["college_id"] = $college_id;
         $data['college'] = $this->db_model->get_row(TABLE_COLLEGE, ['is_active' => true, 'id' => $college_id]);
-        $data["principals"] = $this->common->get_all_with_department(TABLE_STAFF, ["college_id" => $college_id, "is_active" => 1, "designation" => DESIGNATION_PRINCIPAL]);
-        $data["hods"] = $this->common->get_all_with_department(TABLE_STAFF, ["college_id" => $college_id, "is_active" => 1, "designation" => DESIGNATION_HOD]);
-        $data["facultys"] = $this->common->get_all_with_department(TABLE_STAFF, ["college_id" => $college_id, "is_active" => 1, "designation" => DESIGNATION_STAFF]);
+        $data["principals"] = $this->common->get_all_with_department(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_SUPERADMIN]);
+        $data["hods"] = $this->common->get_all_with_department(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_ADMIN]);
+        $data["facultys"] = $this->common->get_all_with_department(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_STAFF]);
         
         // Get batch filter from URL parameter
         $batch_filter = $this->input->get('batch');
@@ -124,7 +124,7 @@ class User extends CI_Controller {
                     'college_id'   => $college_id
                 ];
 
-                if ($this->db_model->insert(TABLE_STAFF,$staff_data)) {
+                if ($this->db_model->insert(TABLE_FACULTY,$staff_data)) {
                     $this->session->set_flashdata('success', array("success",'Principal added successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add Principal.'));
@@ -165,7 +165,7 @@ class User extends CI_Controller {
                     'college_id'   => $college_id
                 ];
 
-                if ($this->db_model->insert(TABLE_STAFF,$staff_data)) {
+                if ($this->db_model->insert(TABLE_FACULTY,$staff_data)) {
                     $this->session->set_flashdata('success', array("success",'HOD added successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add HOD.'));
@@ -206,7 +206,7 @@ class User extends CI_Controller {
                     'college_id'   => $college_id
                 ];
 
-                if ($this->db_model->insert(TABLE_STAFF,$staff_data)) {
+                if ($this->db_model->insert(TABLE_FACULTY,$staff_data)) {
                     $this->session->set_flashdata('success', array("success",'Faculty added successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add Faculty.'));
@@ -294,7 +294,7 @@ class User extends CI_Controller {
                     'updated_by'   => $this->user_session['id']
                 ];
 
-                if ($this->db_model->update(TABLE_STAFF,$staff_data,["id"=>$id,"college_id"=>$college_id,"is_active"=>1])) {
+                if ($this->db_model->update(TABLE_FACULTY,$staff_data,["id"=>$id,"is_active"=>1])) {
                     $this->session->set_flashdata('success', array("success",'Principal Updated successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add Principal.'));
@@ -303,7 +303,7 @@ class User extends CI_Controller {
             }
         }else{
             $data["college_id"] = $college_id; 
-            $data["staff"] = $this->db_model->get_row(TABLE_STAFF,["designation"=>DESIGNATION_PRINCIPAL,"is_active"=>1,"college_id"=>$college_id,"id"=>$id]);
+            $data["staff"] = $this->db_model->get_row(TABLE_FACULTY,["role"=>ROLE_SUPERADMIN,"is_active"=>1,"id"=>$id]);
             $this->common->load_view("user/add_principal",$data); 
         }
 
@@ -335,7 +335,7 @@ class User extends CI_Controller {
                     'updated_by'   => $this->user_session['id']
                 ];
 
-                if ($this->db_model->update(TABLE_STAFF,$staff_data,["id"=>$id,"college_id"=>$college_id,"is_active"=>1])) {
+                if ($this->db_model->update(TABLE_FACULTY,$staff_data,["id"=>$id,"is_active"=>1])) {
                     $this->session->set_flashdata('success', array("success",'Principal Updated successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add Principal.'));
@@ -344,7 +344,7 @@ class User extends CI_Controller {
             }
         }else{
             $data["college_id"] = $college_id; 
-            $data["staff"] = $this->db_model->get_row(TABLE_STAFF,["designation"=>DESIGNATION_HOD,"is_active"=>1,"college_id"=>$college_id,"id"=>$id]);
+            $data["staff"] = $this->db_model->get_row(TABLE_FACULTY,["role"=>ROLE_ADMIN,"is_active"=>1,"id"=>$id]);
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT,["is_active"=>1,"college_id"=> $college_id]);
             $this->common->load_view("user/add_hod",$data); 
         }
@@ -376,7 +376,7 @@ class User extends CI_Controller {
                     'updated_by'   => $this->user_session['id']
                 ];
 
-                if ($this->db_model->update(TABLE_STAFF,$staff_data,["id"=>$id,"college_id"=>$college_id,"is_active"=>1])) {
+                if ($this->db_model->update(TABLE_FACULTY,$staff_data,["id"=>$id,"is_active"=>1])) {
                     $this->session->set_flashdata('success', array("success",'Faculty Updated successfully!'));
                 } else {
                     $this->session->set_flashdata('error', array("danger",'Failed to add Faculty.'));
@@ -385,7 +385,7 @@ class User extends CI_Controller {
             }
         }else{
             $data["college_id"] = $college_id; 
-            $data["staff"] = $this->db_model->get_row(TABLE_STAFF,["designation"=>DESIGNATION_STAFF,"is_active"=>1,"college_id"=>$college_id,"id"=>$id]);
+            $data["staff"] = $this->db_model->get_row(TABLE_FACULTY,["role"=>ROLE_STAFF,"is_active"=>1,"id"=>$id]);
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT,["is_active"=>1,"college_id"=> $college_id]);
             $this->common->load_view("user/add_faculty",$data); 
         }
@@ -439,7 +439,7 @@ class User extends CI_Controller {
     }
 
     public function delete_principal($college_id,$id){
-        $result=$this->db_model->update(TABLE_STAFF,["is_active"=>0],["designation"=>DESIGNATION_PRINCIPAL,"id"=>$id,"college_id"=>$college_id]);
+        $result=$this->db_model->update(TABLE_FACULTY,["is_active"=>0],["role"=>ROLE_SUPERADMIN,"id"=>$id]);
 		$message = array('success',"Principal Deleted SuccessFully");
 		if(!$result){
 			$message = array('danger',"Something went wrong");
@@ -449,7 +449,7 @@ class User extends CI_Controller {
     }
 
     public function delete_hod($college_id,$id){
-        $result=$this->db_model->update(TABLE_STAFF,["is_active"=>0],["designation"=>DESIGNATION_HOD,"id"=>$id,"college_id"=>$college_id]);
+        $result=$this->db_model->update(TABLE_FACULTY,["is_active"=>0],["role"=>ROLE_ADMIN,"id"=>$id]);
 		$message = array('success',"HOD Deleted SuccessFully");
 		if(!$result){
 			$message = array('danger',"Something went wrong");
@@ -459,7 +459,7 @@ class User extends CI_Controller {
     }
 
     public function delete_faculty($college_id,$id){
-        $result=$this->db_model->update(TABLE_STAFF,["is_active"=>0],["designation"=>DESIGNATION_STAFF,"id"=>$id,"college_id"=>$college_id]);
+        $result=$this->db_model->update(TABLE_FACULTY,["is_active"=>0],["role"=>ROLE_STAFF,"id"=>$id]);
 		$message = array('success',"Faculty Deleted SuccessFully");
 		if(!$result){
 			$message = array('danger',"Something went wrong");
@@ -489,7 +489,7 @@ class User extends CI_Controller {
                     $row['designation'] = DESIGNATION_PRINCIPAL;    // Add designation
                     $row['file_path'] = $file_path;
                 } 
-                $result=$this->db_model->bulk_insert(TABLE_STAFF,$data);
+                $result=$this->db_model->bulk_insert(TABLE_FACULTY,$data);
                 if($result){
                     echo "success";
                 }else{
@@ -511,7 +511,7 @@ class User extends CI_Controller {
                     'designation' => null
                 ],
                 'hod' => [
-                    'table' => TABLE_STAFF,
+                    'table' => TABLE_FACULTY,
                     'columns' => ['name', 'department', 'other_department', 'email', 'phone_number', 'password', 'joining_date'],
                     'extra_data' => ['college_id' => $college_id, 'created_by' => $this->user_session["id"], 'file_path' => $file_path, 'designation' => DESIGNATION_HOD],
                     'operation' => 'bulk_upsert',
@@ -519,7 +519,7 @@ class User extends CI_Controller {
                     'designation' => DESIGNATION_HOD
                 ],
                 'faculty' => [
-                    'table' => TABLE_STAFF,
+                    'table' => TABLE_FACULTY,
                     'columns' => ['name', 'department', 'email', 'phone_number', 'password', 'joining_date'],
                     'extra_data' => ['college_id' => $college_id, 'created_by' => $this->user_session["id"], 'file_path' => $file_path, 'designation' => DESIGNATION_STAFF],
                     'operation' => 'bulk_upsert',
@@ -527,7 +527,7 @@ class User extends CI_Controller {
                     'designation' => DESIGNATION_STAFF
                 ],
                 'principal' => [ 
-                    'table'=> TABLE_STAFF,
+                    'table'=> TABLE_FACULTY,
                     'columns'=> ['name', 'email', 'phone_number', 'password','joining_date'],
                     'extra_data'=> ['college_id' => $college_id, 'created_by' => $this->user_session["id"], 'file_path' => $file_path, 'designation' => DESIGNATION_PRINCIPAL],
                     'operation'=> 'bulk_upsert',

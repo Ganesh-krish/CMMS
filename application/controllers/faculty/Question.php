@@ -9,7 +9,7 @@ class Question extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->model('faculty/common', 'common');
+        $this->load->model('common', 'common');
         $this->load->model('faculty/db_model', 'db_model');
         $this->load->model('faculty/test_model', 'test_model');
         $this->url = $this->uri->segment(1);
@@ -122,13 +122,11 @@ class Question extends CI_Controller
         $types = $this->input->get('types');
 
         $conditions = [
-            "is_active" => true,
-            "college_id" => $this->college['id']
+            "is_active" => true
         ];
 
-        $principal = $this->db_model->get_all(TABLE_STAFF, [
-            'college_id' => $this->college['id'],
-            'designation' => DESIGNATION_PRINCIPAL
+        $principal = $this->db_model->get_all(TABLE_FACULTY, [
+            'role' => ROLE_SUPERADMIN
         ]);
 
         $principal_ids = array_column($principal, 'id');

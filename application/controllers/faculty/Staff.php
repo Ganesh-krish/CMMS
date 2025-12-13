@@ -10,8 +10,8 @@ class Staff extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
         $this->common->check_user_session($this->url);
         $this->college = $this->common->get_default_college();

@@ -11,8 +11,8 @@ class Test extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment( 1 );
         $this->common->check_user_session( $this->url );
         $this->college = $this->common->get_default_college();
@@ -97,9 +97,9 @@ class Test extends CI_Controller
 
         // Get all modules for the dropdown
         $data[ 'modules' ] = $this->db_model->get_all( TABLE_TEST_MODULES, [ 'is_active' => 1 ] );
-        $this->load->view( 'faculty/sidebar', $class );
+        $this->load->view( 'faculty/faculty/sidebar', $class );
         $this->load->view( 'test/view', $data );
-        $this->load->view( 'faculty/footer' );
+        $this->load->view( 'faculty/faculty/footer' );
     }
 
 
@@ -727,9 +727,9 @@ class Test extends CI_Controller
             }
         }
 
-        $this->load->view( 'faculty/sidebar', $class );
+        $this->load->view( 'faculty/faculty/sidebar', $class );
         $this->load->view( 'test/add', $data );
-        $this->load->view( 'faculty/footer' );
+        $this->load->view( 'faculty/faculty/footer' );
     }
 
     public function edit( $id ) {
@@ -886,9 +886,9 @@ class Test extends CI_Controller
                 }
             }
 
-            $this->load->view( 'faculty/sidebar', $class );
+            $this->load->view( 'faculty/faculty/sidebar', $class );
             $this->load->view( 'test/add', $data );
-            $this->load->view( 'faculty/footer' );
+            $this->load->view( 'faculty/faculty/footer' );
         }
 
     public function delete( $id ) {
@@ -1029,9 +1029,9 @@ class Test extends CI_Controller
 
         ];
 
-        $this->load->view( 'faculty/sidebar', $class );
+        $this->load->view( 'faculty/faculty/sidebar', $class );
         $this->load->view( 'test/questions', $data );
-        $this->load->view( 'faculty/footer' );
+        $this->load->view( 'faculty/faculty/footer' );
     }
 
     public function add_question() {

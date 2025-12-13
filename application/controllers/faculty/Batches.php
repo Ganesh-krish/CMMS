@@ -10,7 +10,7 @@ class Batches extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
         $this->load->model('Batch_model', 'batches');
 
         $this->url = $this->uri->segment(1);

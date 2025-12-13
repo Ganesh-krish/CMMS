@@ -11,7 +11,7 @@ class Announcement extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'faculty_common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
         $this->load->model('Announcement_model', 'announcement');
 
         $this->url = $this->uri->segment(1);

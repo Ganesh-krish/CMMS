@@ -285,5 +285,55 @@ public function get_max($table, $field, $where = []) {
 
    }
 
+    public function get_groupMembers($college_id=null,$created_by=null){
+        return $this->get_groupMembers_test($college_id, $created_by);
+    }
+
+    public function get_groupMembers_test($college_id=null,$created_by=null){
+        $this->db->select('COALESCE(count(mg.student_id), 0) AS students, g.id, g.name as group_name, g.group_expiry, g.created_at');
+        $this->db->from('groups as g');
+        $this->db->join(TABLE_MEMGROUPS . ' AS mg', 'g.id = mg.group_id AND (mg.college_id = ' . $this->db->escape($college_id) . ' OR ' . $this->db->escape($college_id) . ' IS NULL)', 'LEFT');
+
+        if(is_array($created_by) && !empty($created_by)){
+            $this->db->where_in('g.created_by', $created_by);
+        }elseif($created_by != null){
+            $this->db->where('g.created_by', $created_by);
+        }
+
+        $this->db->where('g.is_active', 1);
+        $this->db->where('g.college_id',$college_id);
+        $this->db->group_by('g.id, g.name, g.group_expiry, g.created_at');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_paginated($table, $conditions = [], $limit = 10, $offset = 0) {
+        $this->db->where($conditions);
+        $this->db->limit($limit, $offset);
+        return $this->db->get($table)->result_array();
+    }
+
+    public function count_all($table, $conditions = []) {
+        $this->db->where($conditions);
+        return $this->db->count_all_results($table);
+    }
+
+    public function get_sum($table, $conditions = [], $column) {
+        $this->db->select_sum($column);
+        if (!empty($conditions)) {
+            foreach ($conditions as $key => $value) {
+                if (is_array($value)) {
+                    // Use WHERE IN if the value is an array
+                    $this->db->where_in($key, $value);
+                } else {
+                    // Otherwise, apply the regular WHERE condition
+                    $this->db->where($key, $value);
+                }
+            }
+        }
+        $query = $this->db->get($table);
+        $result = $query->row();
+        return isset($result->$column) ? $result->$column : 0;
+    }
+
 
 }

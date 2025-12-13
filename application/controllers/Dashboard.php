@@ -11,8 +11,7 @@ class Dashboard extends CI_Controller {
 
         // Load required libraries and models
         $this->load->library('form_validation');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
         $this->load->model('common', 'common');
     }
 
@@ -147,7 +146,7 @@ class Dashboard extends CI_Controller {
             'add_student_url' => base_url('Dashboard/add_student'),
             'edit_student_url' => base_url('Dashboard/edit_student'),
             'delete_student_url' => base_url('Dashboard/delete_student'),
-            'memgroups' => method_exists($this->db_model, 'get_groupMembers') ? $this->db_model->get_groupMembers($college_id) : []
+            'memgroups' => $this->db_model->get_groupMembers($college_id)
         ];
 
         // Ensure session data exists for sidebar

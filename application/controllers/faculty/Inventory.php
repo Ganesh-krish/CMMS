@@ -11,7 +11,7 @@ class Inventory extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'faculty_common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
         $this->load->model('Inventory_model', 'inventory');
 
         $this->url = $this->uri->segment(1);
@@ -454,7 +454,7 @@ class Inventory extends CI_Controller
         return $this->json_response('success', ['transaction_id' => $transaction_id], 201);
     }
 
-    public function return_item()
+    public function return_item_api()
     {
         if ($this->input->method() !== 'post') {
             return $this->json_response('error', 'Invalid method', 405);

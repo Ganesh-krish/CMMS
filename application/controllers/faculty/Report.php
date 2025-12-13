@@ -11,9 +11,27 @@ class Report extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
-        $this->url = $this->uri->segment(1);
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
+        $segment1 = $this->uri->segment(1);
+
+        // If accessed via /report directly, determine the correct URL from session
+        if ($segment1 === 'report') {
+            // Find the appropriate session key
+            $possible_keys = ['admin', 'staff', 'hod', 'principal'];
+            $this->url = null;
+            foreach ($possible_keys as $key) {
+                if ($this->session->userdata($key)) {
+                    $this->url = $key;
+                    break;
+                }
+            }
+            // Default to admin if no session found
+            $this->url = $this->url ?: 'admin';
+        } else {
+            $this->url = $segment1;
+        }
+
         $this->common->check_user_session($this->url);
         $this->college = $this->common->get_default_college();
         $this->session_data = $this->session->userdata($this->url);
@@ -146,9 +164,9 @@ class Report extends CI_Controller
         $data['avg_score'] = $avg_score;
         
         // Load views
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('reports/index', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/reports/index', $data);
+        $this->load->view('faculty/faculty/footer');
     }
     
     public function student_detail($student_id)
@@ -257,9 +275,9 @@ class Report extends CI_Controller
         $data['module_map'] = $module_map;
         
         // Load views
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('reports/student_detail', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/reports/student_detail', $data);
+        $this->load->view('faculty/faculty/footer');
     }
     
     public function test_detail($test_id)
@@ -431,9 +449,9 @@ class Report extends CI_Controller
         $data['difficulty_map'] = $difficulty_map;
         
         // Load views
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('reports/test_detail', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/reports/test_detail', $data);
+        $this->load->view('faculty/faculty/footer');
     }
     
     public function course_detail($course_id)
@@ -536,9 +554,9 @@ class Report extends CI_Controller
         $data['total_tests'] = count($data['tests']);
         
         // Load views
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('reports/course_detail', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/reports/course_detail', $data);
+        $this->load->view('faculty/faculty/footer');
     }
     
     // Export functions for different report types
@@ -1017,9 +1035,9 @@ class Report extends CI_Controller
         $this->initialize_placeholder_chart_data($data);
         
         // Load views
-        $this->load->view('faculty/sidebar', $class);
-        $this->load->view('reports/dashboard', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/reports/dashboard', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 
     private function initialize_dashboard_data(&$data) {

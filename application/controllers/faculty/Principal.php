@@ -8,8 +8,8 @@ class Principal extends CI_Controller {
 	function __construct() {
         parent::__construct();
         $this->load->model('common', 'faculty_common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
         // Support single-college admin access without an existing session
         if ($this->url === 'admin') {

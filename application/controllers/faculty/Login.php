@@ -6,7 +6,7 @@ class Login extends CI_Controller {
 	function __construct() {
         parent::__construct(); 
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
 		$url = $this->uri->segment(1); 
 		if(!($url)){
 			return redirect(base_url(""));

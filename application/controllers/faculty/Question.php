@@ -10,8 +10,8 @@ class Question extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
         $this->common->check_user_session($this->url);
         $this->college = $this->common->get_default_college();
@@ -209,9 +209,9 @@ class Question extends CI_Controller
   
         // $data[ 'topics' ] = $this->db_model->get_distinct( TABLE_QUESTION_BANK, 'topic', [ 'is_active' => true,  ] );
         $data['samplePdfurl'] = $this->uri->segment(3) . '/SampleCsv/download_sample_csv_questions';
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('question_bank/view', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
 
 
@@ -296,9 +296,9 @@ class Question extends CI_Controller
         
         $data['tags'] = array_values(array_unique(array_filter($all_tags)));
         
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('question_bank/add', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
 
 
@@ -396,9 +396,9 @@ class Question extends CI_Controller
         $data['tags'] = array_values(array_unique(array_filter($all_tags)));
 
          
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('question_bank/add', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
         
     }
 
@@ -1103,9 +1103,9 @@ class Question extends CI_Controller
         $this->session->unset_userdata('bulk_upload_results');
         error_log("Session data cleared");
 
-        $this->load->view('faculty/sidebar', $class);
+        $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('question_bank/upload_report', $data);
-        $this->load->view('faculty/footer');
+        $this->load->view('faculty/faculty/footer');
     }
 
     public function uploadQuestionImage()

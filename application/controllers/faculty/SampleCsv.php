@@ -6,7 +6,7 @@ class SampleCsv extends CI_Controller {
     function __construct() {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
         $this->url = $this->uri->segment(1);
         $this->common->check_user_session($this->url);
     }

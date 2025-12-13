@@ -315,6 +315,17 @@
                         </li>
                     <?php endif; ?>
 
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
+                        <li class="sidenav-item <?php if ($classname == "reports") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url("report") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-bar-chart-2"></i>
+                                <div>Reports</div>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>
                         <li class="sidenav-item <?php if ($classname == "announcements") {
                                                     echo "active";
@@ -352,18 +363,6 @@
 
 
 
-                    <!-- <?php 
-                    if (in_array($this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "reports") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/report") ?>" class="sidenav-link">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>Reports</div>
-                            </a>
-                        </li>
-                    <?php endif; ?> -->
 
                     
 

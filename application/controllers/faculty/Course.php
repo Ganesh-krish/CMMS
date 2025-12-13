@@ -11,8 +11,8 @@ class Course extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
-        $this->load->model('faculty/test_model', 'test_model');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
 
         // Allow super admin access via /admin without faculty session
@@ -170,10 +170,10 @@ class Course extends CI_Controller
 
         
         
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/add", $data);
         // $this->load->view("course/assign_students",$data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
 
@@ -249,9 +249,9 @@ class Course extends CI_Controller
         
         $data['tags'] = array_values(array_unique(array_filter($all_tags)));
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("faculty/allcourses", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
 
@@ -321,9 +321,9 @@ class Course extends CI_Controller
         
         $data['tags'] = array_values(array_unique(array_filter($all_tags)));
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("faculty/cources", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     public function add()
@@ -736,10 +736,10 @@ class Course extends CI_Controller
             
            
 
-            $this->load->view("faculty/sidebar", $class);
+            $this->load->view("faculty/faculty/sidebar", $class);
             $this->load->view("course/add", $data);
           
-            $this->load->view("faculty/footer");
+            $this->load->view("faculty/faculty/footer");
         }
     }
 
@@ -885,9 +885,9 @@ class Course extends CI_Controller
             $class["sidebar_href"] = base_url($this->url . "/allcourses");
 
             // Load views
-            $this->load->view("faculty/sidebar", $class);
+            $this->load->view("faculty/faculty/sidebar", $class);
             $this->load->view("course/assign_students", $data);
-            $this->load->view("faculty/footer");
+            $this->load->view("faculty/faculty/footer");
         }
     }
 
@@ -1019,9 +1019,9 @@ class Course extends CI_Controller
                 );
             }
 
-            $this->load->view("faculty/sidebar", $class);
+            $this->load->view("faculty/faculty/sidebar", $class);
             $this->load->view("course/course_tests", $data);
-            $this->load->view("faculty/footer");
+            $this->load->view("faculty/faculty/footer");
         } else {
             redirect(base_url($this->url . "/course"));
         }
@@ -1227,9 +1227,9 @@ class Course extends CI_Controller
 
         $data["students"] = $unique_students;
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/view_students", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // Add these methods to your existing Course controller
@@ -1304,9 +1304,9 @@ class Course extends CI_Controller
         //     }
         // }
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/modules", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // allcourses_modules
@@ -1373,9 +1373,9 @@ class Course extends CI_Controller
         //     }
         // }
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/all_course_modules", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
     
 
@@ -1516,9 +1516,9 @@ class Course extends CI_Controller
                 redirect(base_url($this->url . "/course/modules/" . $course_id));
             }
 
-            $this->load->view("faculty/sidebar", $class);
+            $this->load->view("faculty/faculty/sidebar", $class);
             $this->load->view("course/edit_module", $data);
-            $this->load->view("faculty/footer");
+            $this->load->view("faculty/faculty/footer");
         }
     }
 
@@ -1734,9 +1734,9 @@ class Course extends CI_Controller
         }
         $data["available_tests"] = array_values($data["available_tests"]);
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/module_tests", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // all_course_module_tests
@@ -1912,9 +1912,9 @@ class Course extends CI_Controller
         }
         $data["available_tests"] = array_values($data["available_tests"]);
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/all_course_module_tests", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     public function add_tests_to_module()
@@ -2212,9 +2212,9 @@ class Course extends CI_Controller
                 redirect(base_url($this->url . "/course/module_tests/" . $course_id . "/" . $module_id));
             }
 
-            $this->load->view("faculty/sidebar", $class);
+            $this->load->view("faculty/faculty/sidebar", $class);
             $this->load->view("course/edit_module_test", $data);
-            $this->load->view("faculty/footer");
+            $this->load->view("faculty/faculty/footer");
         }
     }
 
@@ -2397,9 +2397,9 @@ class Course extends CI_Controller
         }
 
         // Load views
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/test_questions", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     public function all_course_test_questions($test_id = null) {
@@ -2549,9 +2549,9 @@ class Course extends CI_Controller
         }
 
         // Load views
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/test_questions", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // Helper function to format time spent
@@ -2926,9 +2926,9 @@ class Course extends CI_Controller
         // var_dump("Is First Sync: ", $is_first_sync);
 
         // exit;
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/test_results", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // all_course_test_results
@@ -3291,9 +3291,9 @@ class Course extends CI_Controller
         // var_dump("Is First Sync: ", $is_first_sync);
 
         // exit;
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/test_results", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
 
@@ -3652,9 +3652,9 @@ class Course extends CI_Controller
         
         
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/student_test_report", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     // all_course_student_test_report
@@ -4017,9 +4017,9 @@ class Course extends CI_Controller
             3 => "Hard"
         ];
 
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/student_test_report", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     public function student_overall_test_report($student_id = null)
@@ -4094,9 +4094,9 @@ class Course extends CI_Controller
         // print_r($data);
         // exit;
         // Load view
-        $this->load->view("faculty/sidebar", $class);
+        $this->load->view("faculty/faculty/sidebar", $class);
         $this->load->view("course/student_overall_test_report", $data);
-        $this->load->view("faculty/footer");
+        $this->load->view("faculty/faculty/footer");
     }
 
     public function export_test_report($course_id = null, $module_id = null, $test_id = null, $student_id = null) {

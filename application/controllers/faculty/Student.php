@@ -27,8 +27,8 @@ class Student extends CI_Controller {
         $this->load->database();
         $this->load->helper( 'form' );
         $this->load->model( 'faculty/common', 'common' );
-        $this->load->model( 'faculty/db_model', 'db_model' );
-        $this->load->model( 'faculty/test_model', 'test_model' );
+        $this->load->model( 'Db_model', 'db_model' );
+        $this->load->model( 'Test_model', 'test_model' );
         $this->load->model( 'Lesson_model', 'lesson_model' );
         $this->load->library( 'session' );
 

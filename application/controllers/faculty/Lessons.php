@@ -11,7 +11,7 @@ class Lessons extends CI_Controller
     {
         parent::__construct();
         $this->load->model('common', 'common');
-        $this->load->model('faculty/db_model', 'db_model');
+        $this->load->model('Db_model', 'db_model');
         $this->load->model('Lesson_model', 'lessons');
         $this->url = $this->uri->segment(1);
         $this->session_data = $this->rbac->require_faculty($this->url, [

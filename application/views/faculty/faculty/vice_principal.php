@@ -16,11 +16,9 @@
         <?php   } ?>
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
-                <?php if (isset($add_url)): ?>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVicePrincipalModal">
                     <i class="feather icon-plus"></i> Add Vice-Principal
                 </button>
-                <?php endif; ?>
             </div>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-striped table-bordered">
@@ -56,13 +54,9 @@
                                                 Actions
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<?php echo $row['id']; ?>">
-                                                <?php if (isset($can_edit_vice_principals) && $can_edit_vice_principals): ?>
                                                 <li><a class="dropdown-item" href="#" onclick="editVicePrincipal(<?php echo $row['id']; ?>, '<?php echo $row['name']; ?>', '<?php echo $row['email']; ?>', '<?php echo $row['phone'] ?? ''; ?>')"><i class="feather icon-edit"></i> Edit</a></li>
-                                                <?php endif; ?>
                                                 <li><a class="dropdown-item" href="#" onclick="resetPassword(<?php echo $row['id']; ?>)"><i class="feather icon-lock"></i> Reset Password</a></li>
-                                                <?php if (isset($can_delete_vice_principals) && $can_delete_vice_principals): ?>
                                                 <li><a class="dropdown-item text-danger" href="#" onclick="deleteVicePrincipal(<?php echo $row['id']; ?>)"><i class="feather icon-trash"></i> Delete</a></li>
-                                                <?php endif; ?>
                                             </ul>
                                         </div>
                                     </td>

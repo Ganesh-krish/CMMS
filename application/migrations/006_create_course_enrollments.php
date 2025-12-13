@@ -37,3 +37,4 @@ class Migration_Create_course_enrollments extends CI_Migration
 
 
 
+

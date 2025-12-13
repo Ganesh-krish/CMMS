@@ -286,7 +286,7 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "students") {
                                                     echo "active";
@@ -409,7 +409,7 @@
                                                 } ?>">
                             <a href="<?= base_url("$url/principal/profile") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-settings"></i>
-                                <div>Login Page Setup</div>
+                                <div>Settings Page</div>
                             </a>
                         </li>
                         

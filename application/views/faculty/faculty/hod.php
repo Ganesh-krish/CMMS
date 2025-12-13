@@ -45,11 +45,9 @@
         </div> -->
         <div class="card p-2">
             <div class="d-flex justify-content-end mb-2">
-                <?php if (isset($add_url)): ?>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHodModal">
                     <i class="feather icon-plus"></i> Add HOD
                 </button>
-                <?php endif; ?>
             </div>
             <!-- <div style="display: flex; justify-content:space-between; align-items: center;
             border-bottom: 0 solid rgba(24, 28, 33, 0.13);
@@ -117,17 +115,9 @@
                                         } ?>
                                     </td> 
                                     <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                        <?php
-                                        $can_edit = (isset($can_edit_all_hods) && $can_edit_all_hods) ||
-                                                   (isset($can_edit_own_hod) && $can_edit_own_hod && isset($user_hod_id) && $user_hod_id == $row['id']);
-                                        if ($can_edit):
-                                        ?>
-                                        <a href="<?= base_url($url.'/principal/edit_hod/'.$row['id']) ?>" class="btn btn-sm btn-info">Edit</a>
-                                        <?php endif; ?>
-                                        <?php if (isset($can_delete_hods) && $can_delete_hods): ?>
-                                        <a href="<?= base_url($url.'/principal/delete_hod/'.$row['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this HOD?');">Delete</a>
+                                        <a href="<?= base_url($url.'/hod/edit/'.$row['id']) ?>" class="btn btn-sm btn-info">Edit</a>
+                                        <a href="<?= base_url($url.'/hod/delete/'.$row['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this HOD?');">Delete</a>
                                         <a href="<?= base_url($url.'/hod/role_switch/'.$row['id']) ?>" class="btn btn-sm btn-secondary">Role Switch</a>
-                                        <?php endif; ?>
                                         <button type="button" onclick="model_open(<?=$row['id']?>)" class="btn btn-warning btn-sm">Reset Password</button>
                                     </td>
                                 </tr>
@@ -187,15 +177,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Department</label>
-                            <select name="department" class="form-control" required>
-                                <option value="">Select Department</option>
-                                <?php
-                                $departments = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => true, "college_id" => $this->session->userdata($url)['college_id'] ?? 1]);
-                                foreach ($departments as $dept) {
-                                    echo '<option value="' . $dept['id'] . '">' . $dept['name'] . '</option>';
-                                }
-                                ?>
-                            </select>
+                            <input type="text" name="department" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>

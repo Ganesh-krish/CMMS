@@ -110,6 +110,9 @@ defined('TABLE_INSTRUMENT_ISSUES')         or define('TABLE_INSTRUMENT_ISSUES', 
 defined('TABLE_INSTRUMENT_MAINTENANCE')    or define('TABLE_INSTRUMENT_MAINTENANCE', "instrument_maintenance");
 defined('TABLE_INSTRUMENT_CATEGORIES')     or define('TABLE_INSTRUMENT_CATEGORIES', "instrument_categories");
 
+// Announcement Tables
+defined('TABLE_ANNOUNCEMENTS')             or define('TABLE_ANNOUNCEMENTS', "announcements");
+
 
 
 define('COURSE_TYPES', json_encode([

@@ -172,6 +172,14 @@ $route['(:any)/inventory/issues'] = 'faculty/Inventory/issues';
 $route['(:any)/inventory/maintenance_logs'] = 'faculty/Inventory/maintenance_logs';
 $route['(:any)/inventory/reports'] = 'faculty/Inventory/reports';
 
+// Announcement routes
+$route['(:any)/announcements'] = 'faculty/Announcement/index';
+$route['(:any)/announcements/create'] = 'faculty/Announcement/create';
+$route['(:any)/announcements/edit/(:num)'] = 'faculty/Announcement/edit/$2';
+$route['(:any)/announcements/delete/(:num)'] = 'faculty/Announcement/delete/$2';
+$route['(:any)/announcements/view/(:num)'] = 'faculty/Announcement/view/$2';
+$route['(:any)/announcements/get_user_announcements'] = 'faculty/Announcement/get_user_announcements';
+
 // Student routes
 $route['(:any)/student/login'] = 'faculty/Student/login';
 $route['(:any)/student/check_auth'] = 'faculty/Student/check_auth';

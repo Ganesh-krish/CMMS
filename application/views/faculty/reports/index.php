@@ -223,17 +223,20 @@
     
 </div>
 
+<!-- Include Select2 script -->
+<script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize select2 for better dropdown experience
         $('.select2').select2();
-        
+
         // Auto-submit form when filters change
-        $('#student_id, #test_id, #course_id').on('change', function() {
+        $('#student_id, #course_id').on('change', function() {
             $('#reportFilterForm').submit();
         });
     });
-    
+
     function printReport(id) {
         // This would typically open a print-friendly version of the report
         window.open('<?= base_url($url . '/report/print/') ?>' + id, '_blank');

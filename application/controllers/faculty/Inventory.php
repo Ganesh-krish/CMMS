@@ -15,9 +15,26 @@ class Inventory extends CI_Controller
         $this->load->model('Inventory_model', 'inventory');
 
         $this->url = $this->uri->segment(1);
-        $this->faculty_common->check_user_session($this->url);
+
+        // Handle both faculty and admin sessions
+        $owner_session = $this->session->userdata('owner');
+        if ($owner_session && !empty($owner_session)) {
+            // Admin/owner session - use owner session
+            $this->faculty_common->check_user_session(); // Validate session
+            $this->session_data = [
+                'id' => $owner_session['id'] ?? null,
+                'name' => $owner_session['name'] ?? 'Admin',
+                'role' => ROLE_SUPERADMIN,
+                'designation' => DESIGNATION_PRINCIPAL,
+                'department' => null // Admin can see all departments
+            ];
+        } else {
+            // Faculty session
+            $this->faculty_common->check_user_session($this->url);
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
         $this->college = $this->faculty_common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){

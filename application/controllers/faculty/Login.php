@@ -62,7 +62,7 @@ class Login extends CI_Controller {
 		$this->load->view("faculty/faculty/login",$data);
 	}
 
-	public function logout($url){
+	public function logout($url){ 
 		$this->session->unset_userdata($url);
 		redirect(base_url("OAuth"));
 	}

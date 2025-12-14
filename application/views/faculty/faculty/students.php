@@ -15,7 +15,7 @@
             </div>
         <?php   } ?>
         <!-- <div class="card mb-4">
-            <form method="get" action="<?= base_url('Purchase/Invoice') ?>">
+            <form method="get" action="<?php echo base_url('Purchase/Invoice'); ?>">
                 <div class="card-body">
                     <div class="form-row align-items-center">
                         <div class="col-md my-2">
@@ -84,7 +84,7 @@
                 <table id="student_table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th><input type="checkbox" id="selectAllStudents"></th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -125,7 +125,7 @@
             border-bottom-width: 1px;">
                 <h6 class="card-header" style="border:none">List of Groups</h6>
                 <div>
-                    <a href="<?= base_url($url . '/groups/add') ?>" class="btn btn-primary mr-3">Add Group</a>
+                    <a href="<?php echo base_url($url . '/groups/add'); ?>" class="btn btn-primary mr-3">Add Group</a>
                 </div>
             </div>
             <div class="card-datatable container table-responsive">
@@ -169,9 +169,9 @@
                                         } ?>
                                     </td>
                                     <td>
-                                        <a href="<?= base_url($url . '/groups/group_students/' . $row['id']) ?>" class="btn btn-info btn-sm"><i class="feather icon-users"></i>&nbsp;View Students </a>
-                                        <a href="<?= base_url($url . '/groups/edit/' . $row['id']) ?>" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Edit Group </a>
-                                        <!-- <a href="<?= base_url($url . '/groups/delete_group/' . $row['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?')"><i class="feather icon-trash"></i>&nbsp;Delete </a> -->
+                                        <a href="<?php echo base_url($url . '/groups/group_students/' . $row['id']); ?>" class="btn btn-info btn-sm"><i class="feather icon-users"></i>&nbsp;View Students </a>
+                                        <a href="<?php echo base_url($url . '/groups/edit/' . $row['id']); ?>" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Edit Group </a>
+                                        <!-- <a href="<?php echo base_url($url . '/groups/delete_group/' . $row['id']); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?')"><i class="feather icon-trash"></i>&nbsp;Delete </a> -->
                                         <a href="javascript:void(0);" class="btn btn-danger btn-sm delete-group" data-id="<?= $row['id'] ?>"><i class="feather icon-trash"></i>&nbsp;Delete</a>
                                     </td>
                                 </tr>
@@ -206,7 +206,7 @@
                 border-bottom-width: 1px;">
                 <h6 class="card-header" style="border:none">List of Groups</h6>
                 <div>
-                    <a href="<?= base_url($url . '/groups/add') ?>" class="btn btn-primary mr-3">Add Group</a>
+                    <a href="<?php echo base_url($url . '/groups/add'); ?>" class="btn btn-primary mr-3">Add Group</a>
                 </div>
             </div>
             <div class="card-datatable container table-responsive">
@@ -256,8 +256,8 @@
                                         } ?>
                                     </td>
                                     <td>
-                                        <a href="<?= base_url($url . '/groups/edit/' . $row['id']) ?>" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Edit Group </a>
-                                        <a href="<?= base_url($url . '/groups/delete_group/' . $row['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?')"><i class="feather icon-trash"></i>&nbsp;Delete </a>
+                                        <a href="<?php echo base_url($url . '/groups/edit/' . $row['id']); ?>" class="btn btn-warning btn-sm"><i class="feather icon-edit"></i>&nbsp;Edit Group </a>
+                                        <a href="<?php echo base_url($url . '/groups/delete_group/' . $row['id']); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?')"><i class="feather icon-trash"></i>&nbsp;Delete </a>
                                     </td>
                                 </tr>
                         <?php }
@@ -306,7 +306,7 @@ $(document).ready(function() {
             "processing": true,
             "serverSide": true,
             "ajax": {
-                "url": "<?= base_url('Dashboard/students') ?>",
+                "url": dashboardUrl + "students",
                 "type": "GET",
                 "data": function(d) {
                     // Add any additional data if needed
@@ -314,7 +314,10 @@ $(document).ready(function() {
                 }
             },
             "columns": [
-                { "data": 0, "name": "id" }, // ID
+                { "data": null, "orderable": false, "searchable": false, "render": function(data, type, row) {
+                    return '<input type="checkbox" class="student-checkbox" value="' + row[0] + '">';
+                }}, // Checkbox
+                { "data": 0, "name": "id", "visible": false }, // ID (hidden)
                 { "data": 1, "name": "name" }, // Name
                 { "data": 2, "name": "email" }, // Email
                 { "data": 3, "name": "phone" }, // Phone
@@ -342,38 +345,64 @@ $(document).ready(function() {
             }
         });
     }, 100); // Small delay
-});
 
-// Initialize Select2 for department dropdowns
-$('.select2').select2({
-    placeholder: "Select Department",
-    allowClear: true,
-    width: '100%'
-});
-
-// Re-initialize Select2 when modals are shown
-$('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
+    // Initialize Select2 after DataTable is ready
     setTimeout(function() {
-        $('.select2').select2({
-            placeholder: "Select Department",
-            allowClear: true,
-            width: '100%'
-        });
-    }, 100);
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('.select2').select2({
+                placeholder: "Select Department",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Re-initialize Select2 when modals are shown
+            $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
+                setTimeout(function() {
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('.select2').each(function() {
+                            var $element = $(this);
+                            // Safely destroy if already initialized
+                            if ($element.hasClass('select2-hidden-accessible')) {
+                                try {
+                                    $element.select2('destroy');
+                                } catch (e) {
+                                    // Ignore destroy errors
+                                }
+                            }
+                            // Initialize
+                            $element.select2({
+                                placeholder: "Select Department",
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        });
+                    }
+                }, 100);
+            });
+
+            console.log('Select2 initialized successfully');
+        } else {
+            console.error('Select2 library not loaded');
+        }
+    }, 200); // Small delay after DataTable
 });
 </script>
 
-<script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
-
+<!-- DataTable scripts (require jQuery) - Load BEFORE custom scripts -->
+<script src="<?php echo base_url(''); ?>assets/faculty/libs/datatables/datatables.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<!-- Select Plugin for Row Selection -->
 <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
+
+<!-- Select2 (requires jQuery) -->
+<script src="<?php echo base_url(''); ?>assets/faculty/libs/select2/select2.js"></script>
+
+<!-- Custom scripts that depend on the above libraries -->
+<script src="<?php echo base_url(''); ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <!-- Add Student Modal -->
 <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -382,7 +411,7 @@ $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
                 <h5 class="modal-title" id="addStudentLabel">Add Student</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('Dashboard/students') ?>" method="POST">
+            <form action="<?php echo base_url('Dashboard/students'); ?>" method="POST">
                 <input type="hidden" name="action" value="create">
                 <div class="modal-body">
                     <div class="row">
@@ -444,7 +473,7 @@ $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
                 <h5 class="modal-title" id="editStudentLabel">Edit Student</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('Dashboard/students') ?>" method="POST">
+            <form action="<?php echo base_url('Dashboard/students'); ?>" method="POST">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" id="edit_student_id" name="id">
                 <div class="modal-body">
@@ -495,9 +524,6 @@ $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
     </div>
 </div>
 
-<!-- <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script> -->
 
 <style>
 /* Fix Select2 dropdown z-index issue in modals */
@@ -509,39 +535,29 @@ $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
 .modal .select2-container {
     z-index: auto;
 }
+
+/* Style for selected table rows */
+#student_table tbody tr.selected {
+    background-color: #e3f2fd !important;
+    border: 2px solid #2196f3 !important;
+}
+
+#student_table tbody tr.selected:hover {
+    background-color: #bbdefb !important;
+}
 </style>
 
 <script>
 $(document).ready(function() {
-    // Prevent multiple initializations
-    if ($.fn.DataTable.isDataTable('#student_table')) {
-        $('#student_table').DataTable().destroy();
-        $('#student_table').empty(); // Clear any existing content
-    }
+    // Set PHP variables as JavaScript variables
+    var baseUrl = '<?php echo base_url(); ?>';
+    var urlSegment = '<?php echo $url ?? 'admin'; ?>';
+    var dashboardUrl = baseUrl + 'Dashboard/';
 
-
-    // Initialize Select2 for department dropdowns
-    $('.select2').select2({
-        placeholder: "Select Department",
-        allowClear: true,
-        width: '100%'
-    });
-
-    // Re-initialize Select2 when modals are shown
-    $('#addStudentModal, #editStudentModal').on('shown.bs.modal', function() {
-        setTimeout(function() {
-            $('.select2').select2({
-                placeholder: "Select Department",
-                allowClear: true,
-                width: '100%'
-            });
-        }, 100);
-    });
-});
-
-function editStudent(id) {
+    // Student edit and delete functions
+    window.editStudent = function(id) {
     // Fetch student data via AJAX and populate edit modal
-    $.get('<?= base_url('Dashboard/get_student/') ?>' + id)
+    $.get(dashboardUrl + 'get_student/' + id)
         .done(function(data) {
             const student = JSON.parse(data);
             $('#edit_student_id').val(student.id);
@@ -557,13 +573,13 @@ function editStudent(id) {
         .fail(function() {
             alert('Failed to load student data');
         });
-}
+    };
 
-function deleteStudent(id) {
+    window.deleteStudent = function(id) {
     if (confirm('Are you sure you want to delete this student?')) {
         const form = $('<form>', {
             'method': 'POST',
-            'action': '<?= base_url('Dashboard/students') ?>'
+            'action': dashboardUrl + 'students'
         });
 
         form.append($('<input>', {
@@ -581,5 +597,114 @@ function deleteStudent(id) {
         $('body').append(form);
         form.submit();
     }
+
+    // Group management functionality
+    let studentTable;
+    let selectedStudents = [];
+
+    // Initialize student table reference after DataTable is created
+    setTimeout(function() {
+        studentTable = $('#student_table').DataTable();
+    }, 200);
+
+    // Handle select all checkbox
+    $('#selectAllStudents').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        $('.student-checkbox').prop('checked', isChecked).trigger('change');
+    });
+
+    // Handle individual student checkbox changes
+    $(document).on('change', '.student-checkbox', function() {
+        const studentId = $(this).val();
+
+        if ($(this).is(':checked')) {
+            if (!selectedStudents.includes(studentId)) {
+                selectedStudents.push(studentId);
+            }
+        } else {
+            selectedStudents = selectedStudents.filter(id => id !== studentId);
+            // Uncheck "select all" if any individual checkbox is unchecked
+            $('#selectAllStudents').prop('checked', false);
+        }
+
+        console.log('Selected students:', selectedStudents);
+    });
+
+    // Handle "Add to group" button click
+    $('#addToGroupBtn').on('click', function() {
+        const groupId = $('#groupSelect').val();
+
+        if (!groupId || groupId === 'Choose group') {
+            alert('Please select a group first.');
+            return;
+        }
+
+        if (selectedStudents.length === 0) {
+            alert('Please select at least one student.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to add ' + selectedStudents.length + ' student(s) to the selected group?')) {
+            // Make AJAX call to add students to group
+            $.ajax({
+                url: baseUrl + urlSegment + '/groups/addMemberstoGroup',
+                type: 'POST',
+                data: {
+                    group_id: groupId,
+                    student_ids: selectedStudents
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        // Clear selection and refresh table
+                        selectedStudents = [];
+                        $('.student-checkbox').prop('checked', false);
+                        $('#selectAllStudents').prop('checked', false);
+                        if (studentTable) {
+                            studentTable.ajax.reload();
+                        }
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    alert('An error occurred while adding students to the group. Please try again.');
+                }
+            });
+        }
+    });
+
+    // Handle group deletion
+    $(document).on('click', '.delete-group', function() {
+        const groupId = $(this).data('id');
+        const groupName = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+
+        if (confirm('Are you sure you want to delete the group "' + groupName + '"? This action cannot be undone.')) {
+            // Make AJAX call to delete group
+            $.ajax({
+                url: baseUrl + urlSegment + '/groups/deleteGroup',
+                type: 'POST',
+                data: {
+                    id: groupId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        // Refresh the page to update the groups table
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    alert('An error occurred while deleting the group. Please try again.');
+                }
+            });
+        }
+    });
 });
 </script>

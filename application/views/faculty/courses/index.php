@@ -37,32 +37,48 @@
                     <tbody>
                         <?php if (!empty($courses)) {
                             $i = 1;
-                            foreach ($courses as $course) { ?>
+                            foreach ($courses as $course) {
+                                // Ensure all required fields exist to prevent table structure issues
+                                $course_name = isset($course['name']) ? htmlspecialchars($course['name']) : 'N/A';
+                                $course_code = isset($course['code']) ? htmlspecialchars($course['code']) : 'N/A';
+                                $course_description = isset($course['description']) ? $course['description'] : '';
+                                $course_department = isset($course['department']) ? $course['department'] : null;
+                                $course_created = isset($course['created_at']) ? $course['created_at'] : date('Y-m-d H:i:s');
+                                ?>
                                 <tr>
                                     <td><?php echo $i++; ?></td>
-                                    <td><?php echo $course['name']; ?></td>
-                                    <td><?php echo $course['code']; ?></td>
+                                    <td><?php echo $course_name; ?></td>
+                                    <td><?php echo $course_code; ?></td>
                                     <td><?php
-                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $course['department']]);
-                                        echo $dept ? $dept['name'] : 'Unknown';
+                                        $dept = $course_department ? $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $course_department]) : null;
+                                        echo $dept ? htmlspecialchars($dept['name']) : 'Unknown';
                                     ?></td>
-                                    <td><?php echo substr($course['description'], 0, 50) . (strlen($course['description']) > 50 ? '...' : ''); ?></td>
-                                    <td><?php echo $this->common->display_date($course['created_at']); ?></td>
-                                    <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                        <a href="<?php echo base_url($url.'/courses/modules/'.$course['id']); ?>" class="btn btn-sm btn-info">
-                                            <i class="feather icon-layers"></i> Modules
+                                    <td><?php echo htmlspecialchars(substr($course_description, 0, 50) . (strlen($course_description) > 50 ? '...' : '')); ?></td>
+                                    <td><?php echo htmlspecialchars($this->common->display_date($course_created)); ?></td>
+                                    <td>
+                                        <a href="<?php echo base_url($url.'/courses/modules/'.$course['id']); ?>" class="btn btn-sm btn-info" title="Modules">
+                                            <i class="feather icon-layers"></i>
                                         </a>
-                                        <a href="<?php echo base_url($url.'/courses/enrollments/'.$course['id']); ?>" class="btn btn-sm btn-success">
-                                            <i class="feather icon-users"></i> Enrollments
+                                        <a href="<?php echo base_url($url.'/courses/enrollments/'.$course['id']); ?>" class="btn btn-sm btn-success" title="Enrollments">
+                                            <i class="feather icon-users"></i>
                                         </a>
                                         <?php if (isset($can_edit_all_courses) && $can_edit_all_courses): ?>
-                                        <button class="btn btn-sm btn-warning" onclick="editCourse(<?php echo $course['id']; ?>, '<?php echo addslashes($course['name']); ?>', '<?php echo addslashes($course['code']); ?>', '<?php echo addslashes($course['description']); ?>', '<?php echo $course['department']; ?>')">
-                                            <i class="feather icon-edit"></i> Edit
+                                        <button class="btn btn-sm btn-warning edit-course-btn"
+                                                data-id="<?php echo $course['id']; ?>"
+                                                data-name="<?php echo htmlspecialchars($course['name']); ?>"
+                                                data-code="<?php echo htmlspecialchars($course['code']); ?>"
+                                                data-description="<?php echo htmlspecialchars($course['description']); ?>"
+                                                data-department="<?php echo $course['department']; ?>"
+                                                title="Edit">
+                                            <i class="feather icon-edit"></i>
                                         </button>
                                         <?php endif; ?>
                                         <?php if (isset($can_delete_courses) && $can_delete_courses): ?>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteCourse(<?php echo $course['id']; ?>)">
-                                            <i class="feather icon-trash"></i> Delete
+                                        <button class="btn btn-sm btn-danger delete-course-btn"
+                                                data-id="<?php echo $course['id']; ?>"
+                                                data-name="<?php echo htmlspecialchars($course['name']); ?>"
+                                                title="Delete">
+                                            <i class="feather icon-trash"></i>
                                         </button>
                                         <?php endif; ?>
                                     </td>
@@ -105,11 +121,20 @@
                             <label for="department" class="form-label">Department (Optional)</label>
                             <select class="form-control select2" id="department" name="department">
                                 <option value="">Select Department (Optional)</option>
-                                <?php if (!empty($departments)) {
-                                    foreach ($departments as $dept) { ?>
-                                        <option value="<?php echo $dept['id']; ?>"><?php echo $dept['name']; ?></option>
-                                    <?php }
-                                } ?>
+                                <?php
+                                if (!isset($departments) || !is_array($departments)) {
+                                    echo '<option disabled>No departments data available</option>';
+                                } elseif (empty($departments)) {
+                                    echo '<option disabled>No departments found. Please create departments first.</option>';
+                                    echo '<option disabled>You can create departments in the Administrator section.</option>';
+                                } else {
+                                    foreach ($departments as $dept) {
+                                        if (isset($dept['id']) && isset($dept['name'])) { ?>
+                                            <option value="<?php echo htmlspecialchars($dept['id']); ?>"><?php echo htmlspecialchars($dept['name']); ?></option>
+                                        <?php }
+                                    }
+                                }
+                                ?>
                             </select>
                             <small class="form-text text-muted">If selected, all students from this department will be auto-enrolled</small>
                         </div>
@@ -176,37 +201,68 @@
     </div>
 </div>
 
+<!-- jQuery (ensure it's loaded first) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<!-- Select2 (requires jQuery) -->
+<script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+
 <script>
-function editCourse(id, name, code, description, department) {
-    document.getElementById('edit_course_id').value = id;
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_code').value = code;
-    document.getElementById('edit_description').value = description;
-    document.getElementById('edit_department').value = department;
-    new bootstrap.Modal(document.getElementById('editCourseModal')).show();
-}
-
-function deleteCourse(id) {
-    if (confirm('Are you sure you want to delete this course? This will also delete all modules and lessons.')) {
-        window.location.href = '<?= base_url($url . "/courses/delete/") ?>' + id;
-    }
-}
-
-// Initialize DataTable and Select2
+// Event delegation for edit and delete buttons
 $(document).ready(function() {
-    $('#coursesTable').DataTable({
-        "pageLength": 25,
-        "order": [[ 0, "asc" ]]
+    // Edit course button click
+    $(document).on('click', '.edit-course-btn', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const code = $(this).data('code');
+        const description = $(this).data('description');
+        const department = $(this).data('department');
+
+        document.getElementById('edit_course_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_code').value = code;
+        document.getElementById('edit_description').value = description;
+        document.getElementById('edit_department').value = department;
+        new bootstrap.Modal(document.getElementById('editCourseModal')).show();
     });
 
-    // Initialize Select2 for department dropdown in add course modal
-    $('#addCourseModal').on('shown.bs.modal', function () {
-        $('.select2').select2({
-            placeholder: "Select Department (Optional)",
-            allowClear: true,
-            width: '100%'
-        });
+    // Delete course button click
+    $(document).on('click', '.delete-course-btn', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+
+        if (confirm('Are you sure you want to delete the course "' + name + '"? This will also delete all modules and lessons.')) {
+            window.location.href = '<?= base_url($url . "/courses/delete/") ?>' + id;
+        }
     });
 });
 </script>
 
+<script>
+// Initialize Select2
+$(document).ready(function() {
+    // Function to initialize Select2
+    function initializeSelect2() {
+        if (typeof $.fn.select2 === 'undefined') {
+            console.warn('Select2 library not loaded');
+            return;
+        }
+
+        try {
+            // Target the specific department select in the modal
+            $('#department').select2({
+                placeholder: "Select Department (Optional)",
+                allowClear: true,
+                width: '100%'
+            });
+        } catch (e) {
+            console.error('Select2 initialization failed:', e);
+        }
+    }
+
+    // Initialize Select2 when modal is shown
+    $('#addCourseModal').on('shown.bs.modal', function () {
+        initializeSelect2();
+    });
+});
+</script>

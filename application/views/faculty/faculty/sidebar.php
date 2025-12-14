@@ -343,7 +343,7 @@
                                                     echo "active";
                                                 } ?>">
                             <a href="<?= "$sidebar_href/students" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-graduation-cap"></i>
+                                <i class="sidenav-icon feather icon-user"></i>
                                 <div>Learner</div>
                             </a>
                         </li>

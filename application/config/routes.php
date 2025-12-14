@@ -124,21 +124,21 @@ $route['(:any)/staff/view'] = 'faculty/Staff/staff';
 $route['(:any)/staff/students'] = 'faculty/Staff/students';
 $route['(:any)/hod/groups'] = 'faculty/Hod/groups';
 
-// Course functionality (tests removed)
-$route['(:any)/course'] = 'faculty/Course/courses'; 
-$route['(:any)/allcourses'] = 'faculty/Course/allcourses';
-$route['(:any)/course/new'] = 'faculty/Course';
-$route['(:any)/course/add'] = 'faculty/Course/add'; 
-$route['(:any)/course/edit/(:any)/(:any)'] = 'faculty/Course/edit/$2/$3'; 
-$route['(:any)/course/edit/(:any)'] = 'faculty/Course/edit/$4'; 
-$route['(:any)/course/delete/(:any)/(:any)'] = 'faculty/Course/delete/$2/$3';
-$route['(:any)/course/view_students/(:any)'] = 'faculty/Course/view_students/$2';
-$route['(:any)/course/modules/(:any)'] = 'faculty/Course/modules/$2';
-$route['(:any)/allcourses/modules/(:any)'] = 'faculty/Course/allcourses_modules/$2';
-$route['(:any)/allspecialcourses/assign_students/(:any)'] = 'faculty/Course/assign_students/$2';
-$route['(:any)/course/add_module'] = 'faculty/Course/add_module';
-$route['(:any)/course/edit_module/(:any)/(:any)'] = 'faculty/Course/edit_module/$2/$3';
-$route['(:any)/course/delete_module/(:any)/(:any)'] = 'faculty/Course/delete_module/$2/$3';
+// Course functionality - redirect basic operations to Courses controller
+$route['(:any)/course'] = 'faculty/Courses/index';  // Redirect to Courses index
+$route['(:any)/allcourses'] = 'faculty/Course/allcourses';  // Keep advanced view
+$route['(:any)/course/new'] = 'faculty/Courses/add';  // Redirect to Courses add
+$route['(:any)/course/add'] = 'faculty/Courses/add';  // Redirect to Courses add
+$route['(:any)/course/edit/(:any)/(:any)'] = 'faculty/Courses/edit/$2';  // Redirect to Courses edit
+$route['(:any)/course/edit/(:any)'] = 'faculty/Courses/edit/$2';  // Redirect to Courses edit
+$route['(:any)/course/delete/(:any)/(:any)'] = 'faculty/Courses/delete/$2';  // Redirect to Courses delete
+$route['(:any)/course/view_students/(:any)'] = 'faculty/Courses/enrollments/$2';  // Redirect to Courses enrollments
+$route['(:any)/course/modules/(:any)'] = 'faculty/Courses/modules/$2';  // Redirect to Courses modules
+$route['(:any)/allcourses/modules/(:any)'] = 'faculty/Course/allcourses_modules/$2';  // Keep advanced
+$route['(:any)/allspecialcourses/assign_students/(:any)'] = 'faculty/Course/assign_students/$2';  // Keep advanced
+$route['(:any)/course/add_module'] = 'faculty/Courses/add_module';  // Redirect to Courses
+$route['(:any)/course/edit_module/(:any)/(:any)'] = 'faculty/Courses/edit_module/$2/$3';  // Redirect to Courses
+$route['(:any)/course/delete_module/(:any)/(:any)'] = 'faculty/Courses/delete_module/$2/$3';  // Redirect to Courses
 
 // Batches & schedules
 $route['(:any)/batches/(:num)'] = 'faculty/Batches/index/$2';

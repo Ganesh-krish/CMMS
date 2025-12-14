@@ -261,7 +261,7 @@
                 <div class="alert alert-info text-center">
                     <h4>Redirecting to Login...</h4>
                     <p>If you're not redirected automatically, <a href="<?= base_url('OAuth') ?>">click here</a>.</p>
-                </div>
+                    </div>
                 
                 <div class="footer">
                     <p>&copy; <span id="currentYear">2024</span> DrillU. All rights reserved.</p>

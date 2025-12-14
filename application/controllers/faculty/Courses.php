@@ -73,10 +73,22 @@ class Courses extends CI_Controller {
         $data["courses"] = $this->db_model->get_all(TABLE_COURCES, $conditions);
 
         // Get departments for dropdown
-        $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+        $departments = $this->db_model->get_all(TABLE_DEPARTMENT, [
             "is_active" => true,
             "college_id" => $this->college['id']
         ]);
+
+        // If no departments found for this college, try to get all active departments
+        if (empty($departments)) {
+            $departments = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => true
+            ]);
+            log_message('debug', 'Courses Controller - No departments for college ' . $this->college['id'] . ', loaded all departments: ' . count($departments));
+        } else {
+            log_message('debug', 'Courses Controller - Departments loaded for college ' . $this->college['id'] . ': ' . count($departments));
+        }
+
+        $data['departments'] = $departments;
 
         $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('faculty/courses/index', $data);

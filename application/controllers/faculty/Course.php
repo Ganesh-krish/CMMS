@@ -344,7 +344,7 @@ class Course extends CI_Controller
         "danger",
         "Invalid course type selected.",
     ]);
-    return redirect(base_url($this->url . "/course"));
+    return redirect(base_url($this->url . "/courses"));
     }
 
     if(!in_array((int)$courseMode, $allowedModes)) {
@@ -352,7 +352,7 @@ class Course extends CI_Controller
         "danger",
         "Invalid course mode selected.",
     ]);
-    return redirect(base_url($this->url . "/course"));
+    return redirect(base_url($this->url . "/courses"));
     }
             $this->form_validation->set_rules(
                 "course_code",
@@ -375,7 +375,7 @@ class Course extends CI_Controller
                     "danger",
                     validation_errors(),
                 ]);
-                return redirect(base_url($this->url . "/course"));
+                return redirect(base_url($this->url . "/courses"));
             } else {
 
                 $course_name = trim($this->input->post("course_name"));
@@ -411,7 +411,7 @@ class Course extends CI_Controller
                         $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
                     } else {
                         $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
-                        return redirect(base_url($this->url . "/course"));
+                        return redirect(base_url($this->url . "/courses"));
                     }
                 }
 
@@ -459,7 +459,7 @@ class Course extends CI_Controller
                         }
                     }
                 }
-                redirect(base_url($this->url . "/course"));
+                redirect(base_url($this->url . "/courses"));
             }
         } else {
             redirect(base_url($this->url . "/course"));
@@ -471,7 +471,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -490,7 +490,7 @@ class Course extends CI_Controller
                 "danger",
                 "Invalid course type selected.",
             ]);
-            return redirect(base_url($this->url . "/course"));
+            return redirect(base_url($this->url . "/courses"));
             }
 
           if(!in_array((int)$courseMode, $allowedModes)) {
@@ -498,7 +498,7 @@ class Course extends CI_Controller
                 "danger",
                 "Invalid course mode selected.",
             ]);
-            return redirect(base_url($this->url . "/course"));
+            return redirect(base_url($this->url . "/courses"));
             }
 
             $this->form_validation->set_rules(
@@ -523,7 +523,7 @@ class Course extends CI_Controller
                     "danger",
                     validation_errors(),
                 ]);
-                return redirect(base_url($this->url . "/course"));
+                return redirect(base_url($this->url . "/courses"));
             } else {
                 $tags = implode(',', array_unique(array_filter($this->input->post("tags"))));
 
@@ -648,7 +648,7 @@ class Course extends CI_Controller
                         "Failed to update the cource.",
                     ]);
                 }
-                redirect(base_url($this->url . "/course"));
+                redirect(base_url($this->url . "/courses"));
             }
         } else {
             $data["college_id"] = $college_id;
@@ -906,7 +906,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -952,7 +952,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -981,7 +981,7 @@ class Course extends CI_Controller
                     "danger",
                     "Course not found.",
                 ]);
-                redirect(base_url($this->url . "/course"));
+                redirect(base_url($this->url . "/courses"));
             }
 
             // Get course tests
@@ -1046,7 +1046,7 @@ class Course extends CI_Controller
 
             if(!$this->check_permisson($course_id)){
 
-                redirect( base_url( $this->url . '/course' ) );
+                redirect( base_url( $this->url . '/courses' ) );
     
             }
     
@@ -1108,7 +1108,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1140,7 +1140,7 @@ class Course extends CI_Controller
         // exit;
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1255,7 +1255,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1397,7 +1397,7 @@ class Course extends CI_Controller
 
             if(!$this->check_permisson($course_id)){
 
-                redirect( base_url( $this->url . '/course' ) );
+                redirect( base_url( $this->url . '/courses' ) );
     
             }
     
@@ -1407,7 +1407,7 @@ class Course extends CI_Controller
                     "danger",
                     "Module name is required.",
                 ]);
-                redirect(base_url($this->url . "/course/modules/" . $course_id));
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
             }
 
             // Insert module
@@ -1444,7 +1444,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1458,7 +1458,7 @@ class Course extends CI_Controller
                     "danger",
                     "Module name is required.",
                 ]);
-                redirect(base_url($this->url . "/course/edit_module/" . $course_id . "/" . $module_id));
+                redirect(base_url($this->url . "/courses/edit_module/" . $course_id . "/" . $module_id));
             }
 
             // Update module
@@ -1475,13 +1475,13 @@ class Course extends CI_Controller
                     "success",
                     "Module updated successfully!",
                 ]);
-                redirect(base_url($this->url . "/course/modules/" . $course_id));
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
             } else {
                 $this->session->set_flashdata("message", [
                     "danger",
                     "Failed to update module.",
                 ]);
-                redirect(base_url($this->url . "/course/edit_module/" . $course_id . "/" . $module_id));
+                redirect(base_url($this->url . "/courses/edit_module/" . $course_id . "/" . $module_id));
             }
         } else {
             $data["url"] = $this->url;
@@ -1507,7 +1507,7 @@ class Course extends CI_Controller
                     "danger",
                     "Course not found.",
                 ]);
-                redirect(base_url($this->url . "/course"));
+                redirect(base_url($this->url . "/courses"));
             }
 
             // Get module details
@@ -1522,7 +1522,7 @@ class Course extends CI_Controller
                     "danger",
                     "Module not found.",
                 ]);
-                redirect(base_url($this->url . "/course/modules/" . $course_id));
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
             }
 
             $this->load->view("faculty/faculty/sidebar", $class);
@@ -1539,7 +1539,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1577,7 +1577,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -1945,7 +1945,7 @@ class Course extends CI_Controller
 
             if(!$this->check_permisson($course_id)){
 
-                redirect( base_url( $this->url . '/course' ) );
+                redirect( base_url( $this->url . '/courses' ) );
     
             }
     
@@ -2071,7 +2071,7 @@ class Course extends CI_Controller
 
             if(!$this->check_permisson($course_id)){
 
-                redirect( base_url( $this->url . '/course' ) );
+                redirect( base_url( $this->url . '/courses' ) );
     
             }
     
@@ -2183,7 +2183,7 @@ class Course extends CI_Controller
                     "danger",
                     "Course not found.",
                 ]);
-                redirect(base_url($this->url . "/course"));
+                redirect(base_url($this->url . "/courses"));
             }
 
             // Get module details
@@ -2198,7 +2198,7 @@ class Course extends CI_Controller
                     "danger",
                     "Module not found.",
                 ]);
-                redirect(base_url($this->url . "/course/modules/" . $course_id));
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
             }
 
             // Get course test details
@@ -2235,7 +2235,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -2589,7 +2589,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 
@@ -3313,7 +3313,7 @@ class Course extends CI_Controller
 
         if(!$this->check_permisson($course_id)){
 
-            redirect( base_url( $this->url . '/course' ) );
+            redirect( base_url( $this->url . '/courses' ) );
 
         }
 

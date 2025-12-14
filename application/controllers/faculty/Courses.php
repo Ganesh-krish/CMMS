@@ -12,33 +12,22 @@ class Courses extends CI_Controller {
         $this->load->model('Db_model', 'db_model');
         $segment1 = $this->uri->segment(1);
 
-        // Check for owner/admin session first
-        $this->user_session = $this->session->userdata('owner');
-        if ($this->user_session) {
-            // Admin/owner access
-            $this->url = $segment1 ?: 'admin';
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = [
-                'id' => $this->user_session['id'],
-                'role' => ROLE_SUPERADMIN,
-                'designation' => DESIGNATION_PRINCIPAL,
-                'department' => null,
-                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
-            ];
-        } else {
-            // Faculty session
-            $this->url = $segment1;
-            $this->faculty_common->check_user_session($this->url);
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
+        // Check unified session
+        $user = $this->session->userdata('user');
+        if (!$user || $user['user_type'] !== 'faculty') {
+            redirect('Welcome');
         }
 
-        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+        $this->user_session = $user;
+        $this->url = $segment1 ?: 'admin';
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $user; // Use unified session data
+
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
 
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $role = $this->session_data['role'];
         if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
-            $this->faculty_common->redirect_route($role,$this->url);
+            redirect('Welcome');
         }
     }
 

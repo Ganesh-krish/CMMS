@@ -27,49 +27,27 @@ class StudentPortal extends CI_Controller
 
     public function login($college_slug = 'democollege')
     {
-        $this->resolve_college($college_slug);
-        $data = [
-            'college' => $this->college,
-            'college_slug' => $college_slug,
-            'message' => $this->session->flashdata('message'),
-        ];
-        $this->load->view('student/login', $data);
+        // Redirect to unified login
+        redirect('Welcome');
     }
 
     public function authenticate($college_slug = 'democollege')
     {
-        $this->resolve_college($college_slug);
-        $email = $this->input->post('email');
-        $password = $this->input->post('password');
-
-        if (!$email || !$password) {
-            $this->session->set_flashdata('message', ['danger', 'Email and password are required']);
-            return redirect("student-portal/$college_slug/login");
-        }
-
-        $student = $this->db_model->get_row(TABLE_STUDENT, [
-            'email' => $email,
-            'password' => $password,
-            'college_id' => $this->college['id'],
-            'is_active' => 1
-        ]);
-
-        if (!$student) {
-            $this->session->set_flashdata('message', ['danger', 'Invalid credentials']);
-            return redirect("student-portal/$college_slug/login");
-        }
-
-        $this->session->set_userdata($college_slug . '_student', (object)$student);
-        return redirect("student-portal/$college_slug/dashboard");
+        // Redirect to unified login
+        redirect('Welcome');
     }
 
     public function dashboard($college_slug = 'democollege')
     {
         $this->resolve_college($college_slug);
-        $student = $this->session->userdata($college_slug . '_student');
-        if (!$student) {
-            return redirect("student-portal/$college_slug/login");
+
+        // Check unified session
+        $user = $this->session->userdata('user');
+        if (!$user || $user['user_type'] !== 'student') {
+            return redirect('Welcome');
         }
+
+        $student = $user; // Use unified session data
 
         $courses = $this->db_model->get_all(TABLE_COURCES, [
             'college_id' => $student->college_id,

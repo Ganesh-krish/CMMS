@@ -82,96 +82,66 @@ class Report extends CI_Controller
             ['college_id' => $this->college['id'], 'is_active' => 1]
         );
         
-        $data['tests'] = $this->db_model->get_all(
-            TABLE_TESTS,
-            ['college_id' => $this->college['id'], 'is_active' => 1]
-        );
-        
         $data['courses'] = $this->db_model->get_all(
             TABLE_COURCES,
             ['college_id' => $this->college['id'], 'is_active' => 1]
         );
         
-        // Build query for submissions with joins
+        // Build query for course enrollments with joins
         $this->db->select('
-            student_test_submission.*, 
-            students.name as student_name, 
+            course_enrollments.*,
+            students.name as student_name,
             students.email as student_email,
-            tests.title as test_title,
-            tests.module_id,
-            tests.pass_percentage
+            students.batch,
+            students.department,
+            courses.name as course_title,
+            courses.description as course_description
         ');
-        
-        $this->db->from('student_test_submission');
-        
+
+        $this->db->from(TABLE_COURSE_ENROLLMENTS);
+
         $this->db->join(
             TABLE_STUDENT . ' as students',
-            'student_test_submission.student_id = students.id',
+            'course_enrollments.student_id = students.id',
             'inner'
         );
-        
+
         $this->db->join(
-            TABLE_TESTS . ' as tests',
-            'student_test_submission.test_id = tests.id',
+            TABLE_COURCES . ' as courses',
+            'course_enrollments.course_id = courses.id',
             'inner'
         );
-        
+
         // Apply filters based on parameters
-        $this->db->where('student_test_submission.finished', 1);
-        $this->db->where('tests.college_id', $this->college['id']);
-        
+        $this->db->where('courses.college_id', $this->college['id']);
+
         if (!empty($student_id)) {
-            $this->db->where('student_test_submission.student_id', $student_id);
+            $this->db->where('course_enrollments.student_id', $student_id);
         }
-        
-        if (!empty($test_id)) {
-            $this->db->where('student_test_submission.test_id', $test_id);
-        }
-        
+
         if (!empty($course_id)) {
-            // We need to join with course_tests to filter by course
-            $this->db->join(
-                TABLE_COURSE_TESTS . ' as course_tests',
-                'student_test_submission.test_id = course_tests.test_id',
-                'inner'
-            );
-            $this->db->where('course_tests.course_id', $course_id);
-            $this->db->where('course_tests.is_active', 1);
+            $this->db->where('course_enrollments.course_id', $course_id);
         }
-        
+
         // Execute query
-        $data['submissions'] = $this->db->get()->result_array();
+        $data['enrollments'] = $this->db->get()->result_array();
+        
+        // Calculate additional statistics for enrollments
+        $total_enrollments = count($data['enrollments']);
+        $active_enrollments = 0;
 
-
-        
-        // Get test modules for reference
-        $test_modules = $this->db_model->get_all(TABLE_TEST_MODULES, ['is_active' => 1]);
-        $module_map = [];
-        foreach ($test_modules as $module) {
-            $module_map[$module['id']] = $module['name'];
-        }
-        
-        $data['module_map'] = $module_map;
-        
-        // Calculate additional statistics
-        $total_submissions = count($data['submissions']);
-        $pass_count = 0;
-        $avg_score = 0;
-        
-        if ($total_submissions > 0) {
-            foreach ($data['submissions'] as $submission) {
-                if ($submission['percentage'] >= $submission["pass_percentage"] ) {
-                    $pass_count++;
+        if ($total_enrollments > 0) {
+            foreach ($data['enrollments'] as $enrollment) {
+                if ($enrollment['is_active'] == 1) {
+                    $active_enrollments++;
                 }
-                $avg_score += $submission['percentage'];
             }
-            $avg_score = $avg_score / $total_submissions;
         }
-        
-        $data['total_submissions'] = $total_submissions;
-        $data['pass_count'] = $pass_count;
-        $data['pass_rate'] = $total_submissions > 0 ? ($pass_count / $total_submissions) * 100 : 0;
-        $data['avg_score'] = $avg_score;
+
+        $data['total_submissions'] = $total_enrollments; // Keep for backward compatibility with view
+        $data['pass_count'] = $active_enrollments; // Keep for backward compatibility with view
+        $data['pass_rate'] = $total_enrollments > 0 ? ($active_enrollments / $total_enrollments) * 100 : 0;
+        $data['avg_score'] = 0; // Not applicable for enrollments
         
         // Load views
         $this->load->view('faculty/faculty/sidebar', $class);
@@ -208,27 +178,6 @@ class Report extends CI_Controller
             $this->session->set_flashdata('message', array('danger', 'Student not found'));
             redirect($this->url . '/report');
         }
-        
-        // Get all test submissions for this student
-        $this->db->select('
-            student_test_submission.*, 
-            tests.title as test_title,
-            tests.module_id,
-            tests.start_date,
-            tests.end_date
-        ');
-        
-        $this->db->from('student_test_submission');
-        
-        $this->db->join(
-            TABLE_TESTS . ' as tests',
-            'student_test_submission.test_id = tests.id',
-            'inner'
-        );
-        
-        $this->db->where('student_test_submission.student_id', $student_id);
-        
-        $data['submissions'] = $this->db->get()->result_array();
         
         // Get courses the student is enrolled in
         $this->db->select('
@@ -287,180 +236,6 @@ class Report extends CI_Controller
         // Load views
         $this->load->view('faculty/faculty/sidebar', $class);
         $this->load->view('faculty/reports/student_detail', $data);
-        $this->load->view('faculty/faculty/footer');
-    }
-    
-    public function test_detail($test_id)
-    {
-        if (empty($test_id)) {
-            $this->session->set_flashdata('message', array('danger', 'Test ID is required'));
-            redirect($this->url . '/report');
-        }
-        
-        $data["url"] = $this->url;
-        $class["classname"] = "reports";
-        $class["url"] = $this->url;
-        $class["college_id"] = $this->college['id'];
-        
-        // Determine the path based on user designation
-        $map = [
-            DESIGNATION_STAFF => 'staff',
-            DESIGNATION_PRINCIPAL => 'principal'
-        ];
-        $path = $map[$this->session_data['designation']] ?? 'hod';
-        $class["sidebar_href"] = base_url($this->url . "/" . $path);
-        
-        // Get test details
-        $data['test'] = $this->db_model->get_row(TABLE_TESTS, [
-            'id' => $test_id]);
-        
-        if (!$data['test']) {
-            $this->session->set_flashdata('message', array('danger', 'Test not found'));
-            redirect($this->url . '/report');
-        }
-        
-        // Get all submissions for this test
-        $this->db->select('
-            student_test_submission.*, 
-            students.name as student_name,
-            students.email as student_email
-        ');
-        
-        $this->db->from('student_test_submission');
-        
-        $this->db->join(
-            TABLE_STUDENT . ' as students',
-            'student_test_submission.student_id = students.id',
-            'inner'
-        );
-        
-        $this->db->where('student_test_submission.test_id', $test_id);
-        
-        $data['submissions'] = $this->db->get()->result_array();
-        
-        // Get questions for this test
-        $this->db->select('
-            test_questions.question_order,
-            question_bank.id as question_id,
-            question_bank.question_title,
-            question_bank.type,
-            question_bank.score,
-            question_bank.difficulty_level
-        ');
-        
-        $this->db->from(TABLE_TEST_QUESTIONS . ' as test_questions');
-        
-        $this->db->join(
-            TABLE_QUESTION_BANK . ' as question_bank',
-            'test_questions.question_id = question_bank.id',
-            'inner'
-        );
-        
-        $this->db->where('test_questions.test_id', $test_id);
-        $this->db->where('test_questions.is_active', 1);
-        $this->db->order_by('test_questions.question_order', 'ASC');
-        
-        $data['questions'] = $this->db->get()->result_array();
-        
-        // Get detailed student solutions for this test
-        $this->db->select('
-            student_solutions.*
-        ');
-        
-        $this->db->from('student_solutions');
-        $this->db->where('student_solutions.test_id', $test_id);
-        
-        $solutions = $this->db->get()->result_array();
-        
-        // Process and organize solutions by student
-        $student_solutions = [];
-        foreach ($solutions as $solution) {
-            $student_id = $solution['student_id'];
-            
-            if (!isset($student_solutions[$student_id])) {
-                $student_solutions[$student_id] = [];
-            }
-            
-            // Extract IP address and other metadata from JSON meta field
-            $meta = json_decode($solution['meta'], true);
-            if (!empty($meta)) {
-                $solution['ip_address'] = isset($meta['userIp']) ? $meta['userIp'] : 'N/A';
-                $solution['user_agent'] = isset($meta['userAgent']) ? $meta['userAgent'] : 'N/A';
-                $solution['screen_resolution'] = isset($meta['screenResolution']) ? 
-                    $meta['screenResolution']['width'] . 'x' . $meta['screenResolution']['height'] : 'N/A';
-            } else {
-                $solution['ip_address'] = 'N/A';
-                $solution['user_agent'] = 'N/A';
-                $solution['screen_resolution'] = 'N/A';
-            }
-            
-            // Format time spent in readable format
-            $seconds = intval($solution['time_spent']);
-            $solution['formatted_time_spent'] = $seconds > 0 ? 
-                sprintf('%02d:%02d', floor($seconds / 60), $seconds % 60) : 'N/A';
-            
-            // Parse solution data based on problem type
-            if (!empty($solution['solution'])) {
-                $solution_data = json_decode($solution['solution'], true);
-                
-                if ($solution['problem_type'] == 1) { // MCQ
-                    $solution['answered_options'] = isset($solution_data['answer']) ? 
-                        (is_array($solution_data['answer']) ? implode(', ', $solution_data['answer']) : $solution_data['answer']) : 'N/A';
-                } elseif ($solution['problem_type'] == 2) { // Code
-                    $solution['code_solution'] = $solution_data;
-                } elseif ($solution['problem_type'] == 3) { // Fill in Blank
-                    $solution['answered_text'] = isset($solution_data['answer']) ? $solution_data['answer'] : 'N/A';
-                }
-            } else {
-                $solution['answered_options'] = 'Not answered';
-                $solution['answered_text'] = 'Not answered';
-                $solution['code_solution'] = null;
-            }
-            
-            $student_solutions[$student_id][$solution['question_id']] = $solution;
-        }
-        
-        $data['student_solutions'] = $student_solutions;
-        
-        // Calculate performance metrics
-        $total_submissions = count($data['submissions']);
-        $completed_submissions = 0;
-        $total_score = 0;
-        $passed_count = 0;
-        
-        foreach ($data['submissions'] as $submission) {
-            if ($submission['finished'] == 1) {
-                $completed_submissions++;
-                $total_score += $submission['percentage'];
-                
-                // Assuming 60% as passing score
-                if ($submission['percentage'] >= $data['test']['pass_percentage']) {
-                    $passed_count++;
-                }
-            }
-        }
-        
-        $data['total_submissions'] = $total_submissions;
-        $data['completed_submissions'] = $completed_submissions;
-        $data['avg_score'] = $completed_submissions > 0 ? $total_score / $completed_submissions : 0;
-        $data['pass_rate'] = $completed_submissions > 0 ? ($passed_count / $completed_submissions) * 100 : 0;
-        
-        // Get the module name
-        $module = $this->db_model->get_row(TABLE_TEST_MODULES, ['id' => $data['test']['module_id']]);
-        $data['module_name'] = $module ? $module['name'] : 'N/A';
-        
-        // Load difficulty levels for reference
-        $difficulty_levels = $this->db_model->get_all(TABLE_QUESTION_DIFFICULTY_LEVEL, ['is_active' => 1]);
-        $difficulty_map = [];
-        foreach ($difficulty_levels as $level) {
-            $difficulty_map[$level['id']] = $level['level'];
-        }
-        
-        $data['difficulty_map'] = $difficulty_map;
-        
-        // Load views
-        $this->load->view('faculty/faculty/sidebar', $class);
-        $this->load->view('faculty/reports/test_detail', $data);
         $this->load->view('faculty/faculty/footer');
     }
     
@@ -578,150 +353,99 @@ class Report extends CI_Controller
         
         switch ($type) {
             case 'all':
-                // Export all submissions
+                // Export all course enrollments
                 $this->db->select('
                     students.name as student_name,
                     students.email as student_email,
-                    tests.title as test_title,
-                    student_test_submission.submission_time,
-                    student_test_submission.earned_score,
-                    student_test_submission.total_score,
-                    student_test_submission.percentage
+                    students.batch,
+                    courses.name as course_title,
+                    course_enrollments.enrolled_at,
+                    course_enrollments.is_active
                 ');
-                
-                $this->db->from('student_test_submission');
-                
+
+                $this->db->from(TABLE_COURSE_ENROLLMENTS);
+
                 $this->db->join(
                     TABLE_STUDENT . ' as students',
-                    'student_test_submission.student_id = students.id',
+                    'course_enrollments.student_id = students.id',
                     'inner'
                 );
-                
+
                 $this->db->join(
-                    TABLE_TESTS . ' as tests',
-                    'student_test_submission.test_id = tests.id',
+                    TABLE_COURCES . ' as courses',
+                    'course_enrollments.course_id = courses.id',
                     'inner'
                 );
-                
-                $this->db->where('student_test_submission.finished', 1);
-                
+
+                $this->db->where('courses.college_id', $this->college['id']);
+
                 $data = $this->db->get()->result_array();
-                $filename = 'all_submissions_' . date('Y-m-d') . '.csv';
+                $filename = 'all_enrollments_' . date('Y-m-d') . '.csv';
                 break;
                 
             case 'student':
-                // Export student submissions
+                // Export student course enrollments
                 if (!$id) {
                     $this->session->set_flashdata('message', array('danger', 'Student ID is required'));
                     redirect($this->url . '/report');
                 }
-                
+
                 $student = $this->db_model->get_row(TABLE_STUDENT,['id' => $id]);
-                
+
                 $this->db->select('
-                    tests.title as test_title,
-                    student_test_submission.submission_time,
-                    student_test_submission.earned_score,
-                    student_test_submission.total_score,
-                    student_test_submission.percentage
+                    courses.name as course_title,
+                    course_enrollments.enrolled_at,
+                    course_enrollments.is_active,
+                    course_enrollments.status
                 ');
-                
-                $this->db->from('student_test_submission');
-                
+
+                $this->db->from(TABLE_COURSE_ENROLLMENTS);
+
                 $this->db->join(
-                    TABLE_TESTS . ' as tests',
-                    'student_test_submission.test_id = tests.id',
+                    TABLE_COURCES . ' as courses',
+                    'course_enrollments.course_id = courses.id',
                     'inner'
                 );
-                
-                $this->db->where('student_test_submission.student_id', $id);
-                $this->db->where('student_test_submission.finished', 1);
-                
+
+                $this->db->where('course_enrollments.student_id', $id);
+
                 $data = $this->db->get()->result_array();
-                
-                $filename = 'student_' . preg_replace('/[^A-Za-z0-9]/', '_', $student['name']) . '_submissions_' . date('Y-m-d') . '.csv';
-                break;
-                
-            case 'test':
-                // Export test submissions
-                if (!$id) {
-                    $this->session->set_flashdata('message', array('danger', 'Test ID is required'));
-                    redirect($this->url . '/report');
-                }
-                
-                $test = $this->db_model->get_row(TABLE_TESTS, ['id' => $id]);
-                
-                $this->db->select('
-                    students.name as student_name,
-                    students.email as student_email,
-                    student_test_submission.submission_time,
-                    student_test_submission.earned_score,
-                    student_test_submission.total_score,
-                    student_test_submission.percentage
-                ');
-                
-                $this->db->from('student_test_submission');
-                
-                $this->db->join(
-                    TABLE_STUDENT . ' as students',
-                    'student_test_submission.student_id = students.id',
-                    'inner'
-                );
-                
-                $this->db->where('student_test_submission.test_id', $id);
-                $this->db->where('student_test_submission.finished', 1);
-                
-                $data = $this->db->get()->result_array();
-                
-                $filename = 'test_' . preg_replace('/[^A-Za-z0-9]/', '_', $test['title']) . '_submissions_' . date('Y-m-d') . '.csv';
+
+                $filename = 'student_' . preg_replace('/[^A-Za-z0-9]/', '_', $student['name']) . '_enrollments_' . date('Y-m-d') . '.csv';
                 break;
                 
             case 'course':
-                // Export course submissions
+                // Export course enrollments
                 if (!$id) {
                     $this->session->set_flashdata('message', array('danger', 'Course ID is required'));
                     redirect($this->url . '/report');
                 }
-                
-                $course = $this->db_model->get_row(TABLE_COURCES,[ 'id' =>$id]);
-                
+
+                $course = $this->db_model->get_row(TABLE_COURCES, ['id' => $id]);
+
                 $this->db->select('
                     students.name as student_name,
                     students.email as student_email,
-                    tests.title as test_title,
-                    student_test_submission.submission_time,
-                    student_test_submission.earned_score,
-                    student_test_submission.total_score,
-                    student_test_submission.percentage
+                    course_enrollments.enrolled_at,
+                    course_enrollments.is_active,
+                    course_enrollments.status
                 ');
-                
-                $this->db->from('student_test_submission');
-                
+
+                $this->db->from(TABLE_COURSE_ENROLLMENTS);
+
                 $this->db->join(
                     TABLE_STUDENT . ' as students',
-                    'student_test_submission.student_id = students.id',
+                    'course_enrollments.student_id = students.id',
                     'inner'
                 );
-                
-                $this->db->join(
-                    TABLE_TESTS . ' as tests',
-                    'student_test_submission.test_id = tests.id',
-                    'inner'
-                );
-                
-                $this->db->join(
-                    TABLE_COURSE_TESTS . ' as course_tests',
-                    'tests.id = course_tests.test_id',
-                    'inner'
-                );
-                
-                $this->db->where('course_tests.course_id', $id);
-                $this->db->where('student_test_submission.finished', 1);
+
+                $this->db->where('course_enrollments.course_id', $id);
                 
                 $data = $this->db->get()->result_array();
-                
-                $filename = 'course_' . preg_replace('/[^A-Za-z0-9]/', '_', $course['name']) . '_submissions_' . date('Y-m-d') . '.csv';
+
+                $filename = 'course_' . preg_replace('/[^A-Za-z0-9]/', '_', $course['name']) . '_enrollments_' . date('Y-m-d') . '.csv';
                 break;
+                
         }
         
         // Generate and output CSV

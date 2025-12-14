@@ -105,7 +105,7 @@
                             <?php
                             if (!empty($groups)) {
                                 foreach ($groups as $group_row) { ?>
-                                    <option value="<?= $group_row['id'] ?>"><?= $group_row['group_name'] ?></option>
+                                    <option value="<?= $group_row['id'] ?>"><?= $group_row['name'] ?></option>
                             <?php }
                             } ?>
                         </select>
@@ -148,8 +148,8 @@
                                 $no++ ?>
                                 <tr>
                                     <td> <?= $no; ?></td>
-                                    <td><?php if (isset($row['group_name'])) {
-                                            echo $row['group_name'];
+                                    <td><?php if (isset($row['name'])) {
+                                            echo $row['name'];
                                         } else {
                                             echo "-";
                                         } ?>
@@ -186,7 +186,7 @@
                             <?php
                             if (!empty($groups)) {
                                 foreach ($groups as $group_row) { ?>
-                                    <option value="<?= $group_row['id'] ?>"><?= $group_row['group_name'] ?></option>
+                                    <option value="<?= $group_row['id'] ?>"><?= $group_row['name'] ?></option>
                             <?php }
                             } ?>
                         </select>
@@ -229,8 +229,8 @@
                                 $no++ ?>
                                 <tr>
                                     <td> <?= $no; ?></td>
-                                    <td><?php if (isset($row['group_name'])) {
-                                            echo $row['group_name'];
+                                    <td><?php if (isset($row['name'])) {
+                                            echo $row['name'];
                                         } else {
                                             echo "-";
                                         } ?>

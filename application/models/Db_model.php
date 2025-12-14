@@ -290,7 +290,7 @@ public function get_max($table, $field, $where = []) {
     }
 
     public function get_groupMembers_test($college_id=null,$created_by=null){
-        $this->db->select('COALESCE(count(mg.student_id), 0) AS students, g.id, g.name as group_name, g.group_expiry, g.created_at');
+        $this->db->select('COALESCE(count(mg.student_id), 0) AS students, g.id, g.name, g.group_expiry, g.created_at');
         $this->db->from('groups as g');
         $this->db->join(TABLE_MEMGROUPS . ' AS mg', 'g.id = mg.group_id AND (mg.college_id = ' . $this->db->escape($college_id) . ' OR ' . $this->db->escape($college_id) . ' IS NULL)', 'LEFT');
 

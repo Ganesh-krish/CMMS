@@ -103,3 +103,4 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAnnouncements();
 });
 </script>
+

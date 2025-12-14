@@ -45,8 +45,8 @@
                             foreach ($groups as $row) {  $no++?>
                                 <tr>
                                     <td> <?= $no;?></td>   
-                                    <td><?php if (isset($row['group_name'])) {
-                                            echo $row['group_name'];
+                                    <td><?php if (isset($row['name'])) {
+                                            echo $row['name'];
                                         } else {
                                             echo "-";
                                         } ?>

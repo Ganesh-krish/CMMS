@@ -611,16 +611,29 @@ class Principal extends CI_Controller {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
-                $data = array(
-                    'name' => $this->input->post('name'),
+                $department_name = trim($this->input->post('name'));
+
+                // Check if department with same name already exists
+                $existing_department = $this->db_model->get_row(TABLE_DEPARTMENT, [
+                    'name' => $department_name,
                     'college_id' => $this->college['id'],
-                    'created_by' => $this->session_data['id'],
-                    "is_active" => 1
-                );
-                if ($this->db_model->insert(TABLE_DEPARTMENT, $data)) {
-                    $this->session->set_flashdata('message', array('success', "Department Created successfully!"));
+                    'is_active' => 1
+                ]);
+
+                if ($existing_department) {
+                    $this->session->set_flashdata('message', array('info', "Department '{$department_name}' already exists. Using existing department."));
                 } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to create Department."));
+                    $data = array(
+                        'name' => $department_name,
+                        'college_id' => $this->college['id'],
+                        'created_by' => $this->session_data['id'],
+                        "is_active" => 1
+                    );
+                    if ($this->db_model->insert(TABLE_DEPARTMENT, $data)) {
+                        $this->session->set_flashdata('message', array('success', "Department Created successfully!"));
+                    } else {
+                        $this->session->set_flashdata('message', array('danger', "Failed to create Department."));
+                    }
                 }
                 redirect(base_url($this->url . "/principal/batch_dept"));
             }

@@ -102,15 +102,16 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="department" class="form-label">Department *</label>
-                            <select class="form-control" id="department" name="department" required>
-                                <option value="">Select Department</option>
+                            <label for="department" class="form-label">Department (Optional)</label>
+                            <select class="form-control select2" id="department" name="department">
+                                <option value="">Select Department (Optional)</option>
                                 <?php if (!empty($departments)) {
                                     foreach ($departments as $dept) { ?>
                                         <option value="<?php echo $dept['id']; ?>"><?php echo $dept['name']; ?></option>
                                     <?php }
                                 } ?>
                             </select>
+                            <small class="form-text text-muted">If selected, all students from this department will be auto-enrolled</small>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -191,11 +192,21 @@ function deleteCourse(id) {
     }
 }
 
-// Initialize DataTable
+// Initialize DataTable and Select2
 $(document).ready(function() {
     $('#coursesTable').DataTable({
         "pageLength": 25,
         "order": [[ 0, "asc" ]]
     });
+
+    // Initialize Select2 for department dropdown in add course modal
+    $('#addCourseModal').on('shown.bs.modal', function () {
+        $('.select2').select2({
+            placeholder: "Select Department (Optional)",
+            allowClear: true,
+            width: '100%'
+        });
+    });
 });
 </script>
+

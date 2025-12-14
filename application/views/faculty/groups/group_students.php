@@ -5,7 +5,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
                 <li class="breadcrumb-item"><a href="<?= base_url($url.'/staff/students') ?>">Groups</a></li>
-                <li class="breadcrumb-item">Students in <?= $group['group_name'] ?></li>
+                <li class="breadcrumb-item">Students in <?= $group['name'] ?? 'Unknown Group' ?></li>
             </ol>
         </div>
         <?php if ($this->session->flashdata('message')) { ?>
@@ -14,6 +14,14 @@
                 <span><?= $this->session->flashdata('message')[1] ?></span>
             </div>
         <?php } ?>
+
+        <!-- Debug: Show group data -->
+        <?php if (!isset($group) || empty($group)): ?>
+            <div class="alert alert-danger">
+                <strong>Error:</strong> Group data not found or empty.
+                <pre><?php print_r($group ?? 'Group variable not set'); ?></pre>
+            </div>
+        <?php endif ?>
         
         <div class="card">
             <div style="display: flex; justify-content:space-between; align-items: center;
@@ -21,7 +29,7 @@
             border-color: rgba(24, 28, 33, 0.13);
             border-radius: 0.125rem 0.125rem 0 0; 
             border-bottom-width: 1px;">
-                <h6 class="card-header" style="border:none">Students in <?= $group['group_name'] ?></h6>
+                <h6 class="card-header" style="border:none">Students in <?= $group['name'] ?? 'Unknown Group' ?></h6>
                 <div class="card-header-elements ml-md-auto">
                     <a href="<?= base_url($url.'/' . $designation .  '/students') ?>" class="btn btn-secondary btn-sm"><i class="feather icon-arrow-left"></i>&nbsp;Back to Groups</a>
                 </div>
@@ -33,7 +41,7 @@
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Group Details</h5>
-                                <p class="mb-1"><strong>Name:</strong> <?= $group['group_name'] ?? '-' ?></p>
+                                <p class="mb-1"><strong>Name:</strong> <?= $group['name'] ?? '-' ?></p>
                                 <p class="mb-1"><strong>Total Students:</strong> <?= count($students) ?></p>
                                 <p class="mb-1"><strong>Created At:</strong> <?= isset($group['created_at']) ? $this->common->display_date($group['created_at']) : '-' ?></p>
                             </div>

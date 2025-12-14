@@ -88,7 +88,7 @@ class Courses extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Course Name', 'trim|required|min_length[1]|max_length[255]');
             $this->form_validation->set_rules('code', 'Course Code', 'trim|required');
-            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('department', 'Department', 'trim'); // Made optional
             $this->form_validation->set_rules('description', 'Description', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
@@ -108,20 +108,106 @@ class Courses extends CI_Controller {
                     }
                 }
 
-                $data = array(
-                    'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
-                    'description' => $this->input->post('description'),
-                    'department' => $requested_department,
-                    'college_id' => $this->college['id'],
-                    'created_by' => $this->session_data['id'],
-                    'is_active' => 1
-                );
+                $course_name = trim($this->input->post('name'));
+                $course_code = trim($this->input->post('code'));
 
-                if ($this->db_model->insert(TABLE_COURCES, $data)) {
-                    $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
+                // Check if course with same name already exists
+                $existing_course = $this->db_model->get_row(TABLE_COURCES, [
+                    'name' => $course_name,
+                    'college_id' => $this->college['id'],
+                    'is_active' => 1
+                ]);
+
+                if ($existing_course) {
+                    $course_id = $existing_course['id'];
+
+                    // Auto-enroll students from selected department for existing course
+                    if (!empty($requested_department)) {
+                        $department_students = $this->db_model->get_all(TABLE_STUDENT, [
+                            'department' => $requested_department,
+                            'college_id' => $this->college['id'],
+                            'is_active' => 1
+                        ]);
+
+                        $enrolled_count = 0;
+                        foreach ($department_students as $student) {
+                            $enrollment_data = [
+                                'course_id' => $course_id,
+                                'student_id' => $student['id'],
+                                'enrolled_by' => $this->session_data['id'],
+                                'progress_percentage' => 0.00,
+                                'status' => 'enrolled',
+                                'created_by' => $this->session_data['id']
+                            ];
+
+                            // Check if student is not already enrolled
+                            $existing_enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, [
+                                'course_id' => $course_id,
+                                'student_id' => $student['id']
+                            ]);
+
+                            if (!$existing_enrollment) {
+                                $this->db_model->insert(TABLE_COURSE_ENROLLMENTS, $enrollment_data);
+                                $enrolled_count++;
+                            }
+                        }
+
+                        $this->session->set_flashdata('message', array('info', "Course '{$course_name}' already exists. Using existing course. {$enrolled_count} students from the selected department were auto-enrolled."));
+                    } else {
+                        $this->session->set_flashdata('message', array('info', "Course '{$course_name}' already exists. Using existing course."));
+                    }
                 } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
+                    $data = array(
+                        'name' => $course_name,
+                        'course_code' => $course_code, // Fixed column name
+                        'description' => $this->input->post('description'),
+                        'department' => $requested_department,
+                        'college_id' => $this->college['id'],
+                        'created_by' => $this->session_data['id'],
+                        'is_active' => 1
+                    );
+
+                    if ($this->db_model->insert(TABLE_COURCES, $data)) {
+                        $course_id = $this->db->insert_id();
+
+                        // Auto-enroll students from selected department
+                        if (!empty($requested_department)) {
+                            $department_students = $this->db_model->get_all(TABLE_STUDENT, [
+                                'department' => $requested_department,
+                                'college_id' => $this->college['id'],
+                                'is_active' => 1
+                            ]);
+
+                            $enrolled_count = 0;
+                            foreach ($department_students as $student) {
+                                $enrollment_data = [
+                                    'course_id' => $course_id,
+                                    'student_id' => $student['id'],
+                                    'enrolled_by' => $this->session_data['id'],
+                                    'progress_percentage' => 0.00,
+                                    'status' => 'enrolled',
+                                    'created_by' => $this->session_data['id']
+                                ];
+
+                                // Check if student is not already enrolled
+                                $existing_enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, [
+                                    'course_id' => $course_id,
+                                    'student_id' => $student['id']
+                                ]);
+
+                                if (!$existing_enrollment) {
+                                    $this->db_model->insert(TABLE_COURSE_ENROLLMENTS, $enrollment_data);
+                                    $enrolled_count++;
+                                }
+                            }
+
+                            $this->session->set_flashdata('message', array('success', "Course Created successfully! {$enrolled_count} students from the selected department were auto-enrolled."));
+                        } else {
+                            $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
+                        }
+                    } else {
+                        $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
+                    }
                 }
                 redirect(base_url($this->url . "/courses"));
             }
@@ -697,5 +783,53 @@ class Courses extends CI_Controller {
         }
         $this->session->set_flashdata('message', $message);
         redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+    }
+
+    public function students() {
+        // Show course enrollment overview
+        $data["url"] = $this->url;
+        $class["classname"] = "courses";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Get all course enrollments with student and course details
+        $this->db->select('
+            course_enrollments.*,
+            students.name as student_name,
+            students.email as student_email,
+            students.batch,
+            students.department,
+            courses.name as course_title,
+            courses.description as course_description
+        ');
+
+        $this->db->from(TABLE_COURSE_ENROLLMENTS);
+
+        $this->db->join(
+            TABLE_STUDENT . ' as students',
+            'course_enrollments.student_id = students.id',
+            'inner'
+        );
+
+        $this->db->join(
+            TABLE_COURCES . ' as courses',
+            'course_enrollments.course_id = courses.id',
+            'inner'
+        );
+
+        $this->db->where('courses.college_id', $this->college['id']);
+        $this->db->order_by('course_enrollments.enrolled_at', 'DESC');
+
+        $data['enrollments'] = $this->db->get()->result_array();
+
+        // Get summary stats
+        $data['total_enrollments'] = count($data['enrollments']);
+        $data['active_enrollments'] = count(array_filter($data['enrollments'], function($e) {
+            return $e['is_active'] == 1;
+        }));
+
+        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('faculty/courses/students', $data);
+        $this->load->view('faculty/faculty/footer');
     }
 }

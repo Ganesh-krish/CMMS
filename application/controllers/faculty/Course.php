@@ -378,26 +378,45 @@ class Course extends CI_Controller
                 return redirect(base_url($this->url . "/course"));
             } else {
 
-                $tags = implode(',', array_unique(array_filter($this->input->post("tags"))));
-                $data = [
-                    "course_code" => $this->input->post("course_code"),
-                    "name" => $this->input->post("course_name"),
-                    "description" => $this->input->post("description"),
-                    "created_by" => $this->session_data["id"],
-                    "college_id" => $this->college["id"],
-                    "attempts" => $this->input->post("attempts"),
-                    "start_date" => $this->input->post("start_date"),
-                    "end_date" => $this->input->post("end_date"),
-                    "tag" =>  $tags,
-                    "explanation_start_date" => $this->input->post("explanation_start_date"),
-                    "explanation_end_date" => $this->input->post("explanation_end_date"),
-                    "show_explanation" => $this->input->post("show_explanation") == "on" ? 1 : 0,
-                    "course_type" => $courseType,
-                    "course_mode" => $courseMode
+                $course_name = trim($this->input->post("course_name"));
 
-                ];
-                if ($this->db_model->insert(TABLE_COURCES, $data)) {
-                    $course_id = $this->db->insert_id();
+                // Check if course with same name already exists
+                $existing_course = $this->db_model->get_row(TABLE_COURCES, [
+                    'name' => $course_name,
+                    'college_id' => $this->college['id'],
+                    'is_active' => 1
+                ]);
+
+                if ($existing_course) {
+                    $course_id = $existing_course['id'];
+                    $this->session->set_flashdata('message', array('info', "Course '{$course_name}' already exists. Using existing course."));
+                } else {
+                    $tags = implode(',', array_unique(array_filter($this->input->post("tags"))));
+                    $data = [
+                        "course_code" => $this->input->post("course_code"),
+                        "name" => $course_name,
+                        "description" => $this->input->post("description"),
+                        "created_by" => $this->session_data["id"],
+                        "college_id" => $this->college["id"],
+                        "attempts" => $this->input->post("attempts"),
+                        "start_date" => $this->input->post("start_date"),
+                        "end_date" => $this->input->post("end_date"),
+                        "tag" =>  $tags,
+                        "explanation_start_date" => $this->input->post("explanation_start_date"),
+                        "explanation_end_date" => $this->input->post("explanation_end_date"),
+                        "show_explanation" => $this->input->post("show_explanation") == "on" ? 1 : 0,
+                        "course_type" => $courseType,
+                        "course_mode" => $courseMode
+                    ];
+                        $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
+                    } else {
+                        $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
+                        return redirect(base_url($this->url . "/course"));
+                    }
+                }
+
+                // Handle enrollments for both existing and new courses
+                if (isset($course_id)) {
                     $students = $this->input->post("students");
                     $student_groups = $this->input->post("student_groups");
                     $departments = $this->input->post("department");
@@ -439,16 +458,6 @@ class Course extends CI_Controller
                             );
                         }
                     }
-
-                    $this->session->set_flashdata("message", [
-                        "success",
-                        "Cource registered successfully!",
-                    ]);
-                } else {
-                    $this->session->set_flashdata("message", [
-                        "danger",
-                        "Failed to register the cource.",
-                    ]);
                 }
                 redirect(base_url($this->url . "/course"));
             }
@@ -1183,7 +1192,7 @@ class Course extends CI_Controller
 
         // Get students via groups
         $group_students = $this->db
-            ->select('s.*, g.name as group_name, CONCAT("Group: ", g.name) as source')
+            ->select('s.*, g.name, CONCAT("Group: ", g.name) as source')
             ->from("course_groups cg")
             ->join("groups g", "g.id = cg.group_id")
             ->join("group_members gm", "gm.group_id = g.id")

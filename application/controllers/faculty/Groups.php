@@ -78,13 +78,26 @@ class Groups extends CI_Controller
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect(base_url($this->url.'/groups/add'));
             } else {
-                $data = [
-                    'name' => $this->input->post('group_name'),
-                    'created_by' => $this->session_data['id'],
+                $group_name = trim($this->input->post('group_name'));
+
+                // Check if group with same name already exists
+                $existing_group = $this->db_model->get_row(TABLE_GROUPS, [
+                    'name' => $group_name,
                     'college_id' => $this->college['id'],
-                ];
-                $this->db_model->insert(TABLE_GROUPS, $data);
-                $this->session->set_flashdata('message', array('success', "Group created successfully!"));
+                    'is_active' => 1
+                ]);
+
+                if ($existing_group) {
+                    $this->session->set_flashdata('message', array('info', "Group '{$group_name}' already exists. Using existing group."));
+                } else {
+                    $data = [
+                        'name' => $group_name,
+                        'created_by' => $this->session_data['id'],
+                        'college_id' => $this->college['id'],
+                    ];
+                    $this->db_model->insert(TABLE_GROUPS, $data);
+                    $this->session->set_flashdata('message', array('success', "Group created successfully!"));
+                }
 
                 // Redirect based on user role
                 if ($this->session_data['role'] === ROLE_SUPERADMIN) {
@@ -206,7 +219,12 @@ class Groups extends CI_Controller
         
 
         $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "college_id" => $this->college['id']]);
-        
+
+        if (!$data["group"]) {
+            $this->session->set_flashdata('message', array('danger', 'Group not found'));
+            redirect($this->url . '/staff/students');
+        }
+
         $group_members = $this->db_model->get_all(TABLE_MEMGROUPS, ["group_id" => $group_id]);
         $student_ids = array_column($group_members, 'student_id');
 

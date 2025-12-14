@@ -44,7 +44,7 @@
                             <select class="form-control select2" id="student_groups" name="student_groups[]" multiple="multiple">
                                 <?php foreach ($student_groups as $group) : ?>
                                     <option value="<?= $group['id'] ?>" <?= in_array($group['id'], $groupIds) ? 'selected' : '' ?>>
-                                        <?= $group['group_name'] ?>
+                                        <?= $group['name'] ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

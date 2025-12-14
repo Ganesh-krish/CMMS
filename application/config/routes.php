@@ -100,6 +100,9 @@ $route['(:any)/courses/enroll_student'] = 'faculty/Courses/enroll_student';
 $route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'faculty/Courses/update_enrollment_status/$2/$3';
 $route['(:any)/courses/unenroll_student/(:num)'] = 'faculty/Courses/unenroll_student/$2';
 
+// Course students/enrollments overview
+$route['(:any)/courses/students'] = 'faculty/Courses/students';
+
 $route['(:any)/principal/students'] = 'faculty/Principal/students'; 
 $route['(:any)/principal/profile'] = 'faculty/Principal/profile'; 
 $route['(:any)/principal/reset_password'] = 'faculty/Principal/reset_password';

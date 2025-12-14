@@ -481,7 +481,7 @@ class Inventory extends CI_Controller
         return $this->json_response('success', ['transaction_id' => $transaction_id]);
     }
 
-    public function maintenance()
+    public function maintenance_api()
     {
         if ($this->input->method() !== 'post') {
             return $this->json_response('error', 'Invalid method', 405);

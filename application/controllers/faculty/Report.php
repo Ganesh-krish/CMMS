@@ -13,11 +13,21 @@ class Report extends CI_Controller
         $this->load->model('common', 'common');
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
-        $segment1 = $this->uri->segment(1);
-
-        // If accessed via /report directly, determine the correct URL from session
-        if ($segment1 === 'report') {
-            // Find the appropriate session key
+        // Check for owner/admin session first
+        $this->user_session = $this->session->userdata('owner');
+        if ($this->user_session) {
+            // Admin/owner access
+            $this->url = 'admin';
+            $this->college = $this->common->get_default_college();
+            $this->session_data = [
+                'id' => $this->user_session['id'],
+                'role' => ROLE_SUPERADMIN,
+                'designation' => DESIGNATION_PRINCIPAL,
+                'department' => null,
+                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
+            ];
+        } else {
+            // Faculty session - find the active session
             $possible_keys = ['admin', 'staff', 'hod', 'principal'];
             $this->url = null;
             foreach ($possible_keys as $key) {
@@ -26,15 +36,15 @@ class Report extends CI_Controller
                     break;
                 }
             }
-            // Default to admin if no session found
-            $this->url = $this->url ?: 'admin';
-        } else {
-            $this->url = $segment1;
-        }
 
-        $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
+            if (!$this->url) {
+                redirect(base_url('OAuth'));
+            }
+
+            $this->common->check_user_session($this->url);
+            $this->college = $this->common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
         $this->permissions = $this->common->get_access_permissions($this->session_data);
     }
 

@@ -159,7 +159,10 @@ $route['(:any)/groups/addMemberstoGroup'] = 'faculty/Groups/addMemberstoGroup';
 
 // Reports
 $route['report'] = 'faculty/Report';
-$route['(:any)/report'] = 'faculty/Report';
+$route['admin/report'] = 'faculty/Report';
+$route['staff/report'] = 'faculty/Report';
+$route['hod/report'] = 'faculty/Report';
+$route['principal/report'] = 'faculty/Report';
 $route['(:any)/report/kpis'] = 'faculty/Report/kpis';
 $route['(:any)/report/(:any)'] = 'faculty/Report/$2';
 $route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';

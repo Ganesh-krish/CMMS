@@ -102,13 +102,6 @@ class Dashboard extends CI_Controller {
             // Dashboard metrics (set safe defaults)
             'total_students' => 0,
             'total_courses' => 0,
-            'active_tests' => 0,
-            'total_questions' => 0,
-            'code_questions' => 0,
-            'mcq_questions' => 0,
-            'easy_questions_percent' => 0,
-            'medium_questions_percent' => 0,
-            'hard_questions_percent' => 0,
             'department_batch_table' => [
                 'years' => [],
                 'departments' => []

@@ -250,9 +250,10 @@
                 <div class="sidenav-divider mt-0"></div>
                 <ul class="sidenav-inner py-1 ps ps--active-y">
 <?php
+    // Get url from controller data, default to 'admin'
+    $url = $url ?? 'admin';
     $designation = $this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN;
     $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
-    $url = $url ?: 'admin'; // Default to 'admin' if url is empty
 ?>
                     <li class="sidenav-item <?php if ($classname == "home") {
                                                 echo "active";
@@ -319,7 +320,7 @@
                         <li class="sidenav-item <?php if ($classname == "reports") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= base_url("report") ?>" class="sidenav-link ">
+                            <a href="/CMMS/index.php/report" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-bar-chart-2"></i>
                                 <div>Reports</div>
                             </a>

@@ -11,15 +11,27 @@ class Hod extends CI_Controller {
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->faculty_common->check_user_session($this->url);
-        $this->college = $this->faculty_common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
+
+        // Use unified session approach
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            // Unified session access
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            // Fallback for legacy access
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        // Allow Principal, Vice-Principal, and HOD roles to access department administration
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, DESIGNATION_PRINCIPAL, DESIGNATION_VICE_PRINCIPAL, DESIGNATION_HOD];
+
+        // Allow HOD and higher roles to access department administration
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
         if(!in_array($role, $allowed_roles)){
-            $this->faculty_common->redirect_route($role,$this->url);
+            redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
     }
     public function index()

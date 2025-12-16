@@ -121,19 +121,23 @@ class Welcome extends CI_Controller {
 
         switch ($role) {
             case ROLE_SUPERADMIN: // Principal
-                redirect('portal/principal');
+                redirect('portal/dashboard');
                 break;
 
             case ROLE_VICE_PRINCIPAL:
-                redirect('portal/principal/vice_principal');
+                redirect('portal/dashboard'); // Unified dashboard for vice-principal too
                 break;
 
             case ROLE_HOD:
-                redirect('portal/hod');
+                redirect('portal/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_STAFF:
-                redirect('portal/staff');
+                redirect('portal/dashboard'); // Unified dashboard adapts to role
+                break;
+
+            case ROLE_CLERK_STAFF:
+                redirect('portal/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case 'student':

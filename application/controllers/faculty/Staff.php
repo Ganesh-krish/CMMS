@@ -13,16 +13,27 @@ class Staff extends CI_Controller
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        $this->common->check_user_session($this->url);
-        $this->college = $this->common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
-        $this->permissions = $this->common->get_access_permissions($this->session_data);
 
+        // Use unified session approach
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            // Unified session access
+            $this->college = $this->common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            // Fallback for legacy access
+            $this->common->check_user_session($this->url);
+            $this->college = $this->common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
+        $this->permissions = $this->common->get_access_permissions($this->session_data);
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        // Allow all faculty roles to access staff management functions
+
+        // Allow Staff and higher roles to access staff functions
         $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
         if (!in_array($role, $allowed_roles, true)) {
-            $this->common->redirect_route($role, $this->url);
+            redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
     }
     public function index()

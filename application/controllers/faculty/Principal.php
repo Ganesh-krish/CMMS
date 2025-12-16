@@ -11,30 +11,36 @@ class Principal extends CI_Controller {
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
-        // Support single-college admin access without an existing session
-        if ($this->url === 'admin' || $this->url === 'portal') {
+
+        // Use unified session approach for all access
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            // Unified session access
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            // Fallback for legacy access or admin direct access
             $this->college = $this->faculty_common->get_default_college();
             $this->session_data = [
                 'id' => 0,
-                'name' => 'Administrator', // Add name for admin access
+                'name' => 'Administrator',
                 'role' => ROLE_SUPERADMIN,
                 'designation' => DESIGNATION_PRINCIPAL,
                 'department' => null,
                 'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID,
-                'user_type' => 'faculty' // Add user_type for unified session
+                'user_type' => 'faculty'
             ];
-            // Set unified session for portal access so other controllers can access it
             $this->session->set_userdata('user', $this->session_data);
-        } else {
-            $this->faculty_common->check_user_session($this->url);
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
-            $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-            // Allow Principal (SuperAdmin) and Vice-Principal access to college administration
-            $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, DESIGNATION_PRINCIPAL, DESIGNATION_VICE_PRINCIPAL];
-            if(!in_array($role, $allowed_roles)){
-                $this->faculty_common->redirect_route($role,$this->url);
-            }
+        }
+
+        // Check permissions using Common model
+        $permissions = $this->faculty_common->get_access_permissions($this->session_data);
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+
+        // Allow Principal (SuperAdmin) and Vice-Principal access to principal functions
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL];
+        if(!in_array($role, $allowed_roles)){
+            redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
     }
     public function index()

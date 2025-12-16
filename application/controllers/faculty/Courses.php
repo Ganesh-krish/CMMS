@@ -833,4 +833,246 @@ class Courses extends CI_Controller {
         $this->load->view('faculty/courses/students', $data);
         $this->load->view('common/footer');
     }
+
+    // System-level course management (SuperAdmin only)
+    public function system_courses()
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            redirect($this->url.'/dashboard');
+        }
+
+        // System-wide course management (similar to root Course.php index)
+        if ($this->input->is_ajax_request()) {
+            $this->handle_system_courses_ajax();
+            return;
+        }
+
+        $data["url"] = $this->url;
+        $class["classname"] = "system_courses";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/system_courses");
+
+        // Get all colleges for filtering
+        $data["colleges"] = $this->db_model->get_all(TABLE_COLLEGE, ["is_active" => 1]);
+
+        $data["permissions"] = $this->permissions;
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/system_courses', $data);
+        $this->load->view('common/footer');
+    }
+
+    private function handle_system_courses_ajax()
+    {
+        $limit = $this->input->get('length') ?? 50;
+        $offset = $this->input->get('start') ?? 0;
+        $search_value = $this->input->get('search')['value'] ?? '';
+        $college_filter = $this->input->get('college_id');
+
+        $joins = [
+            TABLE_COLLEGE . ' AS c' => 'c.id = co.college_id'
+        ];
+
+        $select = "co.id, co.course_code, co.name, co.description, co.tag, co.course_mode, co.course_type, co.created_at, co.college_id AS creator_college_id, c.name AS college_name";
+
+        $conditions = ['co.is_active' => 1];
+
+        if (!empty($college_filter)) {
+            $college_ids = explode(',', $college_filter);
+            $this->db->where_in('co.college_id', $college_ids);
+        }
+
+        if (!empty($search_value)) {
+            $this->db->group_start()
+                ->like('co.course_code', $search_value)
+                ->or_like('co.name', $search_value)
+                ->or_like('co.description', $search_value)
+                ->or_like('co.tag', $search_value)
+                ->or_like('c.name', $search_value)
+                ->group_end();
+        }
+
+        $data = $this->db_model->get_with_joins(
+            TABLE_COURCES . ' AS co',
+            $select,
+            $joins,
+            $conditions,
+            'co.id',
+            'DESC',
+            null,
+            $limit,
+            $offset
+        );
+
+        $total = $this->db_model->get_with_joins(
+            TABLE_COURCES . ' AS co',
+            'COUNT(co.id) as count',
+            $joins,
+            $conditions
+        );
+
+        $response = [
+            'draw' => intval($this->input->get('draw')),
+            'recordsTotal' => isset($total[0]['count']) ? $total[0]['count'] : 0,
+            'recordsFiltered' => isset($total[0]['count']) ? $total[0]['count'] : 0,
+            'data' => array_map(function($course) {
+                return [
+                    $course['id'],
+                    htmlspecialchars($course['course_code']),
+                    htmlspecialchars($course['name']),
+                    htmlspecialchars($course['college_name']),
+                    htmlspecialchars($course['course_mode']),
+                    htmlspecialchars($course['course_type']),
+                    date('Y-m-d', strtotime($course['created_at']))
+                ];
+            }, $data)
+        ];
+
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+
+    // Multi-college course assignment methods (SuperAdmin only)
+    public function add_colleges($course_id)
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        $college_ids = $this->input->post('college_ids');
+        if (empty($college_ids) || !is_array($college_ids)) {
+            $this->output->set_status_header(400);
+            echo json_encode(['error' => 'Invalid college IDs']);
+            return;
+        }
+
+        // Add colleges to course
+        $insert_data = [];
+        foreach ($college_ids as $college_id) {
+            $insert_data[] = [
+                'course_id' => $course_id,
+                'college_id' => $college_id,
+                'assigned_at' => date('Y-m-d H:i:s')
+            ];
+        }
+
+        $this->db->insert_batch('course_college_assignments', $insert_data);
+
+        echo json_encode(['success' => true, 'message' => 'Colleges assigned successfully']);
+    }
+
+    public function get_colleges()
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        $colleges = $this->db_model->get_all(TABLE_COLLEGE, ['is_active' => 1]);
+        echo json_encode($colleges);
+    }
+
+    public function get_shared_colleges($course_id)
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        // Get colleges that have access to this course
+        $shared_colleges = $this->db->select('c.*')
+            ->from('course_college_assignments cca')
+            ->join(TABLE_COLLEGE . ' c', 'c.id = cca.college_id')
+            ->where('cca.course_id', $course_id)
+            ->where('c.is_active', 1)
+            ->get()
+            ->result_array();
+
+        echo json_encode($shared_colleges);
+    }
+
+    public function assign_course()
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        $course_id = $this->input->post('course_id');
+        $college_ids = $this->input->post('college_ids');
+
+        if (empty($course_id) || empty($college_ids) || !is_array($college_ids)) {
+            $this->output->set_status_header(400);
+            echo json_encode(['error' => 'Invalid data']);
+            return;
+        }
+
+        // Remove existing assignments for this course
+        $this->db->where('course_id', $course_id)->delete('course_college_assignments');
+
+        // Add new assignments
+        $insert_data = [];
+        foreach ($college_ids as $college_id) {
+            $insert_data[] = [
+                'course_id' => $course_id,
+                'college_id' => $college_id,
+                'assigned_at' => date('Y-m-d H:i:s')
+            ];
+        }
+
+        $this->db->insert_batch('course_college_assignments', $insert_data);
+
+        echo json_encode(['success' => true, 'message' => 'Course assigned to colleges successfully']);
+    }
+
+    public function remove_course_assign($course_id, $college_id)
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        $this->db->where('course_id', $course_id)
+                 ->where('college_id', $college_id)
+                 ->delete('course_college_assignments');
+
+        echo json_encode(['success' => true, 'message' => 'Course assignment removed']);
+    }
+
+    public function get_exclude_colleges($course_id, $creator_college_id)
+    {
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            $this->output->set_status_header(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        // Get colleges that don't have access to this course (excluding creator college)
+        $exclude_colleges = $this->db->select('c.*')
+            ->from(TABLE_COLLEGE . ' c')
+            ->where('c.is_active', 1)
+            ->where('c.id !=', $creator_college_id)
+            ->where_not_in('c.id',
+                $this->db->select('college_id')
+                        ->from('course_college_assignments')
+                        ->where('course_id', $course_id)
+                        ->get_compiled_select()
+            )
+            ->get()
+            ->result_array();
+
+        echo json_encode($exclude_colleges);
+    }
 }

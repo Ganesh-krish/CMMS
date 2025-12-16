@@ -104,28 +104,46 @@ class Welcome extends CI_Controller {
     private function redirect_based_on_role() {
         $user = $this->session->userdata('user');
 
-        switch ($user['role']) {
+        // Convert object to array if needed (session serialization can change data type)
+        if (is_object($user)) {
+            $user = (array) $user;
+        }
+
+        // Check if user data and role exist
+        if (!isset($user['role']) || empty($user['role'])) {
+            // Invalid session data, destroy session and redirect to login
+            $this->session->unset_userdata('user');
+            redirect('Welcome');
+            return;
+        }
+
+        $role = $user['role'];
+
+        switch ($role) {
             case ROLE_SUPERADMIN: // Principal
-                redirect('principal/Dashboard');
+                redirect('portal/principal');
                 break;
 
             case ROLE_VICE_PRINCIPAL:
-                redirect('vice_principal/dashboard');
+                redirect('portal/principal/vice_principal');
                 break;
 
             case ROLE_HOD:
-                redirect('hod/dashboard');
+                redirect('portal/hod');
                 break;
 
             case ROLE_STAFF:
-                redirect('staff/dashboard');
+                redirect('portal/staff');
                 break;
 
             case 'student':
-                redirect('student/dashboard');
+                redirect('portal/student/dashboard');
                 break;
 
             default:
+                // Unknown role - destroy session and redirect to login
+                $this->session->unset_userdata('user');
+                $this->session->set_flashdata('error', 'Invalid user role. Please login again.');
                 redirect('Welcome');
         }
     }

@@ -12,7 +12,7 @@ class Principal extends CI_Controller {
         $this->load->model('Test_model', 'test_model');
         $this->url = $this->uri->segment(1);
         // Support single-college admin access without an existing session
-        if ($this->url === 'admin') {
+        if ($this->url === 'admin' || $this->url === 'portal') {
             $this->college = $this->faculty_common->get_default_college();
             $this->session_data = [
                 'id' => 0,
@@ -127,9 +127,15 @@ class Principal extends CI_Controller {
         // Get course enrollment data
         $courses_q = $this->db->select('c.id, c.name')
             ->from(TABLE_COURCES . ' c')
-            ->where('c.department', $department)
-            ->where('c.created_by', $staff_id)
             ->where('c.is_active', 1);
+
+        // For admin access ($staff_id = 0), show all courses in the college
+        // For regular staff, filter by courses they created
+        if ($staff_id !== 0) {
+            // Regular staff access - show only courses they created
+            $courses_q->where('c.created_by', $staff_id);
+        }
+
         if ($this->has_college_column(TABLE_COURCES)) {
             $courses_q->where('c.college_id', $college_id);
         }

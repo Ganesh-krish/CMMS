@@ -152,15 +152,18 @@ class Staff extends CI_Controller
         $data["department_student_counts"] = [$data["total_students"]];
         
         // Get course enrollment data
-        $courses = $this->db->select('c.id, c.name')
+        $courses_q = $this->db->select('c.id, c.name')
             ->from(TABLE_COURCES . ' c')
             ->where('c.college_id', $college_id)
-            ->where('c.department', $department)
             ->where('c.created_by', $staff_id)
-            ->where('c.is_active', 1)
-            ->limit(10)
-            ->get()
-            ->result_array();
+            ->where('c.is_active', 1);
+
+        // Only filter by department if the column exists
+        if ($this->db->field_exists('department', TABLE_COURCES)) {
+            $courses_q->where('c.department', $department);
+        }
+
+        $courses = $courses_q->limit(10)->get()->result_array();
             
         $data["course_names"] = [];
         $data["course_enrollments"] = [];

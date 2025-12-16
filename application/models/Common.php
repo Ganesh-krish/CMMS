@@ -80,6 +80,10 @@ class common extends CI_Model {
             case DESIGNATION_PRINCIPAL:
                 redirect( base_url("OAuth"));
                 break;
+            case ROLE_VICE_PRINCIPAL:
+            case DESIGNATION_VICE_PRINCIPAL:
+                redirect( base_url("$url/vice_principal"));
+                break;
             case ROLE_ADMIN:
             case DESIGNATION_HOD:
                 redirect( base_url("$url/hod"));
@@ -87,6 +91,9 @@ class common extends CI_Model {
             case ROLE_STAFF:
             case DESIGNATION_STAFF:
                 redirect( base_url("$url/staff"));
+                break;
+            case 'student':
+                redirect( base_url("$url/student"));
                 break;
             default:
                 redirect( base_url("OAuth"));
@@ -201,10 +208,28 @@ class common extends CI_Model {
             $staff_ids = array_unique($staff_ids);
 
             return [
-                'read' =>  $staff_ids,   
+                'read' =>  $staff_ids,
                 'modify' => [$user_id],
                 'additional_departments' => [],
                 'department' => [$department]
+            ];
+        } elseif ($role == ROLE_VICE_PRINCIPAL || $role == DESIGNATION_VICE_PRINCIPAL) {
+            // Vice Principal has similar permissions to Principal but potentially more restricted
+            $query = $this->db->select('id')->from(TABLE_FACULTY)->where('is_active',1)->get();
+            $ids = array_column($query->result_array(), 'id');
+            return [
+                'read' => 'all',
+                'modify' => $ids, // Same as Principal for now, can be restricted later if needed
+                'departments' => [],
+                'additional_departments' => []
+            ];
+        } elseif ($role == 'student') {
+            // Students have limited access - typically only their own records
+            return [
+                'read' => [$user_id],     // Can only read their own data
+                'modify' => [$user_id],   // Can only modify their own data
+                'departments' => [$department],
+                'additional_departments' => []
             ];
         }
 
@@ -235,73 +260,7 @@ class common extends CI_Model {
         return $data;
     }
 
-    public function upload_to_cloudinary($field_name = 'image', $folder = '') 
-    {
-        if (!empty($_FILES[$field_name]['name'])) {
-            $cloud_name = CLOUDINARY_CLIENT;
-            $api_key = CLOUDINARY_API_KEY;
-            $api_secret = CLOUDINARY_API_SECRET;
-            $upload_url = "https://api.cloudinary.com/v1_1/{$cloud_name}/image/upload";
-            
-            $file_path = $_FILES[$field_name]['tmp_name'];
-            $file_name = $_FILES[$field_name]['name'];
-            
-            $params = [
-                'file' => new CURLFile($file_path, $_FILES[$field_name]['type'], $file_name),
-                'upload_preset' => CLOUDINARY_PRESET, 
-                'timestamp' => time(),
-            ];
-            
-            if (!empty($folder)) {
-                $params['folder'] = $folder;
-            }
-            
-            $params['signature'] = $this->generate_cloudinary_signature($params, $api_secret);
-            $params['api_key'] = $api_key;
-            
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $upload_url);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // For testing only, remove in production
-            
-            $response = curl_exec($ch);
-            
-            if (curl_errno($ch)) {
-                log_message('error', 'Cloudinary upload error: ' . curl_error($ch));
-                return false;
-            }
-            
-            curl_close($ch);
-            
-            $result = json_decode($response, true);
-            
-            if (isset($result['secure_url'])) {
-                return $result['secure_url'];
-            } else {
-                log_message('error', 'Cloudinary upload failed: ' . print_r($result, true));
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private function generate_cloudinary_signature($params, $api_secret) {
-        $signature_params = $params;
-        unset($signature_params['file']);
-        unset($signature_params['resource_type']);
-        
-        ksort($signature_params);
-        
-        $string_to_sign = http_build_query($signature_params);
-        $string_to_sign = str_replace(['%0D%0A', '%0A%0D', '%0D'], '%0A', $string_to_sign);
-        
-        $signature = sha1($string_to_sign . $api_secret);
-        
-        return $signature;
-    }
-
+    
     public function get_student_course_types($student)
     {
         if (!$student || !isset($student->college_id)) {

@@ -153,3 +153,5 @@ function editDepartment(id, name) {
 <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+
+

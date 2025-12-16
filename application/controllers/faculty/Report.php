@@ -38,22 +38,22 @@ class Report extends CI_Controller
             } else {
                 // Legacy faculty session - find the active session
                 $possible_keys = ['admin', 'staff', 'hod', 'principal', 'portal'];
-                $this->url = null;
-                foreach ($possible_keys as $key) {
-                    if ($this->session->userdata($key)) {
-                        $this->url = $key;
-                        break;
-                    }
+            $this->url = null;
+            foreach ($possible_keys as $key) {
+                if ($this->session->userdata($key)) {
+                    $this->url = $key;
+                    break;
                 }
-
-                if (!$this->url) {
-                    redirect('Welcome'); // Redirect to login instead of OAuth
-                }
-
-                $this->common->check_user_session($this->url);
-                $this->college = $this->common->get_default_college();
-                $this->session_data = $this->session->userdata($this->url);
             }
+
+            if (!$this->url) {
+                    redirect('Welcome'); // Redirect to login instead of OAuth
+            }
+
+            $this->common->check_user_session($this->url);
+            $this->college = $this->common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
         }
 
         // Check role permissions - only Principal and Vice-Principal can access reports

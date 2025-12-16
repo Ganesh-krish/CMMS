@@ -40,7 +40,32 @@
                         <h5><?php echo $title; ?> Details</h5>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($show_full_admin) && $show_full_admin): ?>
+                        <?php if (isset($show_admin_management) && $show_admin_management): ?>
+                            <!-- Administrator Management content -->
+                            <div class="alert alert-primary">
+                                <h6>Administrator Management</h6>
+                                <p>Manage system administrators and administrative settings.</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Administrator Actions:</h6>
+                                    <ul>
+                                        <li><a href="<?php echo base_url($url.'/departments'); ?>">Manage Departments</a></li>
+                                        <li><a href="<?php echo base_url($url.'/manage_staff'); ?>">Manage Staff</a></li>
+                                        <li><a href="<?php echo base_url($url.'/add_hod'); ?>">Add HOD</a></li>
+                                        <li><a href="<?php echo base_url($url.'/college/edit/1'); ?>">College Settings</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>System Management:</h6>
+                                    <ul>
+                                        <li><a href="<?php echo base_url($url.'/report'); ?>">System Reports</a></li>
+                                        <li><a href="<?php echo base_url($url.'/students'); ?>">Student Management</a></li>
+                                        <li><a href="<?php echo base_url($url.'/system_courses'); ?>">System Courses</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        <?php elseif (isset($show_full_admin) && $show_full_admin): ?>
                             <!-- Full admin content -->
                             <div class="alert alert-info">
                                 <h6>Administrative Overview</h6>

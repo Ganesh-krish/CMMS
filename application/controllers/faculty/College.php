@@ -11,6 +11,10 @@ class College extends CI_Controller {
     function __construct() {
         parent::__construct();
 
+        $this->load->model('common', 'faculty_common');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
+
         $this->url = $this->uri->segment(1);
 
         // Use unified session approach
@@ -68,6 +72,23 @@ class College extends CI_Controller {
                 'email' => $this->input->post('email'),
                 'created_by' => $this->session_data['id']
             );
+
+            // Handle logo upload
+            if(isset($_FILES['logo']) && $_FILES['logo']['error'] == 0){
+                $logo_path = $this->_upload_file('logo', 'college');
+                if($logo_path){
+                    $data['logo'] = $logo_path;
+                }
+            }
+
+            // Handle banner upload
+            if(isset($_FILES['banner']) && $_FILES['banner']['error'] == 0){
+                $banner_path = $this->_upload_file('banner', 'college');
+                if($banner_path){
+                    $data['banner'] = $banner_path;
+                }
+            }
+
             $this->db_model->update(TABLE_COLLEGE,$data,["id"=>$id]);
             $this->session->set_flashdata('message', array('success',"College updated."));
             return redirect($this->url.'/college/view');
@@ -102,5 +123,28 @@ class College extends CI_Controller {
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/college/view', $data);
         $this->load->view('common/footer');
+    }
+
+    private function _upload_file($field_name, $folder) {
+        // Create upload directory if it doesn't exist
+        $upload_path = './uploads/' . $folder . '/';
+        if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0777, true);
+        }
+
+        $config['upload_path'] = $upload_path;
+        $config['allowed_types'] = 'gif|jpg|jpeg|png';
+        $config['max_size'] = $field_name == 'logo' ? 2048 : 5120; // 2MB for logo, 5MB for banner
+        $config['file_name'] = $field_name . '_' . time() . '_' . rand(1000, 9999);
+
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload($field_name)) {
+            $this->session->set_flashdata('message', array('danger', $this->upload->display_errors()));
+            return false;
+        } else {
+            $upload_data = $this->upload->data();
+            return $upload_data['file_name'];
+        }
     }
 }

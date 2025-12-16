@@ -28,9 +28,9 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <?php if (isset($can_manage) && $can_manage): ?>
-                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addDepartmentModal">
+                                    <a href="<?php echo base_url($url.'/departments/add'); ?>" class="btn btn-success">
                                         <i class="feather icon-plus"></i> Add Department
-                                    </button>
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -50,9 +50,9 @@
                                 <h4 class="mt-3">No Departments</h4>
                                 <p class="text-muted">There are no departments to display.</p>
                                 <?php if (isset($can_manage) && $can_manage): ?>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDepartmentModal">
+                                    <a href="<?php echo base_url($url.'/departments/add'); ?>" class="btn btn-primary">
                                         Add First Department
-                                    </button>
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         <?php else: ?>
@@ -85,7 +85,7 @@
                                                                 <i class="feather icon-more-vertical"></i>
                                                             </button>
                                                             <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/edit_department/'.$dept['id']); ?>">
+                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/departments/edit/'.$dept['id']); ?>">
                                                                     <i class="feather icon-edit"></i> Edit
                                                                 </a>
                                                                 <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $dept['id']; ?>, '<?php echo htmlspecialchars($dept['name']); ?>')">
@@ -111,7 +111,7 @@
 <script>
 function confirmDelete(id, name) {
     if (confirm('Are you sure you want to delete the department "' + name + '"? This action cannot be undone.')) {
-        window.location.href = '<?php echo base_url($url.'/delete_department/'); ?>' + id;
+        window.location.href = '<?php echo base_url($url.'/departments/delete/'); ?>' + id;
     }
 }
 </script>

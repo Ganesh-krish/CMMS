@@ -24,9 +24,9 @@ class Announcement extends CI_Controller
             $this->session_data = $unified_user;
         } else {
             // Legacy faculty session approach
-            $this->faculty_common->check_user_session($this->url);
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
+        $this->faculty_common->check_user_session($this->url);
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $this->session->userdata($this->url);
         }
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;

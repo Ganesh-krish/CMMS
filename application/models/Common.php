@@ -28,14 +28,14 @@ class common extends CI_Model {
 	{  
         // Owner (admin) session
         if ($url === null) {
-            if(empty($this->user_session)){
-                $this->session->unset_userdata('owner');
+            if(empty($this->user_session)){ 
+                $this->session->unset_userdata('owner'); 
                 redirect(base_url("Welcome")); // Redirect to login instead of OAuth
             }
             $user=$this->db_model->get_row(TABLE_FACULTY,['id'=>$this->user_session['id'],"is_active"=>1]);  
 
             if(empty($user)) {
-                $this->session->unset_userdata('owner');
+                $this->session->unset_userdata('owner'); 
                 redirect(base_url("Welcome")); // Redirect to login instead of OAuth
             }
             $this->session->unset_userdata('owner'); 
@@ -45,7 +45,7 @@ class common extends CI_Model {
 
         // Faculty session (by url segment)
         $session = $this->session->userdata($url);
-        if(empty($session)){
+        if(empty($session)){  
             redirect( base_url("Welcome")); // Redirect to login instead of OAuth
         }
         $college = $this->get_default_college();
@@ -208,7 +208,7 @@ class common extends CI_Model {
             $staff_ids = array_unique($staff_ids);
 
             return [
-                'read' =>  $staff_ids,
+                'read' =>  $staff_ids,   
                 'modify' => [$user_id],
                 'additional_departments' => [],
                 'department' => [$department]
@@ -260,7 +260,7 @@ class common extends CI_Model {
         return $data;
     }
 
-    
+
     public function get_student_course_types($student)
     {
         if (!$student || !isset($student->college_id)) {

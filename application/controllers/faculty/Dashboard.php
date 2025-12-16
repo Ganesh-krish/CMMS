@@ -49,8 +49,8 @@ class Dashboard extends CI_Controller
         $class["sidebar_href"] = base_url($this->url."/dashboard");
 
         // Role-specific dashboard data
-        if (in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
-            // Principal/Vice-Principal dashboard
+        if ($role == ROLE_VICE_PRINCIPAL) {
+            // Vice-Principal dashboard
             $data = array_merge($data, $this->get_principal_dashboard_data());
             $view_file = 'faculty/faculty/principal';
         } elseif ($role == ROLE_HOD) {
@@ -61,10 +61,16 @@ class Dashboard extends CI_Controller
             // Staff dashboard
             $data = array_merge($data, $this->get_staff_dashboard_data());
             $view_file = 'faculty/faculty/staff';
+        } elseif ($role == ROLE_SUPERADMIN) {
+            // SuperAdmin dashboard - show unified dashboard
+            $data = array_merge($data, $this->get_principal_dashboard_data());
+            $data["title"] = "Dashboard Overview";
+            $data["show_full_admin"] = true;
+            $view_file = 'faculty/admin_view';
         } else {
             // Default dashboard
             $data = array_merge($data, $this->get_default_dashboard_data());
-            $view_file = 'faculty/faculty/dashboard';
+            $view_file = 'common/dashboard';
         }
 
         // Add permissions to all views
@@ -89,8 +95,12 @@ class Dashboard extends CI_Controller
 
         // Get data based on user permissions
         $role = $this->session_data['role'];
-        if (in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        if ($role == ROLE_SUPERADMIN) {
             $data["title"] = "Administrative Overview";
+            $data["stats"] = $this->get_admin_stats();
+            $data["show_full_admin"] = true;
+        } elseif ($role == ROLE_VICE_PRINCIPAL) {
+            $data["title"] = "Principal Overview";
             $data["stats"] = $this->get_admin_stats();
             $data["show_full_admin"] = true;
         } elseif ($role == ROLE_HOD) {
@@ -107,6 +117,29 @@ class Dashboard extends CI_Controller
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/admin_view', $data); // Unified view
+        $this->load->view('common/footer');
+    }
+
+    // Administrator management method
+    public function manage_admin()
+    {
+        // Only SuperAdmin can access administrator management
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if ($role !== ROLE_SUPERADMIN) {
+            redirect($this->url.'/dashboard');
+        }
+
+        $data["url"] = $this->url;
+        $class["classname"] = "manage_admin";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/manage_admin");
+
+        // Load administrator management data (similar to principal view)
+        $data = array_merge($data, $this->get_principal_dashboard_data());
+        $data["permissions"] = $this->permissions;
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/faculty/principal', $data); // Administrator CRUD view
         $this->load->view('common/footer');
     }
 

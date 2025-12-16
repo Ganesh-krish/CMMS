@@ -75,6 +75,7 @@ $route['(:any)/college'] = 'faculty/College';
 $route['(:any)/dashboard'] = 'faculty/Dashboard/index';  // Main dashboard (role-adaptive)
 $route['(:any)/principal'] = 'faculty/Dashboard/index';  // Backward compatibility
 $route['(:any)/view'] = 'faculty/Dashboard/view';        // Administrative view
+$route['(:any)/manage_admin'] = 'faculty/Dashboard/manage_admin';  // Administrator management
 
 // Unified Course Routes - Single controller for all course functionality
 $route['(:any)/courses'] = 'faculty/Course/index';        // Main course management
@@ -221,7 +222,9 @@ $route['report'] = 'faculty/Report';
 $route['admin/report'] = 'faculty/Report';
 $route['staff/report'] = 'faculty/Report';
 $route['hod/report'] = 'faculty/Report';
+$route['hod/report'] = 'faculty/Report';
 $route['principal/report'] = 'faculty/Report';
+$route['(:any)/report'] = 'faculty/Report/index';  // Added for portal/report
 $route['(:any)/report/kpis'] = 'faculty/Report/kpis';
 $route['(:any)/report/(:any)'] = 'faculty/Report/$2';
 $route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';

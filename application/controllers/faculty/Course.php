@@ -154,10 +154,10 @@ class Course extends CI_Controller {
                         }
 
                         $this->session->set_flashdata('message', array('info', "Course '{$course_name}' already exists. Using existing course. {$enrolled_count} students from the selected department were auto-enrolled."));
-                    } else {
+        } else {
                         $this->session->set_flashdata('message', array('info', "Course '{$course_name}' already exists. Using existing course."));
                     }
-                } else {
+            } else {
                     $data = array(
                         'name' => $course_name,
                         'course_code' => $course_code, // Fixed column name
@@ -203,10 +203,10 @@ class Course extends CI_Controller {
                             }
 
                             $this->session->set_flashdata('message', array('success', "Course Created successfully! {$enrolled_count} students from the selected department were auto-enrolled."));
-                        } else {
+        } else {
                             $this->session->set_flashdata('message', array('success', "Course Created successfully!"));
                         }
-                    } else {
+        } else {
                         $this->session->set_flashdata('message', array('danger', "Failed to create Course."));
                     }
                 }
@@ -250,7 +250,7 @@ class Course extends CI_Controller {
 
                 if ($this->db_model->update(TABLE_COURCES, $data, ["id" => $post['id']])) {
                     $this->session->set_flashdata('message', array('success', "Course Updated successfully!"));
-                } else {
+        } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to update Course."));
                 }
                 redirect(base_url($this->url . "/courses"));
@@ -314,11 +314,11 @@ class Course extends CI_Controller {
     }
 
     public function lessons($course_id = null, $module_id = null) {
-        $data["url"] = $this->url;
+            $data["url"] = $this->url;
         $data["course_id"] = $course_id;
         $data["module_id"] = $module_id;
         $class["classname"] = "course_lessons";
-        $class["url"] = $this->url;
+            $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/courses");
 
         // Check access permissions
@@ -327,7 +327,7 @@ class Course extends CI_Controller {
 
         if (!$course || !$module) {
             $this->session->set_flashdata('message', array('danger', "Course or module not found."));
-            redirect(base_url($this->url . "/courses"));
+                redirect(base_url($this->url . "/courses"));
             return;
         }
 
@@ -343,7 +343,7 @@ class Course extends CI_Controller {
         $data["course"] = $course;
         $data["module"] = $module;
         $data["lessons"] = $this->db_model->get_all("course_module_lessons", [
-            "module_id" => $module_id,
+                "module_id" => $module_id,
             "is_active" => 1
         ]);
 
@@ -406,7 +406,7 @@ class Course extends CI_Controller {
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
-            } else {
+                } else {
                 $course_id = $this->input->post('course_id');
 
                 // Check course access permission
@@ -436,13 +436,13 @@ class Course extends CI_Controller {
 
                 if ($this->db_model->insert(TABLE_COURSE_MODULES, $data)) {
                     $this->session->set_flashdata('message', array('success', "Module Created successfully!"));
-                } else {
+            } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to create Module."));
-                }
-                redirect(base_url($this->url . "/courses/modules/" . $course_id));
             }
+                redirect(base_url($this->url . "/courses/modules/" . $course_id));
         }
     }
+        }
 
     public function edit_module($course_id = null, $module_id = null) {
         $post = $this->input->post();
@@ -454,12 +454,12 @@ class Course extends CI_Controller {
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
-            } else {
+        } else {
                 // Check course access permission
                 $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
                 if (!$course) {
                     $this->session->set_flashdata('message', array('danger', "Course not found."));
-                    redirect(base_url($this->url . "/courses"));
+                redirect(base_url($this->url . "/courses"));
                     return;
                 }
 
@@ -480,7 +480,7 @@ class Course extends CI_Controller {
 
                 if ($this->db_model->update(TABLE_COURSE_MODULES, $data, ["id" => $post['module_id']])) {
                     $this->session->set_flashdata('message', array('success', "Module Updated successfully!"));
-                } else {
+                    } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to update Module."));
                 }
                 redirect(base_url($this->url . "/courses/modules/" . $course_id));
@@ -527,7 +527,7 @@ class Course extends CI_Controller {
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
-            } else {
+        } else {
                 $course_id = $this->input->post('course_id');
                 $module_id = $this->input->post('module_id');
 
@@ -562,7 +562,7 @@ class Course extends CI_Controller {
 
                 if ($this->db_model->insert('course_module_lessons', $data)) {
                     $this->session->set_flashdata('message', array('success', "Lesson Created successfully!"));
-                } else {
+        } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to create Lesson."));
                 }
                 redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
@@ -581,7 +581,7 @@ class Course extends CI_Controller {
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
-            } else {
+                            } else {
                 // Check course and module access permission
                 $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
                 $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
@@ -612,7 +612,7 @@ class Course extends CI_Controller {
 
                 if ($this->db_model->update('course_module_lessons', $data, ["id" => $post['lesson_id']])) {
                     $this->session->set_flashdata('message', array('success', "Lesson Updated successfully!"));
-                } else {
+                            } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to update Lesson."));
                 }
                 redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
@@ -659,7 +659,7 @@ class Course extends CI_Controller {
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
-            } else {
+    } else {
                 $course_id = $this->input->post('course_id');
                 $student_id = $this->input->post('student_id');
 
@@ -675,8 +675,8 @@ class Course extends CI_Controller {
 
                 // Check if student is already enrolled
                 $existing_enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, [
-                    "student_id" => $student_id,
-                    "course_id" => $course_id,
+                "student_id" => $student_id,
+                "course_id" => $course_id,
                     "is_active" => 1
                 ]);
 
@@ -699,7 +699,7 @@ class Course extends CI_Controller {
                 }
 
                 $data = array(
-                    'course_id' => $course_id,
+            'course_id' => $course_id,
                     'student_id' => $student_id,
                     'enrolled_by' => $this->session_data['id'],
                     'status' => 'active',
@@ -746,7 +746,7 @@ class Course extends CI_Controller {
         $data = array('status' => $status);
         if ($this->db_model->update(TABLE_COURSE_ENROLLMENTS, $data, ["id" => $enrollment_id])) {
             $this->session->set_flashdata('message', array('success', "Enrollment status updated successfully!"));
-        } else {
+                    } else {
             $this->session->set_flashdata('message', array('danger', "Failed to update enrollment status."));
         }
         redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
@@ -992,8 +992,8 @@ class Course extends CI_Controller {
             ->join(TABLE_COLLEGE . ' c', 'c.id = cca.college_id')
             ->where('cca.course_id', $course_id)
             ->where('c.is_active', 1)
-            ->get()
-            ->result_array();
+                ->get()
+                ->result_array();
 
         echo json_encode($shared_colleges);
     }
@@ -1023,7 +1023,7 @@ class Course extends CI_Controller {
         $insert_data = [];
         foreach ($college_ids as $college_id) {
             $insert_data[] = [
-                'course_id' => $course_id,
+                        'course_id' => $course_id,
                 'college_id' => $college_id,
                 'assigned_at' => date('Y-m-d H:i:s')
             ];

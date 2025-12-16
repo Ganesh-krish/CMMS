@@ -11,6 +11,10 @@ class Department extends CI_Controller {
     function __construct() {
         parent::__construct();
 
+        $this->load->model('common', 'faculty_common');
+        $this->load->model('Db_model', 'db_model');
+        $this->load->model('Test_model', 'test_model');
+
         $this->url = $this->uri->segment(1);
 
         // Use unified session approach
@@ -37,6 +41,7 @@ class Department extends CI_Controller {
 
     public function view() {
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT,["is_active"=>1]);
+        $data["can_manage"] = true; // SuperAdmin can manage departments
 
         $data["url"] = $this->url;
         $class["classname"] = "departments";
@@ -71,6 +76,7 @@ class Department extends CI_Controller {
             }
         }else{
             $data["url"] = $this->url;
+            $data["can_manage"] = true; // SuperAdmin can manage departments
             $class["classname"] = "departments";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/departments");
@@ -104,6 +110,7 @@ class Department extends CI_Controller {
             }
         }else{
             $data["department"] = $this->db_model->get_row(TABLE_DEPARTMENT,["id"=>$id,"is_active"=>1]);
+            $data["can_manage"] = true; // SuperAdmin can manage departments
 
             $data["url"] = $this->url;
             $class["classname"] = "departments";

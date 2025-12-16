@@ -264,12 +264,12 @@
                         </a>
                     </li>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
-                        <li class="sidenav-item <?php if ($classname == "principal") {
+                        <li class="sidenav-item <?php if ($classname == "manage_admin") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= base_url($url . "/view") ?>" class="sidenav-link ">
+                            <a href="<?= base_url($url . "/manage_admin") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-user-check"></i>
-                                <div>Overview</div>
+                                <div>Administrator</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -283,49 +283,15 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
-                        <li class="sidenav-item <?php if ($classname == "departments") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/departments") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-home"></i>
-                                <div>Departments</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
 
                     <!-- System Administration (SuperAdmin only) -->
                     <?php if ($designation == ROLE_SUPERADMIN): ?>
-                        <li class="sidenav-item <?php if ($classname == "college") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/college/view") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-home"></i>
-                                <div>College Settings</div>
-                            </a>
-                        </li>
                         <li class="sidenav-item <?php if ($classname == "departments") {
                                                     echo "active";
                                                 } ?>">
                             <a href="<?= base_url($url . "/departments") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-layers"></i>
                                 <div>Departments</div>
-                            </a>
-                        </li>
-                        <li class="sidenav-item <?php if ($classname == "system_courses") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/system_courses") ?>" class="sidenav-link ">
-                                <i class="feather icon-book"></i>
-                                <div>System Courses</div>
-                            </a>
-                        </li>
-                        <li class="sidenav-item <?php if ($classname == "students") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/students") ?>" class="sidenav-link ">
-                                <i class="feather icon-users"></i>
-                                <div>Manage Students</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -430,7 +396,7 @@
                         <li class="sidenav-item <?php if ($classname == "profile") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= base_url("$url/profile") ?>" class="sidenav-link ">
+                            <a href="<?= base_url("$url/college/edit/1") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-settings"></i>
                                 <div>Settings Page</div>
                             </a>

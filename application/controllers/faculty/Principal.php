@@ -16,6 +16,7 @@ class Principal extends CI_Controller {
             $this->college = $this->faculty_common->get_default_college();
             $this->session_data = [
                 'id' => 0,
+                'name' => 'Administrator', // Add name for admin access
                 'role' => ROLE_SUPERADMIN,
                 'designation' => DESIGNATION_PRINCIPAL,
                 'department' => null,

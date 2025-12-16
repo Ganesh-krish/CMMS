@@ -434,11 +434,13 @@
                         <a class="nav-link  dropdown-toggle" href="#" data-toggle="dropdown">
                             <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
                                 <!-- <img src="" alt class="d-block ui-w-30 rounded-circle"> -->
-                                <span class="px-1 mr-lg-2 ml-2 ml-lg-0"><?php if ($this->session->userdata($url)['name']) {
-                                                                            echo ($this->session->userdata($url)['name']);
-                                                                        } else {
-                                                                            echo ('-');
-                                                                        }
+                                <span class="px-1 mr-lg-2 ml-2 ml-lg-0"><?php
+                                                                            $session_data = $this->session->userdata($url);
+                                                                            if ($session_data && isset($session_data['name']) && $session_data['name']) {
+                                                                                echo $session_data['name'];
+                                                                            } else {
+                                                                                echo 'Administrator';
+                                                                            }
                                                                         ?></span>
                             </span>
                         </a>

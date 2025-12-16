@@ -46,9 +46,9 @@ class Groups extends CI_Controller
         $data["department"] = $this->session_data['department'];
         $data["tests"] = $this->db_model->get_all(TABLE_TESTS,["is_active"=>1,"cource_id"=>$cource_id,"college_id"=>$this->college['id'],"created_by"=>$this->session_data['id']]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('test/view', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
   
     public function view_students($cource_id=null,$test_id=null)
@@ -64,9 +64,9 @@ class Groups extends CI_Controller
         $data["test_id"] = $test_id;
         $data["questions"] = $this->db_model->get_all(TABLE_QUESTIONS, ["is_active" => true, "college_id" => $this->college['id']]);
         $data["tests"] = $this->db_model->get_row(TABLE_TESTS,["id"=>$test_id,"is_active"=>1,"college_id"=>$this->college['id'],"created_by"=>$this->session_data['id']]);
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('test/view_students', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
     public function add()
     {
@@ -153,9 +153,9 @@ class Groups extends CI_Controller
 
 
             // $data["staff"] = $this->db_model->get_all(TABLE_STUDENT,$conditions);
-            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/groups/add',$data);
-            $this->load->view('faculty/faculty/footer');
+            $this->load->view('common/footer');
         }
     }
     public function edit($group_id)
@@ -205,9 +205,9 @@ class Groups extends CI_Controller
             // $data["staff"] = $this->db_model->get_all(TABLE_STUDENT, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department']]);
             // $data["studentIds"] = $studentIds;
 
-            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/groups/add',$data);
-            $this->load->view('faculty/faculty/footer');
+            $this->load->view('common/footer');
         }
     }
 
@@ -242,9 +242,9 @@ class Groups extends CI_Controller
             $data["students"] = [];
         }
         
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/group_students', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function addMemberstoGroup() {

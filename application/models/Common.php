@@ -12,9 +12,9 @@ class common extends CI_Model {
 
     public function load_view($view,$data=[]){ 
         // Default loader; views that need sidebar vars should pass them via $data
-        $this->load->view("faculty/faculty/sidebar",$data);
+        $this->load->view("common/sidebar",$data);
         $this->load->view($view,$data);
-        $this->load->view("faculty/faculty/footer");
+        $this->load->view("common/footer");
     }
 
     public function get_default_college() {

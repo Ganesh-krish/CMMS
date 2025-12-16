@@ -349,9 +349,9 @@ class Staff extends CI_Controller
 
 
         
-        $this->load->view('faculty/faculty/sidebar', $class);
-        $this->load->view('faculty/faculty/dashboard', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('common/dashboard', $data);
+        $this->load->view('common/footer');
     }
     public function staff()
     {
@@ -362,9 +362,9 @@ class Staff extends CI_Controller
         $data["post_url"] = base_url($this->url . "/staff/reset_password");
         $data["staff"] = $this->db_model->get_all(TABLE_FACULTY, ["is_active" => true, "role" => ROLE_STAFF, "department" => $this->session_data['department']]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/faculty/staff', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     // Alias for /staff/view
@@ -384,9 +384,9 @@ class Staff extends CI_Controller
         $data["cources"] = $this->db_model->get_all(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'],"department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
         // var_dump($data["cources"]);die;
         $data["faculty"] = $this->db_model->get_row(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/faculty/cources', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     
@@ -425,9 +425,9 @@ class Staff extends CI_Controller
         $data['batches'] = $this->db_model->get_all(TABLE_STUDENT,["is_active"=>true,"college_id"=>$this->college['id'],"department"=>$this->session_data['department']]);
         $data['batches'] = array_unique(array_column($data['batches'], 'batch'));
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/faculty/students', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function addMemberstoGroup() {

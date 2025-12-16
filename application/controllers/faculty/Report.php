@@ -144,9 +144,9 @@ class Report extends CI_Controller
         $data['avg_score'] = 0; // Not applicable for enrollments
         
         // Load views
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/reports/index', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
     
     public function student_detail($student_id)
@@ -234,9 +234,9 @@ class Report extends CI_Controller
         $data['module_map'] = $module_map;
         
         // Load views
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/reports/student_detail', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
     
     public function course_detail($course_id)
@@ -339,9 +339,9 @@ class Report extends CI_Controller
         $data['total_tests'] = count($data['tests']);
         
         // Load views
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/reports/course_detail', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
     
     // Export functions for different report types
@@ -769,9 +769,9 @@ class Report extends CI_Controller
         $this->initialize_placeholder_chart_data($data);
         
         // Load views
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/reports/dashboard', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     private function initialize_dashboard_data(&$data) {

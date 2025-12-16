@@ -61,10 +61,10 @@ class Inventory extends CI_Controller
         $data["stats"] = $this->inventory->get_inventory_stats($this->college['id']);
         $data["categories"] = $this->inventory->get_instrument_categories();
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/index', $data);
         $this->load->view('faculty/inventory/modals');
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function create()
@@ -274,9 +274,9 @@ class Inventory extends CI_Controller
 
         $data["issues"] = $this->inventory->get_instrument_issues(null, $filters);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/issues', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function maintenance_logs()
@@ -293,9 +293,9 @@ class Inventory extends CI_Controller
 
         $data["maintenance_logs"] = $this->inventory->get_maintenance_logs(null, $filters);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/maintenance', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function reports()
@@ -322,9 +322,9 @@ class Inventory extends CI_Controller
         // Student performance metrics
         $data["student_performance"] = $this->get_student_performance_stats($this->college['id']);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/reports', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     private function json_response($status, $data = [], $http_code = 200)

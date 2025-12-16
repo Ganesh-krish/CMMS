@@ -225,9 +225,9 @@ class Principal extends CI_Controller {
 
         // var_dump($data);die;
         
-        $this->load->view('faculty/faculty/sidebar', $class);
-        $this->load->view('faculty/faculty/dashboard', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('common/dashboard', $data);
+        $this->load->view('common/footer');
     }
 
     public function view(){
@@ -293,9 +293,9 @@ class Principal extends CI_Controller {
         $data["add_vice_principal_url"] = base_url($this->url."/principal/add_vice_principal");
         $data["add_department_admin_url"] = base_url($this->url."/principal/add_department_admin");
 
-		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('common/sidebar',$class);
 		$this->load->view('faculty/faculty/principal',$data);
-		$this->load->view('faculty/faculty/footer');
+		$this->load->view('common/footer');
     }
 
     public function vice_principal(){
@@ -316,9 +316,9 @@ class Principal extends CI_Controller {
             $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department']]);
             $data["vice_principal"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
-		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('common/sidebar',$class);
 		$this->load->view('faculty/faculty/vice_principal',$data);
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
     public function hod(){
@@ -340,9 +340,9 @@ class Principal extends CI_Controller {
             $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $value['department']]);
             $data["hod"][$key]['department'] = $dept ? $dept['name'] : 'unknown';
         }
-		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('common/sidebar',$class); 
 		$this->load->view('faculty/faculty/hod',$data);
-		$this->load->view('faculty/faculty/footer');
+		$this->load->view('common/footer');
     }
 
     public function staff(){
@@ -371,9 +371,9 @@ class Principal extends CI_Controller {
             ["is_active" => true, "college_id" => $this->college['id']]
         );
 
-		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('common/sidebar',$class);
 		$this->load->view('faculty/faculty/staff',$data);
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
     public function groups()
@@ -388,9 +388,9 @@ class Principal extends CI_Controller {
         $data["groups"] = $this->db_model->get_all(TABLE_GROUPS,$group_conditions);
         $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']);
         // var_dump($data["groups"]);die;
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('groups/view', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
 
@@ -432,9 +432,9 @@ class Principal extends CI_Controller {
 
 
         $data['groups'] = $this->db_model->get_all(TABLE_GROUPS,["is_active"=>true,"college_id"=>$this->college['id']]);
-		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('common/sidebar',$class); 
 		$this->load->view('faculty/faculty/students',$data);
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
     public function reset_password(){  
@@ -586,9 +586,9 @@ class Principal extends CI_Controller {
             $data["college"] = $this->db_model->get_row(TABLE_COLLEGE, ["id" => $this->college['id'], "is_active" => true]);
             $data['logo'] = $data["college"]['logo'];
             $data['banner'] = $data["college"]['banner'];
-            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/settings', $data);
-            $this->load->view('faculty/faculty/footer');
+            $this->load->view('common/footer');
         }
     }
 
@@ -604,9 +604,9 @@ class Principal extends CI_Controller {
             "college_id" => $this->college['id']
         ]);
 
-        $this->load->view('faculty/faculty/sidebar',$class);
+        $this->load->view('common/sidebar',$class);
         $this->load->view('faculty/faculty/departments',$data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     // Department CRUD Methods
@@ -886,9 +886,9 @@ class Principal extends CI_Controller {
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url . "/principal");
 
-            $this->load->view('faculty/faculty/sidebar', $class);
+            $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/hod/edit', $data);
-            $this->load->view('faculty/faculty/footer');
+            $this->load->view('common/footer');
         }
     }
 

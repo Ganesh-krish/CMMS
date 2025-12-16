@@ -61,10 +61,10 @@ class Announcement extends CI_Controller
         // Check if user can create announcements
         $data["can_create"] = in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/index', $data);
         $this->load->view('faculty/announcements/modals');
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function create()
@@ -132,9 +132,9 @@ class Announcement extends CI_Controller
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/create', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function edit($id)
@@ -207,9 +207,9 @@ class Announcement extends CI_Controller
         $data["announcement"] = $announcement;
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/edit', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function delete($id)
@@ -274,9 +274,9 @@ class Announcement extends CI_Controller
 
         $data["announcement"] = $announcement;
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/view', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     // API endpoint for getting user announcements (for students and other users)

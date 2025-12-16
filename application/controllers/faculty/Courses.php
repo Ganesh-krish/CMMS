@@ -79,9 +79,9 @@ class Courses extends CI_Controller {
 
         $data['departments'] = $departments;
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/index', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function add() {
@@ -308,9 +308,9 @@ class Courses extends CI_Controller {
             "is_active" => 1
         ]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/modules', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function lessons($course_id = null, $module_id = null) {
@@ -347,9 +347,9 @@ class Courses extends CI_Controller {
             "is_active" => 1
         ]);
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/lessons', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     public function enrollments($course_id = null) {
@@ -390,9 +390,9 @@ class Courses extends CI_Controller {
             $data["enrollments"][$key]['student_email'] = $student ? $student['email'] : 'Unknown';
         }
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/enrollments', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     // Module CRUD Methods
@@ -829,8 +829,8 @@ class Courses extends CI_Controller {
             return $e['is_active'] == 1;
         }));
 
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/students', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 }

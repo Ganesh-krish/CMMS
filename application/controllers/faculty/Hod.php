@@ -265,9 +265,9 @@ class Hod extends CI_Controller {
 
         $data["manage_student_url"] = base_url($this->url."/hod/students");
         
-        $this->load->view('faculty/faculty/sidebar', $class);
-        $this->load->view('faculty/faculty/dashboard', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('common/dashboard', $data);
+        $this->load->view('common/footer');
     }
 
     public function hod(){
@@ -284,9 +284,9 @@ class Hod extends CI_Controller {
                 "role"=>ROLE_ADMIN
             ]
         );
-		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('common/sidebar',$class); 
 		$this->load->view('faculty/faculty/hod',$data); 
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
     // Alias for /hod/view
@@ -309,9 +309,9 @@ class Hod extends CI_Controller {
                 $data["staff"][$key]['department'] = $this->db_model->get_row(TABLE_DEPARTMENT,["id"=>$value['department']])['name'];
             }
         }
-		$this->load->view('faculty/faculty/sidebar',$class); 
+		$this->load->view('common/sidebar',$class); 
 		$this->load->view('faculty/faculty/staff',$data); 
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
     public function students(){
@@ -370,9 +370,9 @@ class Hod extends CI_Controller {
         $data['departments'] = $this->db_model->get_all(TABLE_DEPARTMENT,["id"=>$departments,"is_active"=>true,"college_id"=>$this->college['id']]);
 
 
-		$this->load->view('faculty/faculty/sidebar',$class);
+		$this->load->view('common/sidebar',$class);
 		$this->load->view('faculty/faculty/students',$data);
-		$this->load->view('faculty/faculty/footer'); 
+		$this->load->view('common/footer'); 
     }
 
 
@@ -392,9 +392,9 @@ class Hod extends CI_Controller {
         }
         $data["groups"] = $this->db_model->get_all(TABLE_GROUPS,$group_conditions);
         // var_dump($data["groups"]);die;
-        $this->load->view('faculty/faculty/sidebar', $class);
+        $this->load->view('common/sidebar', $class);
         $this->load->view('groups/view', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
 

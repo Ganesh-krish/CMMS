@@ -109,9 +109,9 @@ class Dashboard extends CI_Controller {
             'manage_student_url' => base_url('Dashboard')
         ];
 
-        $this->load->view('faculty/faculty/sidebar', $data);
-        $this->load->view('faculty/faculty/dashboard', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/sidebar', $data);
+        $this->load->view('common/dashboard', $data);
+        $this->load->view('common/footer');
     }
 
     public function students() {
@@ -148,9 +148,9 @@ class Dashboard extends CI_Controller {
             'name' => $this->user_session['name'] ?? 'Admin'
         ]);
 
-        $this->load->view('faculty/faculty/sidebar', $data);
+        $this->load->view('common/sidebar', $data);
         $this->load->view('faculty/faculty/students', $data);
-        $this->load->view('faculty/faculty/footer');
+        $this->load->view('common/footer');
     }
 
     private function handle_ajax_students() {

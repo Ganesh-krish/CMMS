@@ -229,6 +229,33 @@ $route['(:any)/report/kpis'] = 'faculty/Report/kpis';
 $route['(:any)/report/(:any)'] = 'faculty/Report/$2';
 $route['(:any)/report/dashboard'] = 'faculty/Report/dashboard';
 
+// Management routes (SuperAdmin only)
+$route['(:any)/management/principal'] = 'faculty/Management/principal';
+$route['(:any)/management/principal/add'] = 'faculty/Management/add_principal';
+$route['(:any)/management/principal/edit/(:num)'] = 'faculty/Management/edit_principal/$2';
+$route['(:any)/management/principal/delete/(:num)'] = 'faculty/Management/delete_principal/$2';
+
+$route['(:any)/management/vice_principal'] = 'faculty/Management/vice_principal';
+$route['(:any)/management/vice_principal/add'] = 'faculty/Management/add_vice_principal';
+$route['(:any)/management/vice_principal/edit/(:num)'] = 'faculty/Management/edit_vice_principal/$2';
+$route['(:any)/management/vice_principal/delete/(:num)'] = 'faculty/Management/delete_vice_principal/$2';
+
+$route['(:any)/management/hod'] = 'faculty/Management/hod';
+$route['(:any)/management/hod/add'] = 'faculty/Management/add_hod';
+$route['(:any)/management/hod/edit/(:num)'] = 'faculty/Management/edit_hod/$2';
+$route['(:any)/management/hod/delete/(:num)'] = 'faculty/Management/delete_hod/$2';
+
+// Faculty routes (SuperAdmin only)
+$route['(:any)/faculty/instructor'] = 'faculty/Faculty/instructor';
+$route['(:any)/faculty/instructor/add'] = 'faculty/Faculty/add_instructor';
+$route['(:any)/faculty/instructor/edit/(:num)'] = 'faculty/Faculty/edit_instructor/$2';
+$route['(:any)/faculty/instructor/delete/(:num)'] = 'faculty/Faculty/delete_instructor/$2';
+
+$route['(:any)/faculty/custodian'] = 'faculty/Faculty/custodian';
+$route['(:any)/faculty/custodian/add'] = 'faculty/Faculty/add_custodian';
+$route['(:any)/faculty/custodian/edit/(:num)'] = 'faculty/Faculty/edit_custodian/$2';
+$route['(:any)/faculty/custodian/delete/(:num)'] = 'faculty/Faculty/delete_custodian/$2';
+
 // Instrument Inventory
 $route['(:any)/inventory'] = 'faculty/Inventory/index';
 $route['(:any)/inventory/create'] = 'faculty/Inventory/create';

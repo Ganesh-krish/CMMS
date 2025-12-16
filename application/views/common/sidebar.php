@@ -264,23 +264,28 @@
                         </a>
                     </li>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
-                        <li class="sidenav-item <?php if ($classname == "manage_admin") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/manage_admin") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-user-check"></i>
-                                <div>Administrator</div>
+                        <li class="sidenav-item">
+                            <a href="#" class="sidenav-link dropdown-toggle">
+                                <i class="sidenav-icon feather icon-settings"></i>
+                                <div>Management</div>
                             </a>
+                            <ul class="submenu">
+                                <li><a href="<?php echo base_url($url.'/management/principal'); ?>" class="<?php if ($classname == "management_principal") echo "active"; ?>">Administrator</a></li>
+                                <li><a href="<?php echo base_url($url.'/management/vice_principal'); ?>" class="<?php if ($classname == "management_vice_principal") echo "active"; ?>">Asst Administrator</a></li>
+                                <li><a href="<?php echo base_url($url.'/management/hod'); ?>" class="<?php if ($classname == "management_hod") echo "active"; ?>">Dept Administrator</a></li>
+                            </ul>
                         </li>
                     <?php endif; ?>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>
-                        <li class="sidenav-item <?php if ($classname == "staff") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/manage_staff") ?>" class="sidenav-link ">
+                        <li class="sidenav-item">
+                            <a href="#" class="sidenav-link dropdown-toggle">
                                 <i class="sidenav-icon feather icon-users"></i>
-                                <div>Instructor</div>
+                                <div>Faculty</div>
                             </a>
+                            <ul class="submenu">
+                                <li><a href="<?php echo base_url($url.'/faculty/instructor'); ?>" class="<?php if ($classname == "faculty_instructor") echo "active"; ?>">Instructor</a></li>
+                                <li><a href="<?php echo base_url($url.'/faculty/custodian'); ?>" class="<?php if ($classname == "faculty_custodian") echo "active"; ?>">Custodian</a></li>
+                            </ul>
                         </li>
                     <?php endif; ?>
 

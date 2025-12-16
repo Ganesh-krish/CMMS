@@ -134,6 +134,7 @@ defined('ROLE_SUPERADMIN')      or define('ROLE_SUPERADMIN', 1);      // Princip
 defined('ROLE_VICE_PRINCIPAL')  or define('ROLE_VICE_PRINCIPAL', 2);  // Vice-Principal
 defined('ROLE_HOD')             or define('ROLE_HOD', 4);             // HOD (Department Admin)
 defined('ROLE_STAFF')           or define('ROLE_STAFF', 5);           // Staff (Instructor)
+defined('ROLE_CLERK_STAFF')     or define('ROLE_CLERK_STAFF', 6);     // Clerk Staff (Inventory)
 
 // Backward compatibility - ROLE_ADMIN now maps to Vice-Principal
 defined('ROLE_ADMIN')           or define('ROLE_ADMIN', ROLE_VICE_PRINCIPAL);
@@ -143,4 +144,5 @@ defined('DESIGNATION_PRINCIPAL')     or define('DESIGNATION_PRINCIPAL', ROLE_SUP
 defined('DESIGNATION_VICE_PRINCIPAL') or define('DESIGNATION_VICE_PRINCIPAL', ROLE_VICE_PRINCIPAL);
 defined('DESIGNATION_HOD')           or define('DESIGNATION_HOD', ROLE_HOD);
 defined('DESIGNATION_STAFF')         or define('DESIGNATION_STAFF', ROLE_STAFF);
+defined('DESIGNATION_CLERK_STAFF')   or define('DESIGNATION_CLERK_STAFF', ROLE_CLERK_STAFF);
 

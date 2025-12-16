@@ -320,7 +320,7 @@
                         <li class="sidenav-item <?php if ($classname == "reports") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="/CMMS/index.php/report" class="sidenav-link ">
+                            <a href="<?= base_url($url . "/report") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-bar-chart-2"></i>
                                 <div>Reports</div>
                             </a>

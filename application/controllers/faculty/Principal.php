@@ -20,8 +20,11 @@ class Principal extends CI_Controller {
                 'role' => ROLE_SUPERADMIN,
                 'designation' => DESIGNATION_PRINCIPAL,
                 'department' => null,
-                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
+                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID,
+                'user_type' => 'faculty' // Add user_type for unified session
             ];
+            // Set unified session for portal access so other controllers can access it
+            $this->session->set_userdata('user', $this->session_data);
         } else {
             $this->faculty_common->check_user_session($this->url);
             $this->college = $this->faculty_common->get_default_college();

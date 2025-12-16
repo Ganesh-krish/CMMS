@@ -15,17 +15,37 @@ class Announcement extends CI_Controller
         $this->load->model('Announcement_model', 'announcement');
 
         $this->url = $this->uri->segment(1);
-        $this->faculty_common->check_user_session($this->url);
-        $this->college = $this->faculty_common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
+
+        // Check for unified session (used by portal access)
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            // Unified session access (portal, etc.)
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            // Legacy faculty session approach
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
-        // Only SuperAdmin, Admin (Vice-Principal), and HOD can access announcements
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        // Define access levels for announcements
+        $create_edit_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        $read_only_roles = [ROLE_STAFF, ROLE_CLERK_STAFF];
+        $allowed_roles = array_merge($create_edit_roles, $read_only_roles);
+
         if (!in_array($role, $allowed_roles, true)) {
             $this->faculty_common->redirect_route($role, $this->url);
         }
+
+        // Set permissions based on role
+        $this->permissions = [
+            'can_create' => in_array($role, $create_edit_roles),
+            'can_edit' => in_array($role, $create_edit_roles),
+            'can_delete' => in_array($role, $create_edit_roles)
+        ];
     }
 
     public function index()
@@ -58,8 +78,8 @@ class Announcement extends CI_Controller
         $data["stats"] = $this->announcement->get_announcement_stats($this->college['id']);
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
-        // Check if user can create announcements
-        $data["can_create"] = in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD]);
+        // Add permissions to view data
+        $data["permissions"] = $this->permissions;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/index', $data);
@@ -72,7 +92,7 @@ class Announcement extends CI_Controller
         $role = $this->session_data['role'] ?? $this->session_data['designation'];
 
         // Check permissions
-        if (!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD])) {
+        if (!$this->permissions['can_create']) {
             $this->session->set_flashdata('message', [0, 'You do not have permission to create announcements.']);
             redirect($this->url.'/announcements');
         }

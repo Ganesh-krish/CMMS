@@ -29,17 +29,41 @@ class Inventory extends CI_Controller
                 'department' => null // Admin can see all departments
             ];
         } else {
-            // Faculty session
-            $this->faculty_common->check_user_session($this->url);
-            $this->session_data = $this->session->userdata($this->url);
+            // Check for unified session (used by portal access)
+            $unified_user = $this->session->userdata('user');
+            if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+                // Unified session access (portal, etc.)
+                $this->college = $this->faculty_common->get_default_college();
+                $this->session_data = $unified_user;
+            } else {
+                // Legacy faculty session approach
+                $this->faculty_common->check_user_session($this->url);
+                $this->session_data = $this->session->userdata($this->url);
+            }
         }
 
         $this->college = $this->faculty_common->get_default_college();
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
+
+        // Define access levels
+        $full_access_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_CLERK_STAFF];
+        $read_only_roles = [ROLE_HOD, ROLE_STAFF];
+        $allowed_roles = array_merge($full_access_roles, $read_only_roles);
+
+        if(!in_array($role, $allowed_roles, true)){
             $this->faculty_common->redirect_route($role,$this->url);
         }
+
+        // Set permissions based on role
+        $this->permissions = [
+            'can_create' => in_array($role, $full_access_roles),
+            'can_edit' => in_array($role, $full_access_roles),
+            'can_delete' => in_array($role, $full_access_roles),
+            'can_issue' => in_array($role, $full_access_roles),
+            'can_return' => in_array($role, $full_access_roles),
+            'can_maintenance' => in_array($role, $full_access_roles)
+        ];
     }
 
     public function index()
@@ -61,6 +85,9 @@ class Inventory extends CI_Controller
         $data["stats"] = $this->inventory->get_inventory_stats($this->college['id']);
         $data["categories"] = $this->inventory->get_instrument_categories();
 
+        // Add permissions to view data
+        $data["permissions"] = $this->permissions;
+
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/index', $data);
         $this->load->view('faculty/inventory/modals');
@@ -69,6 +96,13 @@ class Inventory extends CI_Controller
 
     public function create()
     {
+        // Check permissions
+        if (!$this->permissions['can_create']) {
+            $this->session->set_flashdata('message', array("danger", "You don't have permission to create inventory items."));
+            redirect($this->url.'/inventory');
+            return;
+        }
+
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Instrument Name', 'trim|required');

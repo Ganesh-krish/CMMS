@@ -28,15 +28,15 @@ class common extends CI_Model {
 	{  
         // Owner (admin) session
         if ($url === null) {
-            if(empty($this->user_session)){ 
-                $this->session->unset_userdata('owner'); 
-                redirect(base_url("OAuth"));
+            if(empty($this->user_session)){
+                $this->session->unset_userdata('owner');
+                redirect(base_url("Welcome")); // Redirect to login instead of OAuth
             }
             $user=$this->db_model->get_row(TABLE_FACULTY,['id'=>$this->user_session['id'],"is_active"=>1]);  
 
             if(empty($user)) {
-                $this->session->unset_userdata('owner'); 
-                redirect(base_url("OAuth/access_denied"));
+                $this->session->unset_userdata('owner');
+                redirect(base_url("Welcome")); // Redirect to login instead of OAuth
             }
             $this->session->unset_userdata('owner'); 
             $this->session->set_userdata('owner', $user);
@@ -45,8 +45,8 @@ class common extends CI_Model {
 
         // Faculty session (by url segment)
         $session = $this->session->userdata($url);
-        if(empty($session)){  
-            redirect( base_url("OAuth")); 
+        if(empty($session)){
+            redirect( base_url("Welcome")); // Redirect to login instead of OAuth
         }
         $college = $this->get_default_college();
         if(empty($college)){

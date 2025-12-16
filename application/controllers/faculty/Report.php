@@ -13,6 +13,7 @@ class Report extends CI_Controller
         $this->load->model('common', 'common');
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
+
         // Check for owner/admin session first
         $this->user_session = $this->session->userdata('owner');
         if ($this->user_session) {
@@ -27,24 +28,41 @@ class Report extends CI_Controller
                 'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
             ];
         } else {
-            // Faculty session - find the active session
-            $possible_keys = ['admin', 'staff', 'hod', 'principal'];
-            $this->url = null;
-            foreach ($possible_keys as $key) {
-                if ($this->session->userdata($key)) {
-                    $this->url = $key;
-                    break;
+            // Check for unified session (used by portal access)
+            $unified_user = $this->session->userdata('user');
+            if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+                // Unified session access (portal, etc.)
+                $this->url = $this->uri->segment(1) ?: 'admin';
+                $this->college = $this->common->get_default_college();
+                $this->session_data = $unified_user;
+            } else {
+                // Legacy faculty session - find the active session
+                $possible_keys = ['admin', 'staff', 'hod', 'principal', 'portal'];
+                $this->url = null;
+                foreach ($possible_keys as $key) {
+                    if ($this->session->userdata($key)) {
+                        $this->url = $key;
+                        break;
+                    }
                 }
-            }
 
-            if (!$this->url) {
-                redirect(base_url('OAuth'));
-            }
+                if (!$this->url) {
+                    redirect('Welcome'); // Redirect to login instead of OAuth
+                }
 
-            $this->common->check_user_session($this->url);
-            $this->college = $this->common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
+                $this->common->check_user_session($this->url);
+                $this->college = $this->common->get_default_college();
+                $this->session_data = $this->session->userdata($this->url);
+            }
         }
+
+        // Check role permissions - only Principal and Vice-Principal can access reports
+        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL];
+        if (!in_array($role, $allowed_roles, true)) {
+            $this->common->redirect_route($role, $this->url);
+        }
+
         $this->permissions = $this->common->get_access_permissions($this->session_data);
     }
 

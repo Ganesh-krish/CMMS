@@ -155,3 +155,4 @@ function editDepartment(id, name) {
 <script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
 
 
+

@@ -64,7 +64,7 @@
                                 </form>
                             </div>
                             <div class="col-md-6 text-right">
-                                <?php if ($can_create): ?>
+                                <?php if ($permissions['can_create']): ?>
                                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createAnnouncementModal">
                                         <i class="feather icon-plus"></i> Create Announcement
                                     </button>
@@ -96,7 +96,7 @@
                                 <i class="feather icon-bell-off" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Announcements</h4>
                                 <p class="text-muted">There are no announcements to display.</p>
-                                <?php if ($can_create): ?>
+                                <?php if ($permissions['can_create']): ?>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAnnouncementModal">
                                         Create First Announcement
                                     </button>
@@ -172,6 +172,7 @@ function confirmDelete(id) {
     }
 }
 </script>
+
 
 
 

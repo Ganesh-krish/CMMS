@@ -13,7 +13,6 @@ class Faculty extends CI_Controller {
 
         $this->load->model('common', 'faculty_common');
         $this->load->model('Db_model', 'db_model');
-        $this->load->model('Test_model', 'test_model');
 
         $this->url = $this->uri->segment(1);
 
@@ -33,7 +32,7 @@ class Faculty extends CI_Controller {
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
 
         // Only SuperAdmin can manage faculty
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
         if ($role !== ROLE_SUPERADMIN) {
             redirect($this->url.'/dashboard');
         }
@@ -275,5 +274,45 @@ class Faculty extends CI_Controller {
         }
         $this->session->set_flashdata('message', $message);
         redirect($this->url.'/faculty/custodian');
+    }
+
+    // ============ RESET PASSWORD METHODS ============
+
+    public function reset_password_instructor() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+            $this->form_validation->set_rules('id', 'Id', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message',array("danger",validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/instructor"));
+            }
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_STAFF]);
+            if(!$update){
+                $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/instructor"));
+            }
+            $this->session->set_flashdata('message',array("success","Password Reset successfully"));
+            return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/instructor"));
+        }
+    }
+
+    public function reset_password_custodian() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+            $this->form_validation->set_rules('id', 'Id', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message',array("danger",validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/custodian"));
+            }
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_CUSTODIAN]);
+            if(!$update){
+                $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/custodian"));
+            }
+            $this->session->set_flashdata('message',array("success","Password Reset successfully"));
+            return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/faculty/custodian"));
+        }
     }
 }

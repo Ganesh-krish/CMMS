@@ -90,18 +90,16 @@
                                                 </td>
                                                 <td><?php echo date('d M Y', strtotime($instructor['created_at'])); ?></td>
                                                 <td>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                                            <i class="feather icon-more-vertical"></i>
-                                                        </button>
-                                                        <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="<?php echo base_url($url.'/faculty/instructor/edit/'.$instructor['id']); ?>">
-                                                                <i class="feather icon-edit"></i> Edit
-                                                            </a>
-                                                            <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $instructor['id']; ?>, '<?php echo htmlspecialchars($instructor['name']); ?>')">
-                                                                <i class="feather icon-trash"></i> Delete
-                                                            </a>
-                                                        </div>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="<?php echo base_url($url.'/faculty/instructor/edit/'.$instructor['id']); ?>" class="btn btn-sm btn-success" title="Edit">
+                                                            <i class="feather icon-edit"></i>
+                                                        </a>
+                                                        <a href="#" onclick="confirmDelete(<?php echo $instructor['id']; ?>, '<?php echo htmlspecialchars($instructor['name']); ?>')" class="btn btn-sm btn-danger" title="Delete">
+                                                            <i class="feather icon-trash"></i>
+                                                        </a>
+                                                        <a href="#" onclick="resetPassword(<?php echo $instructor['id']; ?>, '<?php echo htmlspecialchars($instructor['name']); ?>')" class="btn btn-sm btn-warning" title="Reset Password">
+                                                            <i class="feather icon-lock"></i>
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -119,8 +117,174 @@
 
 <script>
 function confirmDelete(id, name) {
-    if (confirm('Are you sure you want to delete the instructor "' + name + '"? This action cannot be undone.')) {
-        window.location.href = '<?php echo base_url($url.'/faculty/instructor/delete/'); ?>' + id;
+    // Set modal content
+    document.getElementById('deleteModalLabel').textContent = 'Delete Instructor';
+    document.getElementById('deleteModalBody').innerHTML = 'Are you sure you want to delete the instructor "' + name + '"? This action cannot be undone.';
+
+    // Store the delete URL
+    window.deleteUrl = '<?php echo base_url($url.'/faculty/instructor/delete/'); ?>' + id;
+
+    // Show modal using Bootstrap's JavaScript API
+    var deleteModalElement = document.getElementById('deleteModal');
+    var modal = new bootstrap.Modal(deleteModalElement);
+    modal.show();
+
+    // Manually handle modal dismissal for delete modal
+    setTimeout(function() {
+        var cancelBtn = document.querySelector('#deleteModal .btn-secondary');
+        var closeBtn = document.querySelector('#deleteModal .close');
+
+        if (cancelBtn) {
+            cancelBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+    }, 100);
+}
+
+function resetPassword(id, name) {
+    // Set modal title and form action
+    document.getElementById('passwordResetModalLabel').textContent = 'Reset Password for ' + name;
+    document.getElementById('passwordResetForm').action = '<?php echo base_url($url.'/faculty/reset_password_instructor'); ?>';
+    document.getElementById('resetUserId').value = id;
+
+    // Reset form
+    document.getElementById('passwordResetForm').reset();
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
+
+    // Show modal
+    var passwordResetModalElement = document.getElementById('passwordResetModal');
+    var modal = new bootstrap.Modal(passwordResetModalElement);
+    modal.show();
+
+    // Store modal instance for dismissal
+    window.currentPasswordModal = modal;
+
+    // Initialize form validation after modal is shown
+    setTimeout(initializePasswordResetValidation, 100);
+}
+
+// Form validation for password reset - initialized when modal is shown
+function initializePasswordResetValidation() {
+    var form = document.getElementById('passwordResetForm');
+    var newPasswordField = document.getElementById('newPassword');
+    var confirmPasswordField = document.getElementById('confirmPassword');
+
+    if (!form || !newPasswordField || !confirmPasswordField) {
+        return; // Elements not found
+    }
+
+    form.addEventListener('submit', function(e) {
+        var password = newPasswordField.value;
+        var confirmPassword = confirmPasswordField.value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            confirmPasswordField.classList.add('is-invalid');
+            return false;
+        }
+
+        // Remove invalid class if validation passes
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    // Reset validation on password change
+    newPasswordField.addEventListener('input', function() {
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    confirmPasswordField.addEventListener('input', function() {
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    // Manually handle modal dismissal
+    var cancelBtn = form.querySelector('.btn-secondary');
+    var closeBtn = document.querySelector('#passwordResetModal .close');
+
+    if (cancelBtn) {
+        cancelBtn.onclick = function() {
+            if (window.currentPasswordModal) {
+                window.currentPasswordModal.hide();
+            }
+        };
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (window.currentPasswordModal) {
+                window.currentPasswordModal.hide();
+            }
+        };
+    }
+}
+
+function proceedDelete() {
+    if (window.deleteUrl) {
+        window.location.href = window.deleteUrl;
     }
 }
 </script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="deleteModalBody">
+                Are you sure you want to delete this instructor? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="proceedDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Reset Modal -->
+<div class="modal fade" id="passwordResetModal" tabindex="-1" role="dialog" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordResetModalLabel">Reset Password</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="passwordResetForm" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="password"
+                               placeholder="Enter new password" required>
+                        <small class="form-text text-muted">Password must be at least 6 characters long.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                               placeholder="Confirm new password" required>
+                        <div class="invalid-feedback" id="passwordMatchError">
+                            Passwords do not match.
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="resetUserId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -73,3 +73,16 @@ $route['(:any)/management/hod'] = 'Management/hod';
 $route['(:any)/management/hod/add'] = 'Management/add_hod';
 $route['(:any)/management/hod/edit/(:num)'] = 'Management/edit_hod/$2';
 $route['(:any)/management/hod/delete/(:num)'] = 'Management/delete_hod/$2';
+
+// Faculty Management routes (Instructor & Custodian)
+$route['(:any)/faculty/instructor'] = 'Faculty/instructor';
+$route['(:any)/faculty/instructor/add'] = 'Faculty/add_instructor';
+$route['(:any)/faculty/instructor/edit/(:num)'] = 'Faculty/edit_instructor/$2';
+$route['(:any)/faculty/instructor/delete/(:num)'] = 'Faculty/delete_instructor/$2';
+
+$route['(:any)/faculty/custodian'] = 'Faculty/custodian';
+$route['(:any)/faculty/custodian/add'] = 'Faculty/add_custodian';
+$route['(:any)/faculty/custodian/edit/(:num)'] = 'Faculty/edit_custodian/$2';
+$route['(:any)/faculty/custodian/delete/(:num)'] = 'Faculty/delete_custodian/$2';
+$route['(:any)/faculty/reset_password_instructor'] = 'Faculty/reset_password_instructor';
+$route['(:any)/faculty/reset_password_custodian'] = 'Faculty/reset_password_custodian';

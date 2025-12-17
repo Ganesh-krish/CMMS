@@ -60,7 +60,6 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone Number</th>
-                                            <th>Department</th>
                                             <th>Status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
@@ -74,16 +73,6 @@
                                                 <td><?php echo htmlspecialchars($vp['email']); ?></td>
                                                 <td><?php echo htmlspecialchars($vp['phone'] ?? '-'); ?></td>
                                                 <td>
-                                                    <?php
-                                                    if (isset($vp['department_id']) && $vp['department_id']) {
-                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $vp['department_id']]);
-                                                        echo $dept ? htmlspecialchars($dept['name']) : 'N/A';
-                                                    } else {
-                                                        echo 'N/A';
-                                                    }
-                                                    ?>
-                                                </td>
-                                                <td>
                                                     <span class="badge badge-<?php echo $vp['is_active'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $vp['is_active'] ? 'Active' : 'Inactive'; ?>
                                                     </span>
@@ -94,9 +83,11 @@
                                                         <a href="<?php echo base_url($url.'/management/vice_principal/edit/'.$vp['id']); ?>" class="btn btn-sm btn-success" title="Edit">
                                                             <i class="feather icon-edit"></i>
                                                         </a>
+                                                        <?php if ($vp['id'] != $current_user_id): ?>
                                                         <a href="#" onclick="confirmDelete(<?php echo $vp['id']; ?>, '<?php echo htmlspecialchars($vp['name']); ?>')" class="btn btn-sm btn-danger" title="Delete">
                                                             <i class="feather icon-trash"></i>
                                                         </a>
+                                                        <?php endif; ?>
                                                         <a href="#" onclick="resetPassword(<?php echo $vp['id']; ?>, '<?php echo htmlspecialchars($vp['name']); ?>')" class="btn btn-sm btn-warning" title="Reset Password">
                                                             <i class="feather icon-lock"></i>
                                                         </a>
@@ -136,29 +127,43 @@ function proceedDelete() {
 }
 
 function resetPassword(id, name) {
-    var newPassword = prompt('Enter new password for assistant administrator "' + name + '":');
-    if (newPassword !== null && newPassword.trim() !== '') {
-        // Create a form to submit the reset password request
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?php echo base_url($url.'/management/reset_password_vice_principal'); ?>';
+    // Set modal title and form action
+    document.getElementById('passwordResetModalLabel').textContent = 'Reset Password for ' + name;
+    document.getElementById('passwordResetForm').action = '<?php echo base_url($url.'/management/reset_password_vice_principal'); ?>';
+    document.getElementById('resetUserId').value = id;
 
-        var idField = document.createElement('input');
-        idField.type = 'hidden';
-        idField.name = 'id';
-        idField.value = id;
+    // Reset form
+    document.getElementById('passwordResetForm').reset();
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
 
-        var passwordField = document.createElement('input');
-        passwordField.type = 'hidden';
-        passwordField.name = 'password';
-        passwordField.value = newPassword;
-
-        form.appendChild(idField);
-        form.appendChild(passwordField);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    // Show modal
+    var modal = new bootstrap.Modal(document.getElementById('passwordResetModal'));
+    modal.show();
 }
+
+// Form validation for password reset
+document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
+    var password = document.getElementById('newPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        document.getElementById('confirmPassword').classList.add('is-invalid');
+        return false;
+    }
+
+    // Remove invalid class if validation passes
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
+});
+
+// Reset validation on password change
+document.getElementById('newPassword').addEventListener('input', function() {
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
+});
+
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
+});
 </script>
 
 <!-- Delete Confirmation Modal -->
@@ -178,6 +183,43 @@ function resetPassword(id, name) {
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" onclick="proceedDelete()">Delete</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Reset Modal -->
+<div class="modal fade" id="passwordResetModal" tabindex="-1" role="dialog" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordResetModalLabel">Reset Password</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="passwordResetForm" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="password"
+                               placeholder="Enter new password" required>
+                        <small class="form-text text-muted">Password must be at least 6 characters long.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                               placeholder="Confirm new password" required>
+                        <div class="invalid-feedback" id="passwordMatchError">
+                            Passwords do not match.
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="resetUserId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Reset Password</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

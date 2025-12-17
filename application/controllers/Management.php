@@ -59,6 +59,7 @@ class Management extends CI_Controller {
         // exit;   
 
         $data["administrators"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_SUPERADMIN, "is_active" => 1]);
+        $data["current_user_id"] = $this->session_data['id'];
 
         $data["url"] = $this->url;
         $class["classname"] = "management_principal";
@@ -162,6 +163,13 @@ class Management extends CI_Controller {
     }
 
     public function delete_principal($id) {
+        // Prevent users from deleting themselves
+        if ($id == $this->session_data['id']) {
+            $this->session->set_flashdata('message', array('warning', "You cannot delete your own account."));
+            redirect($this->url.'/management/principal');
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_SUPERADMIN]);
         $message = array('success', "Administrator deleted successfully!");
         if (!$result) {
@@ -175,6 +183,7 @@ class Management extends CI_Controller {
 
     public function vice_principal() {
         $data["vice_principals"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_VICE_PRINCIPAL, "is_active" => 1]);
+        $data["current_user_id"] = $this->session_data['id'];
 
         $data["url"] = $this->url;
         $class["classname"] = "management_vice_principal";
@@ -193,7 +202,6 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
-            $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -207,7 +215,6 @@ class Management extends CI_Controller {
                     'role' => ROLE_VICE_PRINCIPAL,
                     'designation' => DESIGNATION_VICE_PRINCIPAL,
                     'college_id' => $this->college['id'],
-                    'department_id' => $this->input->post('department_id'),
                     'is_active' => 1,
                     'created_at' => date('Y-m-d H:i:s'),
                     'created_by' => $this->session_data['id']
@@ -239,7 +246,6 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -249,7 +255,6 @@ class Management extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
                 );
@@ -281,6 +286,13 @@ class Management extends CI_Controller {
     }
 
     public function delete_vice_principal($id) {
+        // Prevent users from deleting themselves
+        if ($id == $this->session_data['id']) {
+            $this->session->set_flashdata('message', array('warning', "You cannot delete your own account."));
+            redirect($this->url.'/management/vice_principal');
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_VICE_PRINCIPAL]);
         $message = array('success', "Assistant Administrator deleted successfully!");
         if (!$result) {
@@ -294,6 +306,7 @@ class Management extends CI_Controller {
 
     public function hod() {
         $data["hods"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_HOD, "is_active" => 1]);
+        $data["current_user_id"] = $this->session_data['id'];
 
         $data["url"] = $this->url;
         $class["classname"] = "management_hod";
@@ -312,7 +325,6 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
-            $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -326,7 +338,6 @@ class Management extends CI_Controller {
                     'role' => ROLE_HOD,
                     'designation' => DESIGNATION_HOD,
                     'college_id' => $this->college['id'],
-                    'department_id' => $this->input->post('department_id'),
                     'is_active' => 1,
                     'created_at' => date('Y-m-d H:i:s'),
                     'created_by' => $this->session_data['id']
@@ -358,7 +369,6 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -368,7 +378,6 @@ class Management extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
                 );
@@ -400,6 +409,13 @@ class Management extends CI_Controller {
     }
 
     public function delete_hod($id) {
+        // Prevent users from deleting themselves
+        if ($id == $this->session_data['id']) {
+            $this->session->set_flashdata('message', array('warning', "You cannot delete your own account."));
+            redirect($this->url.'/management/hod');
+            return;
+        }
+
         $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_HOD]);
         $message = array('success', "Department Administrator deleted successfully!");
         if (!$result) {

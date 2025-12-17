@@ -52,13 +52,13 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="department_id">Department *</label>
-                                <select class="form-control" id="department_id" name="department_id" required>
+                                <label for="department">Department *</label>
+                                <select class="form-control" id="department" name="department" required>
                                     <option value="">Select Department</option>
                                     <?php if(isset($departments) && !empty($departments)): ?>
                                         <?php foreach($departments as $dept): ?>
                                             <option value="<?php echo $dept['id']; ?>"
-                                                <?php echo (isset($hod) && $hod['department_id'] == $dept['id']) ? 'selected' : ''; ?>>
+                                                <?php echo (isset($hod) && $hod['department'] == $dept['id']) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($dept['name']); ?>
                                             </option>
                                         <?php endforeach; ?>

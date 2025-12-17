@@ -35,11 +35,11 @@ class Principal extends CI_Controller {
 
         // Check permissions using Common model
         $permissions = $this->faculty_common->get_access_permissions($this->session_data);
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Allow Principal (SuperAdmin) and Vice-Principal access to principal functions
         $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL];
-        if(!in_array($role, $allowed_roles)){
+            if(!in_array($role, $allowed_roles)){
             redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
     }

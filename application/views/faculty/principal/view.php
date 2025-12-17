@@ -1,6 +1,6 @@
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-0">HOD Dashboard</h4>
+        <h4 class="font-weight-bold py-3 mb-0">Principal Dashboard</h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="<?php echo base_url($url.'/dashboard'); ?>"><i class="feather icon-home"></i></a></li>
@@ -36,26 +36,32 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Department Actions</h5>
+                        <h5>Quick Actions</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <a href="<?php echo base_url($url.'/courses'); ?>" class="btn btn-outline-primary btn-block">
-                                    <i class="feather icon-book"></i><br>
-                                    Manage Courses
+                            <div class="col-md-3 mb-3">
+                                <a href="<?php echo base_url($url.'/departments'); ?>" class="btn btn-outline-primary btn-block">
+                                    <i class="feather icon-layers"></i><br>
+                                    Manage Departments
                                 </a>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <a href="<?php echo base_url($url.'/students'); ?>" class="btn btn-outline-success btn-block">
-                                    <i class="feather icon-users"></i><br>
-                                    Department Students
-                                </a>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <a href="<?php echo base_url($url.'/report'); ?>" class="btn btn-outline-info btn-block">
+                            <div class="col-md-3 mb-3">
+                                <a href="<?php echo base_url($url.'/report'); ?>" class="btn btn-outline-success btn-block">
                                     <i class="feather icon-bar-chart"></i><br>
-                                    Department Reports
+                                    View Reports
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="<?php echo base_url($url.'/announcements'); ?>" class="btn btn-outline-info btn-block">
+                                    <i class="feather icon-bell"></i><br>
+                                    Announcements
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="<?php echo base_url($url.'/students'); ?>" class="btn btn-outline-warning btn-block">
+                                    <i class="feather icon-users"></i><br>
+                                    Manage Students
                                 </a>
                             </div>
                         </div>
@@ -64,15 +70,18 @@
             </div>
         </div>
 
-        <!-- Department Info -->
+        <!-- Recent Activity or Summary -->
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Department Overview</h5>
+                        <h5>System Overview</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Welcome to your HOD dashboard. Manage your department's courses, students, and view reports.</p>
+                        <p class="text-muted">Welcome to your principal dashboard. Use the quick actions above to manage your institution effectively.</p>
+                        <div class="alert alert-info">
+                            <strong>Tip:</strong> Use the Management dropdown in the sidebar to access administrator management features.
+                        </div>
                     </div>
                 </div>
             </div>

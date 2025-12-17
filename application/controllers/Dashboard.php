@@ -32,8 +32,8 @@ class Dashboard extends CI_Controller
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
 
         // Basic access check - all faculty roles can access dashboard
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CLERK_STAFF];
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN];
         if (!in_array($role, $allowed_roles, true)) {
             redirect('Welcome');
         }
@@ -52,15 +52,17 @@ class Dashboard extends CI_Controller
         if ($role == ROLE_VICE_PRINCIPAL) {
             // Vice-Principal dashboard
             $data = array_merge($data, $this->get_principal_dashboard_data());
-            $view_file = 'faculty/faculty/principal';
+            $view_file = 'faculty/principal/view';
         } elseif ($role == ROLE_HOD) {
             // HOD dashboard
             $data = array_merge($data, $this->get_hod_dashboard_data());
-            $view_file = 'faculty/faculty/hod';
-        } elseif (in_array($role, [ROLE_STAFF, ROLE_CLERK_STAFF])) {
-            // Staff dashboard
+            $view_file = 'faculty/hod/view';
+        } elseif (in_array($role, [ROLE_STAFF, ROLE_CUSTODIAN])) {
+            // Staff dashboard - use common dashboard for now
             $data = array_merge($data, $this->get_staff_dashboard_data());
-            $view_file = 'faculty/faculty/staff';
+            $data["title"] = "Staff Dashboard";
+            $data["show_staff_view"] = true;
+            $view_file = 'faculty/admin_view';
         } elseif ($role == ROLE_SUPERADMIN) {
             // SuperAdmin dashboard - show unified dashboard
             $data = array_merge($data, $this->get_principal_dashboard_data());
@@ -434,7 +436,7 @@ class Dashboard extends CI_Controller
         $data["permissions"] = $this->permissions;
 
         $this->load->view('common/sidebar', $data);
-        $this->load->view('faculty/add_student', $data);
+        $this->load->view('faculty/student/add', $data);
         $this->load->view('common/footer');
     }
 
@@ -462,7 +464,7 @@ class Dashboard extends CI_Controller
         $data["permissions"] = $this->permissions;
 
         $this->load->view('common/sidebar', $data);
-        $this->load->view('faculty/edit_student', $data);
+        $this->load->view('faculty/student/add', $data);
         $this->load->view('common/footer');
     }
 

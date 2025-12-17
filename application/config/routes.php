@@ -151,6 +151,12 @@ $route['(:any)/departments'] = 'faculty/Department/view';  // Department managem
 $route['(:any)/departments/add/(:num)'] = 'faculty/Department/add/$2';  // Add department to college
 $route['(:any)/departments/edit/(:num)'] = 'faculty/Department/edit/$2';  // Edit department
 $route['(:any)/departments/delete/(:num)'] = 'faculty/Department/delete/$2';  // Delete department
+
+// Student management routes (SuperAdmin only)
+$route['(:any)/student/view'] = 'faculty/Dashboard/students';  // Student list (existing)
+$route['(:any)/student/add'] = 'faculty/Dashboard/add_student';  // Add student
+$route['(:any)/student/add/(:num)'] = 'faculty/Dashboard/edit_student/$2';  // Edit student
+$route['(:any)/students/delete/(:num)'] = 'faculty/Dashboard/delete_student/$2';  // Delete student
 $route['(:any)/add_department'] = 'faculty/Principal/add_department';
 $route['(:any)/edit_department/(:num)'] = 'faculty/Principal/edit_department/$2';
 $route['(:any)/delete_department/(:num)'] = 'faculty/Principal/delete_department/$2';
@@ -170,14 +176,14 @@ $route['(:any)/staff_students'] = 'faculty/Staff/students'; // Staff student vie
 
 // Backward compatibility routes for HOD and Staff
 $route['(:any)/hod'] = 'faculty/Hod/index'; // HOD backward compatibility
-$route['(:any)/hod/hod'] = 'faculty/Hod/hod';
-$route['(:any)/hod/view'] = 'faculty/Hod/hod';
-$route['(:any)/hod/staff'] = 'faculty/Hod/staff';
-$route['(:any)/hod/students'] = 'faculty/Hod/students';
+$route['(:any)/hod/hod'] = 'faculty/Hod/hod'; 
+$route['(:any)/hod/view'] = 'faculty/Hod/hod'; 
+$route['(:any)/hod/staff'] = 'faculty/Hod/staff'; 
+$route['(:any)/hod/students'] = 'faculty/Hod/students'; 
 
 $route['(:any)/staff'] = 'faculty/Staff/index'; // Staff backward compatibility
-$route['(:any)/staff/staff'] = 'faculty/Staff/staff';
-$route['(:any)/staff/view'] = 'faculty/Staff/staff';
+$route['(:any)/staff/staff'] = 'faculty/Staff/staff'; 
+$route['(:any)/staff/view'] = 'faculty/Staff/staff'; 
 $route['(:any)/staff/students'] = 'faculty/Staff/students';
 $route['(:any)/hod/groups'] = 'faculty/Hod/groups';
 

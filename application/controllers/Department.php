@@ -49,7 +49,7 @@ class Department extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url."/departments");
 
         $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/departments', $data);
+        $this->load->view('faculty/department/view', $data);
         $this->load->view('common/footer');
     }
 

@@ -103,7 +103,7 @@ class Welcome extends CI_Controller {
 
     private function redirect_based_on_role() {
         $user = $this->session->userdata('user');
-
+           
         // Convert object to array if needed (session serialization can change data type)
         if (is_object($user)) {
             $user = (array) $user;
@@ -136,7 +136,7 @@ class Welcome extends CI_Controller {
                 redirect('portal/dashboard'); // Unified dashboard adapts to role
                 break;
 
-            case ROLE_CLERK_STAFF:
+            case ROLE_CUSTODIAN:
                 redirect('portal/dashboard'); // Unified dashboard adapts to role
                 break;
 

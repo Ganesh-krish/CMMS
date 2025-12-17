@@ -20,9 +20,9 @@ class Hod extends CI_Controller {
             $this->session_data = $unified_user;
         } else {
             // Fallback for legacy access
-            $this->faculty_common->check_user_session($this->url);
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
+        $this->faculty_common->check_user_session($this->url);
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $this->session->userdata($this->url);
         }
 
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);

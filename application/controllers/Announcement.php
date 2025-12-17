@@ -33,7 +33,7 @@ class Announcement extends CI_Controller
 
         // Define access levels for announcements
         $create_edit_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
-        $read_only_roles = [ROLE_STAFF, ROLE_CLERK_STAFF];
+        $read_only_roles = [ROLE_STAFF, ROLE_CUSTODIAN];
         $allowed_roles = array_merge($create_edit_roles, $read_only_roles);
 
         if (!in_array($role, $allowed_roles, true)) {

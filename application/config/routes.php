@@ -51,6 +51,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'Welcome';
 $route['logout'] = 'Welcome/logout';
-$route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+
+//Dashboard routes
+$route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
+
+// Management routes (Administrator dropdown)
+$route['(:any)/management/principal'] = 'Management/principal';
+$route['(:any)/management/principal/add'] = 'Management/add_principal';
+$route['(:any)/management/principal/edit/(:num)'] = 'Management/edit_principal/$2';
+$route['(:any)/management/principal/delete/(:num)'] = 'Management/delete_principal/$2';
+
+$route['(:any)/management/vice_principal'] = 'Management/vice_principal';
+$route['(:any)/management/vice_principal/add'] = 'Management/add_vice_principal';
+$route['(:any)/management/vice_principal/edit/(:num)'] = 'Management/edit_vice_principal/$2';
+$route['(:any)/management/vice_principal/delete/(:num)'] = 'Management/delete_vice_principal/$2';
+
+$route['(:any)/management/hod'] = 'Management/hod';
+$route['(:any)/management/hod/add'] = 'Management/add_hod';
+$route['(:any)/management/hod/edit/(:num)'] = 'Management/edit_hod/$2';
+$route['(:any)/management/hod/delete/(:num)'] = 'Management/delete_hod/$2';

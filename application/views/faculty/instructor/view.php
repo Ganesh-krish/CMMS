@@ -72,7 +72,7 @@
                                                 <td><?php echo $instructor['id']; ?></td>
                                                 <td><?php echo htmlspecialchars($instructor['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($instructor['email']); ?></td>
-                                                <td><?php echo htmlspecialchars($instructor['phone_number']); ?></td>
+                                                <td><?php echo htmlspecialchars($instructor['phone'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php
                                                     if (isset($instructor['department_id']) && $instructor['department_id']) {

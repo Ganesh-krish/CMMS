@@ -68,7 +68,7 @@ class College extends CI_Controller {
                 'description' => $this->input->post('description'),
                 'city' => $this->input->post('city'),
                 'state' => $this->input->post('state'),
-                'phone_number' => $this->input->post('phone_number'),
+                'phone' => $this->input->post('phone'),
                 'email' => $this->input->post('email'),
                 'created_by' => $this->session_data['id']
             );

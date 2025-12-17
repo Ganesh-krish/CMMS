@@ -13,12 +13,20 @@ class Management extends CI_Controller {
 
         $this->load->model('common', 'faculty_common');
         $this->load->model('Db_model', 'db_model');
-        $this->load->model('Test_model', 'test_model');
 
         $this->url = $this->uri->segment(1);
 
         // Use unified session approach
         $unified_user = $this->session->userdata('user');
+        // print_r($unified_user);
+         
+        // Convert object to array if needed (session serialization can change data type)
+        if (is_object($unified_user)) {
+            $unified_user = (array) $unified_user;
+        }
+
+        // print_r($unified_user);
+           
         if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
             // Unified session access
             $this->college = $this->faculty_common->get_default_college();
@@ -29,11 +37,15 @@ class Management extends CI_Controller {
             $this->college = $this->faculty_common->get_default_college();
             $this->session_data = $this->session->userdata($this->url);
         }
-
+        // print_r($this->session_data);
+           
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
-
+        // print_r($this->permissions);
+          
         // Only SuperAdmin can manage administrators
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        // print_r($role);
+        
         if ($role !== ROLE_SUPERADMIN) {
             redirect($this->url.'/dashboard');
         }
@@ -42,6 +54,10 @@ class Management extends CI_Controller {
     // ============ PRINCIPAL MANAGEMENT ============
 
     public function principal() {
+        // print_r("principal");
+        // print_r($this->url);
+        // exit;   
+
         $data["administrators"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_SUPERADMIN, "is_active" => 1]);
 
         $data["url"] = $this->url;
@@ -50,7 +66,7 @@ class Management extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url."/management/principal");
 
         $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/management/principal/view', $data);
+        $this->load->view('faculty/principal/view', $data);
         $this->load->view('common/footer');
     }
 
@@ -59,7 +75,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
 
             if ($this->form_validation->run() == FALSE) {
@@ -69,7 +85,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_SUPERADMIN,
                     'designation' => DESIGNATION_PRINCIPAL,
@@ -95,7 +111,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/principal");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/principal/add', $data);
+            $this->load->view('faculty/principal/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -105,7 +121,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -114,7 +130,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
                 );
@@ -140,7 +156,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/principal");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/principal/add', $data);
+            $this->load->view('faculty/principal/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -166,7 +182,7 @@ class Management extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
         $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/management/vice_principal/view', $data);
+        $this->load->view('faculty/vice_principal/view', $data);
         $this->load->view('common/footer');
     }
 
@@ -175,7 +191,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
@@ -186,7 +202,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_VICE_PRINCIPAL,
                     'designation' => DESIGNATION_VICE_PRINCIPAL,
@@ -212,7 +228,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/vice_principal/add', $data);
+            $this->load->view('faculty/vice_principal/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -222,7 +238,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
@@ -232,7 +248,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
@@ -259,7 +275,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/vice_principal/add', $data);
+            $this->load->view('faculty/vice_principal/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -285,7 +301,7 @@ class Management extends CI_Controller {
         $class["sidebar_href"] = base_url($this->url."/management/hod");
 
         $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/management/hod/view', $data);
+        $this->load->view('faculty/hod/view', $data);
         $this->load->view('common/footer');
     }
 
@@ -294,7 +310,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
@@ -305,7 +321,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_HOD,
                     'designation' => DESIGNATION_HOD,
@@ -331,7 +347,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/hod");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/hod/add', $data);
+            $this->load->view('faculty/hod/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -341,7 +357,7 @@ class Management extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
@@ -351,7 +367,7 @@ class Management extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
@@ -378,7 +394,7 @@ class Management extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/management/hod");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/management/hod/add', $data);
+            $this->load->view('faculty/hod/add', $data);
             $this->load->view('common/footer');
         }
     }
@@ -391,5 +407,64 @@ class Management extends CI_Controller {
         }
         $this->session->set_flashdata('message', $message);
         redirect($this->url.'/management/hod');
+    }
+
+    // ============ RESET PASSWORD METHODS ============
+
+    public function reset_password_principal() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('password', 'Password', 'trim|required');
+            $this->form_validation->set_rules('id', 'Id', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message',array("danger",validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/principal"));
+            }
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_SUPERADMIN]);
+            if(!$update){
+                $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/principal"));
+            }
+            $this->session->set_flashdata('message',array("success","Password Reset successfully"));
+            return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/principal"));
+        }
+    }
+
+    public function reset_password_vice_principal() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('password', 'Password', 'trim|required');
+            $this->form_validation->set_rules('id', 'Id', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message',array("danger",validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/vice_principal"));
+            }
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_VICE_PRINCIPAL]);
+            if(!$update){
+                $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/vice_principal"));
+            }
+            $this->session->set_flashdata('message',array("success","Password Reset successfully"));
+            return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/vice_principal"));
+        }
+    }
+
+    public function reset_password_hod() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('password', 'Password', 'trim|required');
+            $this->form_validation->set_rules('id', 'Id', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message',array("danger",validation_errors()));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/hod"));
+            }
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_HOD]);
+            if(!$update){
+                $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
+                return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/hod"));
+            }
+            $this->session->set_flashdata('message',array("success","Password Reset successfully"));
+            return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/hod"));
+        }
     }
 }

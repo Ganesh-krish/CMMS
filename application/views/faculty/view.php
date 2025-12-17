@@ -71,7 +71,7 @@
                                                 <td><?php echo $admin['id']; ?></td>
                                                 <td><?php echo htmlspecialchars($admin['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($admin['email']); ?></td>
-                                                <td><?php echo htmlspecialchars($admin['phone_number']); ?></td>
+                                                <td><?php echo htmlspecialchars($admin['phone'] ?? '-'); ?></td>
                                                 <td>
                                                     <span class="badge badge-<?php echo $admin['is_active'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $admin['is_active'] ? 'Active' : 'Inactive'; ?>
@@ -79,18 +79,16 @@
                                                 </td>
                                                 <td><?php echo date('d M Y', strtotime($admin['created_at'])); ?></td>
                                                 <td>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                                            <i class="feather icon-more-vertical"></i>
-                                                        </button>
-                                                        <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="<?php echo base_url($url.'/management/principal/edit/'.$admin['id']); ?>">
-                                                                <i class="feather icon-edit"></i> Edit
-                                                            </a>
-                                                            <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $admin['id']; ?>, '<?php echo htmlspecialchars($admin['name']); ?>')">
-                                                                <i class="feather icon-trash"></i> Delete
-                                                            </a>
-                                                        </div>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="<?php echo base_url($url.'/management/hod/edit/'.$admin['id']); ?>" class="btn btn-sm btn-success" title="Edit">
+                                                            <i class="feather icon-edit"></i>
+                                                        </a>
+                                                        <a href="#" onclick="confirmDelete(<?php echo $admin['id']; ?>, '<?php echo htmlspecialchars($admin['name']); ?>')" class="btn btn-sm btn-danger" title="Delete">
+                                                            <i class="feather icon-trash"></i>
+                                                        </a>
+                                                        <a href="#" onclick="resetPassword(<?php echo $admin['id']; ?>, '<?php echo htmlspecialchars($admin['name']); ?>')" class="btn btn-sm btn-warning" title="Reset Password">
+                                                            <i class="feather icon-lock"></i>
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -108,8 +106,67 @@
 
 <script>
 function confirmDelete(id, name) {
-    if (confirm('Are you sure you want to delete the administrator "' + name + '"? This action cannot be undone.')) {
-        window.location.href = '<?php echo base_url($url.'/management/principal/delete/'); ?>' + id;
+    // Set modal content
+    document.getElementById('deleteModalLabel').textContent = 'Delete Department Administrator';
+    document.getElementById('deleteModalBody').innerHTML = 'Are you sure you want to delete the department administrator "' + name + '"? This action cannot be undone.';
+
+    // Store the delete URL
+    window.deleteUrl = '<?php echo base_url($url.'/management/hod/delete/'); ?>' + id;
+
+    // Show modal using Bootstrap's JavaScript API
+    var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+
+function proceedDelete() {
+    if (window.deleteUrl) {
+        window.location.href = window.deleteUrl;
+    }
+}
+
+function resetPassword(id, name) {
+    var newPassword = prompt('Enter new password for department administrator "' + name + '":');
+    if (newPassword !== null && newPassword.trim() !== '') {
+        // Create a form to submit the reset password request
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?php echo base_url($url.'/management/reset_password_hod'); ?>';
+
+        var idField = document.createElement('input');
+        idField.type = 'hidden';
+        idField.name = 'id';
+        idField.value = id;
+
+        var passwordField = document.createElement('input');
+        passwordField.type = 'hidden';
+        passwordField.name = 'password';
+        passwordField.value = newPassword;
+
+        form.appendChild(idField);
+        form.appendChild(passwordField);
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 </script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="deleteModalBody">
+                Are you sure you want to delete this department administrator? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="proceedDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

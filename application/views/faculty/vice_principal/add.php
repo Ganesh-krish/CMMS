@@ -45,9 +45,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="phone_number">Phone Number *</label>
-                                <input type="tel" class="form-control" id="phone_number" name="phone_number"
-                                       value="<?php echo isset($vice_principal) ? htmlspecialchars($vice_principal['phone_number']) : ''; ?>"
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone"
+                                       value="<?php echo isset($vice_principal) ? htmlspecialchars($vice_principal['phone']) : ''; ?>"
                                        required>
                             </div>
 

@@ -83,7 +83,7 @@
                                     <td><?= $student['email'] ?? '-' ?></td>
                                     <td><?= $student['registration_number'] ?? '-' ?></td>
                                     <td><?= $student['batch'] ?? '-' ?></td>
-                                    <td><?= $student['phone_number'] ?? '-' ?></td>
+                                    <td><?= $student['phone'] ?? '-' ?></td>
                                     <td>
                                         <?php 
                                         if (isset($student['department_name'])) {

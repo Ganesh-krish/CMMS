@@ -65,9 +65,9 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="phone_number">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phone_number" name="phone_number"
-                                               value="<?php echo isset($college['phone_number']) ? htmlspecialchars($college['phone_number']) : ''; ?>">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"
+                                               value="<?php echo isset($college['phone']) ? htmlspecialchars($college['phone']) : ''; ?>">
                                     </div>
                                 </div>
                             </div>

@@ -692,7 +692,7 @@ class Principal extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'role' => ROLE_SUPERADMIN,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
@@ -735,7 +735,7 @@ class Principal extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'role' => ROLE_VICE_PRINCIPAL,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
@@ -768,7 +768,7 @@ class Principal extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'department' => $this->input->post('department'),
                     'role' => ROLE_HOD,
                     'college_id' => $this->college['id'],

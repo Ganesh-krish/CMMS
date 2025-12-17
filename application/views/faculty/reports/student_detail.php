@@ -107,7 +107,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-2">
                                             <span class="text-muted small">Phone Number:</span>
-                                            <div><?= $student['phone_number'] ?></div>
+                                            <div><?= $student['phone'] ?? '-' ?></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">

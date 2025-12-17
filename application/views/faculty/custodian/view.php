@@ -72,7 +72,7 @@
                                                 <td><?php echo $custodian['id']; ?></td>
                                                 <td><?php echo htmlspecialchars($custodian['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($custodian['email']); ?></td>
-                                                <td><?php echo htmlspecialchars($custodian['phone_number']); ?></td>
+                                                <td><?php echo htmlspecialchars($custodian['phone'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php
                                                     if (isset($custodian['department_id']) && $custodian['department_id']) {

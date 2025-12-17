@@ -59,7 +59,7 @@ class Faculty extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
@@ -70,7 +70,7 @@ class Faculty extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_STAFF,
                     'designation' => DESIGNATION_STAFF,
@@ -106,7 +106,7 @@ class Faculty extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
@@ -116,7 +116,7 @@ class Faculty extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
@@ -178,7 +178,7 @@ class Faculty extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
@@ -189,7 +189,7 @@ class Faculty extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_CUSTODIAN,
                     'designation' => DESIGNATION_CUSTODIAN,
@@ -225,7 +225,7 @@ class Faculty extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-            $this->form_validation->set_rules('phone_number', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
@@ -235,7 +235,7 @@ class Faculty extends CI_Controller {
                 $data = array(
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
-                    'phone_number' => $this->input->post('phone_number'),
+                    'phone' => $this->input->post('phone'),
                     'department_id' => $this->input->post('department_id'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']

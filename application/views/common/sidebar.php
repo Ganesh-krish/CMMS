@@ -89,6 +89,112 @@
         font-weight: bold;
     }
 
+    /* Dropdown Styles */
+    .sidenav-item.active .dropdown-toggle {
+        background-color: #673AB7;
+        color: #fff;
+    }
+
+    .submenu {
+        display: none;
+        list-style: none;
+        padding-left: 20px;
+        background-color: rgba(103, 58, 183, 0.1);
+        border-left: 3px solid #673AB7;
+    }
+
+    .submenu li {
+        padding: 8px 10px;
+    }
+
+    .submenu li a {
+        color: #666;
+        text-decoration: none;
+        padding: 5px 0;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .submenu li a:hover,
+    .submenu li a.active {
+        color: #673AB7;
+        font-weight: 500;
+    }
+
+    /* Dashboard Chart Styles */
+    .user-distribution {
+        margin-bottom: 20px;
+    }
+
+    .distribution-item {
+        margin-bottom: 12px;
+    }
+
+    .distribution-item .progress {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .metric-card {
+        padding: 15px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+
+    .ratio-display {
+        display: flex;
+        align-items: baseline;
+        min-width: 60px;
+    }
+
+    .ratio-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .ratio-label {
+        font-size: 14px;
+        color: #6c757d;
+        margin-left: 2px;
+    }
+
+    .ratio-bar {
+        flex: 1;
+        height: 60px;
+        background: #e9ecef;
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ratio-fill {
+        width: 100%;
+        background: linear-gradient(180deg, #007bff 0%, #0056b3 100%);
+        border-radius: 4px;
+        transition: height 0.3s ease;
+    }
+
+    .ratio-fill.bg-success {
+        background: linear-gradient(180deg, #28a745 0%, #1e7e34 100%);
+    }
+
+    /* Chart container responsive */
+    @media (max-width: 768px) {
+        .ratio-display {
+            min-width: 50px;
+        }
+
+        .ratio-number {
+            font-size: 20px;
+        }
+
+        .ratio-bar {
+            height: 50px;
+        }
+    }
+
     </style>
     <script>
         const Toast = Swal.mixin({
@@ -150,9 +256,26 @@
     </script>
     <script>
     $(document).ready(function () {
-        $(".sidenav-link").click(function () {
-            $(this).next(".submenu").slideToggle(300); // Smooth dropdown effect
-            $(this).find(".arrow-icon").toggleClass("rotate"); // Rotate arrow
+        // Dropdown toggle functionality
+        $(".dropdown-toggle").click(function (e) {
+            e.preventDefault();
+
+            // Close other open dropdowns
+            $(".submenu").not($(this).next()).slideUp(300);
+
+            // Toggle current dropdown
+            $(this).next(".submenu").slideToggle(300);
+
+            // Toggle active class on parent
+            $(this).parent().toggleClass("active");
+        });
+
+        // Close dropdown when clicking outside
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.sidenav-item').length) {
+                $(".submenu").slideUp(300);
+                $(".sidenav-item").removeClass("active");
+            }
         });
     });
 </script>

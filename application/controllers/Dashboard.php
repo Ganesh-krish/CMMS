@@ -18,6 +18,12 @@ class Dashboard extends CI_Controller
 
         // Use unified session approach
         $unified_user = $this->session->userdata('user');
+
+        // Convert object to array if needed (session serialization can change data type)
+        if (is_object($unified_user)) {
+            $unified_user = (array) $unified_user;
+        }
+
         if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
             // Unified session access
             $this->college = $this->faculty_common->get_default_college();
@@ -201,10 +207,17 @@ class Dashboard extends CI_Controller
     // Helper methods for dashboard data
     private function get_principal_dashboard_data()
     {
-        // Get comprehensive stats for principal
-        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => true]));
-        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["is_active" => true]));
-        $data["total_departments"] = count($this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => true]));
+        // Get comprehensive stats for principal - all 8 metrics
+        $data["total_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_SUPERADMIN]));
+        $data["total_asst_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_VICE_PRINCIPAL]));
+        $data["total_dept_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_HOD]));
+        $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_STAFF]));
+        $data["total_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_CUSTODIAN]));
+        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => 1]));
+        $data["total_departments"] = count($this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]));
+        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["is_active" => 1]));
+
+        // Keep these for backward compatibility
         $data["active_tests"] = 0; // Placeholder
         return $data;
     }

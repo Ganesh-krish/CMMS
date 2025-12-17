@@ -127,8 +127,27 @@ function confirmDelete(id, name) {
     window.deleteUrl = '<?php echo base_url($url.'/management/hod/delete/'); ?>' + id;
 
     // Show modal using Bootstrap's JavaScript API
-    var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    var deleteModalElement = document.getElementById('deleteModal');
+    var modal = new bootstrap.Modal(deleteModalElement);
     modal.show();
+
+    // Manually handle modal dismissal for delete modal
+    setTimeout(function() {
+        var cancelBtn = document.querySelector('#deleteModal .btn-secondary');
+        var closeBtn = document.querySelector('#deleteModal .close');
+
+        if (cancelBtn) {
+            cancelBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+    }, 100);
 }
 
 function resetPassword(id, name) {
@@ -142,33 +161,70 @@ function resetPassword(id, name) {
     document.getElementById('confirmPassword').classList.remove('is-invalid');
 
     // Show modal
-    var modal = new bootstrap.Modal(document.getElementById('passwordResetModal'));
+    var passwordResetModalElement = document.getElementById('passwordResetModal');
+    var modal = new bootstrap.Modal(passwordResetModalElement);
     modal.show();
+
+    // Store modal instance for dismissal
+    window.currentPasswordModal = modal;
+
+    // Initialize form validation after modal is shown
+    setTimeout(initializePasswordResetValidation, 100);
 }
 
-// Form validation for password reset
-document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
-    var password = document.getElementById('newPassword').value;
-    var confirmPassword = document.getElementById('confirmPassword').value;
+// Form validation for password reset - initialized when modal is shown
+function initializePasswordResetValidation() {
+    var form = document.getElementById('passwordResetForm');
+    var newPasswordField = document.getElementById('newPassword');
+    var confirmPasswordField = document.getElementById('confirmPassword');
 
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        document.getElementById('confirmPassword').classList.add('is-invalid');
-        return false;
+    if (!form || !newPasswordField || !confirmPasswordField) {
+        return; // Elements not found
     }
 
-    // Remove invalid class if validation passes
-    document.getElementById('confirmPassword').classList.remove('is-invalid');
-});
+    form.addEventListener('submit', function(e) {
+        var password = newPasswordField.value;
+        var confirmPassword = confirmPasswordField.value;
 
-// Reset validation on password change
-document.getElementById('newPassword').addEventListener('input', function() {
-    document.getElementById('confirmPassword').classList.remove('is-invalid');
-});
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            confirmPasswordField.classList.add('is-invalid');
+            return false;
+        }
 
-document.getElementById('confirmPassword').addEventListener('input', function() {
-    document.getElementById('confirmPassword').classList.remove('is-invalid');
-});
+        // Remove invalid class if validation passes
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    // Reset validation on password change
+    newPasswordField.addEventListener('input', function() {
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    confirmPasswordField.addEventListener('input', function() {
+        confirmPasswordField.classList.remove('is-invalid');
+    });
+
+    // Manually handle modal dismissal
+    var cancelBtn = form.querySelector('.btn-secondary');
+    var closeBtn = document.querySelector('#passwordResetModal .close');
+
+    if (cancelBtn) {
+        cancelBtn.onclick = function() {
+            if (window.currentPasswordModal) {
+                window.currentPasswordModal.hide();
+            }
+        };
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (window.currentPasswordModal) {
+                window.currentPasswordModal.hide();
+            }
+        };
+    }
+}
 
 function proceedDelete() {
     if (window.deleteUrl) {

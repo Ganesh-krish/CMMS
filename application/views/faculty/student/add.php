@@ -16,6 +16,36 @@
             </div>
         <?php } ?>
 
+        <style>
+            .form-group label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 8px;
+            }
+            .form-group label i {
+                color: #6c757d;
+            }
+            .form-control {
+                border-radius: 6px;
+                border: 1px solid #ced4da;
+                padding: 0.75rem;
+            }
+            .form-control:focus {
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+            .card {
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+                border-radius: 8px 8px 0 0 !important;
+            }
+        </style>
+
         <div class="row">
             <div class="col-md-8">
                 <div class="card">
@@ -32,14 +62,14 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name">Full Name *</label>
+                                        <label for="name"><i class="feather icon-user mr-2"></i>Full Name *</label>
                                         <input type="text" class="form-control" id="name" name="name"
                                                value="<?php echo isset($student) ? htmlspecialchars($student['name']) : ''; ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email">Email *</label>
+                                        <label for="email"><i class="feather icon-mail mr-2"></i>Email *</label>
                                         <input type="email" class="form-control" id="email" name="email"
                                                value="<?php echo isset($student) ? htmlspecialchars($student['email']) : ''; ?>" required>
                                     </div>
@@ -49,16 +79,16 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="phone">Phone</label>
+                                        <label for="phone"><i class="feather icon-phone mr-2"></i>Phone</label>
                                         <input type="text" class="form-control" id="phone" name="phone"
                                                value="<?php echo isset($student) ? htmlspecialchars($student['phone']) : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="enrollment_no">Enrollment Number *</label>
-                                        <input type="text" class="form-control" id="enrollment_no" name="enrollment_no"
-                                               value="<?php echo isset($student) ? htmlspecialchars($student['enrollment_no']) : ''; ?>" required>
+                                        <label for="roll_no"><i class="feather icon-hash mr-2"></i>Enrollment Number *</label>
+                                        <input type="text" class="form-control" id="roll_no" name="roll_no"
+                                               value="<?php echo isset($student) ? htmlspecialchars($student['roll_no']) : ''; ?>" required>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +96,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="department">Department *</label>
+                                        <label for="department"><i class="feather icon-briefcase mr-2"></i>Department *</label>
                                         <select class="form-control" id="department" name="department" required>
                                             <option value="">Select Department</option>
                                             <?php foreach ($departments as $dept): ?>
@@ -78,16 +108,15 @@
                                         </select>
                                     </div>
                                 </div>
+                                <?php if (!isset($student)): ?>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="password">Password *</label>
-                                        <input type="password" class="form-control" id="password" name="password"
-                                               <?php echo !isset($student) ? 'required' : ''; ?>>
-                                        <small class="form-text text-muted">
-                                            <?php echo isset($student) ? 'Leave blank to keep current password' : 'Minimum 6 characters'; ?>
-                                        </small>
+                                        <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <small class="form-text text-muted">Minimum 6 characters</small>
                                     </div>
                                 </div>
+                                <?php endif; ?>
                             </div>
 
                             <div class="form-group">

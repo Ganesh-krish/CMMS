@@ -99,6 +99,7 @@ $route['(:any)/students'] = 'Student/students'; // Admin student management
 $route['(:any)/students/add'] = 'Student/add_student';
 $route['(:any)/students/edit/(:num)'] = 'Student/edit_student/$2';
 $route['(:any)/students/delete/(:num)'] = 'Student/delete_student/$2';
+$route['(:any)/students/reset_password'] = 'Student/reset_password_student';
 
 // Role-based Student Management (existing)
 $route['(:any)/principal/students'] = 'Principal/students';

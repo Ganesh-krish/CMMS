@@ -3,37 +3,49 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Groups extends CI_Controller
 {
-    private $url;
-    private $college;
-    private $session_data;
-    function __construct()
-    {
+    function __construct() {
         parent::__construct();
-        $this->load->model('common', 'common');
+
+        $this->load->model('common', 'faculty_common');
         $this->load->model('Db_model', 'db_model');
-        $this->load->model('Test_model', 'test_model');
+
         $this->url = $this->uri->segment(1);
 
-        // Handle both faculty and admin sessions
-        if ($this->url === 'admin' || empty($this->session->userdata($this->url))) {
-            // Admin session - use owner session
-            $this->common->check_user_session(); // Validate session
-            $admin_session = $this->session->userdata('owner');
-            $this->session_data = [
-                'id' => $admin_session['id'] ?? null,
-                'name' => $admin_session['name'] ?? 'Admin',
-                'role' => ROLE_SUPERADMIN,
-                'designation' => DESIGNATION_PRINCIPAL,
-                'department' => null // Admin can see all departments
-            ];
-        } else {
-            // Faculty session
-            $this->common->check_user_session($this->url);
-            $this->session_data = $this->session->userdata($this->url);
+        // Use unified session approach
+        $unified_user = $this->session->userdata('user');
+        // print_r($unified_user);
+         
+        // Convert object to array if needed (session serialization can change data type)
+        if (is_object($unified_user)) {
+            $unified_user = (array) $unified_user;
         }
 
-        $this->college = $this->common->get_default_college();
+        // print_r($unified_user);
+           
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            // Unified session access
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            // Fallback for legacy access
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+        // print_r($this->session_data);
+           
+        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+        // print_r($this->permissions);
+          
+        // Only SuperAdmin can manage administrators
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        // print_r($role);
+        
+        if ($role !== ROLE_SUPERADMIN) {
+            redirect($this->url.'/dashboard');
+        }
     }
+
     public function index($cource_id=null)
     {
         // var_dump($cource_id);die;
@@ -211,41 +223,6 @@ class Groups extends CI_Controller
         }
     }
 
-    public function group_students($group_id) {
-        $data["url"] = $this->url;
-        $class["classname"] = "groups";
-        $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url . "/staff");
-        
-
-        $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "college_id" => $this->college['id']]);
-
-        if (!$data["group"]) {
-            $this->session->set_flashdata('message', array('danger', 'Group not found'));
-            redirect($this->url . '/staff/students');
-        }
-
-        $group_members = $this->db_model->get_all(TABLE_MEMGROUPS, ["group_id" => $group_id]);
-        $student_ids = array_column($group_members, 'student_id');
-
-        $desination_mapper = [
-                DESIGNATION_STAFF => 'staff',
-                DESIGNATION_HOD => 'hod',
-                DESIGNATION_PRINCIPAL => 'principal'
-        ];
-
-        $data['designation'] = $desination_mapper[$this->session_data['designation']];
-        
-        if (!empty($student_ids)) {
-            $data["students"] = $this->db_model->get_all(TABLE_STUDENT, ["id IN (" . implode(',', $student_ids) . ")" => null]);
-        } else {
-            $data["students"] = [];
-        }
-        
-        $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/groups/group_students', $data);
-        $this->load->view('common/footer');
-    }
 
     public function addMemberstoGroup() {
 
@@ -479,13 +456,21 @@ class Groups extends CI_Controller
         }
 
         // Get students in this group
-        $data["group_students"] = $this->db_model->get_with_joins(
-            TABLE_MEMGROUPS,
-            'student',
-            'student_id',
-            ['group_id' => $group_id, 'memgroups.is_active' => 1],
-            'student.*'
-        );
+        $group_members = $this->db_model->get_all(TABLE_MEMGROUPS, [
+            'group_id' => $group_id,
+            'is_active' => 1
+        ]);
+
+        $student_ids = array_column($group_members, 'student_id');
+
+        if (!empty($student_ids)) {
+            $data["group_students"] = $this->db_model->get_all(TABLE_STUDENT, [
+                "id IN (" . implode(',', $student_ids) . ")" => null,
+                "is_active" => 1
+            ]);
+        } else {
+            $data["group_students"] = [];
+        }
 
         // Get all students not in this group for adding
         $existing_student_ids = array_column($data["group_students"], 'id');
@@ -531,9 +516,8 @@ class Groups extends CI_Controller
                     $data = array(
                         'group_id' => $group_id,
                         'student_id' => $student_id,
-                        'added_by' => $this->session_data['id'],
-                        'is_active' => 1,
-                        'added_at' => date('Y-m-d H:i:s')
+                        'college_id' => $this->college['id'],
+                        'created_by' => $this->session_data['id']
                     );
                     if ($this->db_model->insert(TABLE_MEMGROUPS, $data)) {
                         $success_count++;

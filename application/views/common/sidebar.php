@@ -428,7 +428,7 @@
                         <li class="sidenav-item <?php if ($classname == "students") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= "$sidebar_href/students" ?>" class="sidenav-link ">
+                            <a href="<?= base_url($url . "/students") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-user"></i>
                                 <div>Students</div>
                             </a>
@@ -439,7 +439,7 @@
                         <li class="sidenav-item <?php if ($classname == "groups") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= "$sidebar_href/groups" ?>" class="sidenav-link ">
+                            <a href="<?= base_url($url . "/groups") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-users"></i>
                                 <div>Music Groups</div>
                             </a>

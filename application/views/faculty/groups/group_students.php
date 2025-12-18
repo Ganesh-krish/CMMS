@@ -76,7 +76,7 @@
                                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($student['email']); ?></td>
                                                 <td><?php echo htmlspecialchars($student['phone'] ?? '-'); ?></td>
-                                                <td><?php echo htmlspecialchars($student['registration_number'] ?? '-'); ?></td>
+                                                <td><?php echo htmlspecialchars($student['roll_no'] ?? '-'); ?></td>
                                                 <td><?php echo htmlspecialchars($student['batch'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php
@@ -132,7 +132,7 @@
                                         <input class="form-check-input" type="checkbox" name="student_ids[]" value="<?php echo $student['id']; ?>" id="student_<?php echo $student['id']; ?>">
                                         <label class="form-check-label" for="student_<?php echo $student['id']; ?>">
                                             <strong><?php echo htmlspecialchars($student['name']); ?></strong>
-                                            (<?php echo htmlspecialchars($student['email']); ?> - <?php echo htmlspecialchars($student['registration_number']); ?>)
+                                            (<?php echo htmlspecialchars($student['email']); ?> - <?php echo htmlspecialchars($student['roll_no']); ?>)
                                         </label>
                                     </div>
                                 <?php endforeach; ?>

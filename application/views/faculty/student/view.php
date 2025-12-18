@@ -71,7 +71,7 @@
                                                 <td><?php echo $student['id']; ?></td>
                                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($student['email']); ?></td>
-                                                <td><?php echo htmlspecialchars($student['enrollment_no']); ?></td>
+                                                <td><?php echo htmlspecialchars($student['roll_no']); ?></td>
                                                 <td>
                                                     <?php
                                                     if (isset($student['department']) && $student['department']) {
@@ -89,18 +89,16 @@
                                                 </td>
                                                 <td><?php echo date('d M Y', strtotime($student['created_at'])); ?></td>
                                                 <td>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                                            <i class="feather icon-more-vertical"></i>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="<?php echo base_url($url.'/students/edit/'.$student['id']); ?>" class="btn btn-success btn-sm" title="Edit">
+                                                            <i class="feather icon-edit"></i>
+                                                        </a>
+                                                        <button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="openDeleteModal(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['name']); ?>')">
+                                                            <i class="feather icon-trash"></i>
                                                         </button>
-                                                        <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="<?php echo base_url($url.'/student/add/'.$student['id']); ?>">
-                                                                <i class="feather icon-edit"></i> Edit
-                                                            </a>
-                                                            <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['name']); ?>')">
-                                                                <i class="feather icon-trash"></i> Delete
-                                                            </a>
-                                                        </div>
+                                                        <button type="button" class="btn btn-warning btn-sm" title="Reset Password" onclick="openPasswordResetModal(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['name']); ?>')">
+                                                            <i class="feather icon-lock"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -116,10 +114,151 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Student</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the student <strong id="deleteStudentName"></strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Reset Modal -->
+<div class="modal fade" id="passwordResetModal" tabindex="-1" role="dialog" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordResetModalLabel">Reset Password</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="passwordResetForm" method="POST">
+                <div class="modal-body">
+                    <p>Reset password for student: <strong id="resetStudentName"></strong></p>
+                    <div class="form-group">
+                        <label for="newPassword"><i class="feather icon-lock mr-2"></i>New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="password"
+                               placeholder="Enter new password" required>
+                        <small class="form-text text-muted">Password must be at least 6 characters long.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword"><i class="feather icon-lock mr-2"></i>Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                               placeholder="Confirm new password" required>
+                        <div class="invalid-feedback" id="passwordMatchError">
+                            Passwords do not match.
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="resetStudentId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning" id="resetPasswordBtn">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-function confirmDelete(id, name) {
-    if (confirm('Are you sure you want to delete the student "' + name + '"? This action cannot be undone.')) {
+function openDeleteModal(id, name) {
+    document.getElementById('deleteStudentName').textContent = name;
+    document.getElementById('confirmDeleteBtn').onclick = function() {
         window.location.href = '<?php echo base_url($url.'/students/delete/'); ?>' + id;
+    };
+    $('#deleteModal').modal('show');
+}
+
+function openPasswordResetModal(id, name) {
+    document.getElementById('passwordResetModalLabel').textContent = 'Reset Password for ' + name;
+    document.getElementById('passwordResetForm').action = '<?php echo base_url($url.'/students/reset_password'); ?>';
+    document.getElementById('resetStudentId').value = id;
+
+    // Reset form
+    document.getElementById('passwordResetForm').reset();
+    document.getElementById('confirmPassword').classList.remove('is-invalid');
+
+    // Show modal
+    var passwordResetModalElement = document.getElementById('passwordResetModal');
+    var modal = new bootstrap.Modal(passwordResetModalElement);
+    modal.show();
+
+    // Store modal instance for dismissal
+    window.currentPasswordModal = modal;
+
+    // Initialize form validation after modal is shown
+    setTimeout(initializePasswordResetValidation, 100);
+}
+
+// Form validation for password reset - initialized when modal is shown
+function initializePasswordResetValidation() {
+    var form = document.getElementById('passwordResetForm');
+    var newPasswordField = document.getElementById('newPassword');
+    var confirmPasswordField = document.getElementById('confirmPassword');
+
+    if (!form || !newPasswordField || !confirmPasswordField) {
+        return; // Elements not found
     }
+
+    // Password confirmation validation
+    function validatePasswords() {
+        var password = newPasswordField.value;
+        var confirmPassword = confirmPasswordField.value;
+
+        if (confirmPassword && password !== confirmPassword) {
+            confirmPasswordField.classList.add('is-invalid');
+            return false;
+        } else {
+            confirmPasswordField.classList.remove('is-invalid');
+            return true;
+        }
+    }
+
+    // Real-time validation
+    confirmPasswordField.addEventListener('input', validatePasswords);
+    newPasswordField.addEventListener('input', function() {
+        if (confirmPasswordField.value) {
+            validatePasswords();
+        }
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        var password = newPasswordField.value;
+
+        // Check password length
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters long.');
+            newPasswordField.focus();
+            return false;
+        }
+
+        // Check password confirmation
+        if (!validatePasswords()) {
+            e.preventDefault();
+            alert('Passwords do not match.');
+            confirmPasswordField.focus();
+            return false;
+        }
+
+        // Disable submit button to prevent double submission
+        var submitBtn = document.getElementById('resetPasswordBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="feather icon-loader"></i> Resetting...';
+    });
 }
 </script>

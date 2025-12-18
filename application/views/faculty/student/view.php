@@ -26,7 +26,7 @@
                                 <p class="mb-0">Manage student information and enrollment</p>
                             </div>
                             <div class="col-md-6 text-right">
-                                <a href="<?php echo base_url($url.'/student/add'); ?>" class="btn btn-primary">
+                                <a href="<?php echo base_url($url.'/students/add'); ?>" class="btn btn-primary">
                                     <i class="feather icon-plus"></i> Add Student
                                 </a>
                             </div>
@@ -46,7 +46,7 @@
                                 <i class="feather icon-users" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Students</h4>
                                 <p class="text-muted">There are no students to display.</p>
-                                <a href="<?php echo base_url($url.'/student/add'); ?>" class="btn btn-primary">
+                                <a href="<?php echo base_url($url.'/students/add'); ?>" class="btn btn-primary">
                                     Add First Student
                                 </a>
                             </div>

@@ -99,10 +99,17 @@
                                         </td>
                                         <td><?= date('M d, Y h:i A', strtotime($enrollment['enrolled_at'])) ?></td>
                                         <td>
-                                            <?php if ($enrollment['is_active']): ?>
-                                                <span class="badge badge-pill badge-success">Active</span>
+                                            <?php
+                                            $status = $enrollment['status'] ?? 'enrolled';
+                                            if ($status === 'dropped'):
+                                            ?>
+                                                <span class="badge badge-pill badge-secondary">Dropped</span>
+                                            <?php elseif ($status === 'completed'): ?>
+                                                <span class="badge badge-pill badge-success">Completed</span>
+                                            <?php elseif ($status === 'in_progress'): ?>
+                                                <span class="badge badge-pill badge-warning">In Progress</span>
                                             <?php else: ?>
-                                                <span class="badge badge-pill badge-secondary">Inactive</span>
+                                                <span class="badge badge-pill badge-info">Enrolled</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>

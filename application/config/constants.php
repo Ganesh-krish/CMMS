@@ -101,6 +101,7 @@ defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
 defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
 defined('TABLE_COURSE_ENROLLMENTS')      or define('TABLE_COURSE_ENROLLMENTS', "course_enrollments");
+defined('TABLE_COURSE_STUDENTS')      or define('TABLE_COURSE_STUDENTS', "course_enrollments"); // Alias for enrollments
 defined('TABLE_COURSE_MODULES')      or define('TABLE_COURSE_MODULES', "course_modules");
 
 // Musical Instrument Inventory Tables

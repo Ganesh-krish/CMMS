@@ -14,51 +14,20 @@ class Report extends CI_Controller
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Test_model', 'test_model');
 
-        // Check for owner/admin session first
-        $this->user_session = $this->session->userdata('owner');
-        if ($this->user_session) {
-            // Admin/owner access
-            $this->url = 'admin';
-            $this->college = $this->common->get_default_college();
-            $this->session_data = [
-                'id' => $this->user_session['id'],
-                'role' => ROLE_SUPERADMIN,
-                'designation' => DESIGNATION_PRINCIPAL,
-                'department' => null,
-                'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID
-            ];
-        } else {
-            // Check for unified session (used by portal access)
-            $unified_user = $this->session->userdata('user');
-            if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
-                // Unified session access (portal, etc.)
-                $this->url = $this->uri->segment(1) ?: 'admin';
-                $this->college = $this->common->get_default_college();
-                $this->session_data = $unified_user;
-            } else {
-                // Legacy faculty session - find the active session
-                $possible_keys = ['admin', 'staff', 'hod', 'principal', 'portal'];
-            $this->url = null;
-            foreach ($possible_keys as $key) {
-                if ($this->session->userdata($key)) {
-                    $this->url = $key;
-                    break;
-                }
-            }
-
-            if (!$this->url) {
-                    redirect('Welcome'); // Redirect to login instead of OAuth
-            }
-
-            $this->common->check_user_session($this->url);
-            $this->college = $this->common->get_default_college();
-            $this->session_data = $this->session->userdata($this->url);
-        }
+        // Check unified session (similar to Course controller)
+        $user = $this->session->userdata('user');
+        if (!$user || $user['user_type'] !== 'faculty') {
+            redirect('Welcome');
         }
 
-        // Check role permissions - only Principal and Vice-Principal can access reports
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL];
+        $this->user_session = $user;
+        $this->url = $this->uri->segment(1) ?: 'admin';
+        $this->college = $this->common->get_default_college();
+        $this->session_data = $user; // Use unified session data
+
+        // Check role permissions - allow multiple roles to access reports
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
         if (!in_array($role, $allowed_roles, true)) {
             $this->common->redirect_route($role, $this->url);
         }
@@ -80,13 +49,18 @@ class Report extends CI_Controller
         $class["classname"] = "reports";
         $class["url"] = $this->url;
         $class["college_id"] = $this->college['id'];
-        
-        // Determine the path based on user designation
+
+        // Determine the path based on user role/designation
+        $user_designation = $this->session_data['designation'] ?? $this->session_data['role'] ?? null;
+
         $map = [
             DESIGNATION_STAFF => 'staff',
-            DESIGNATION_PRINCIPAL => 'principal'
+            DESIGNATION_PRINCIPAL => 'principal',
+            ROLE_STAFF => 'staff',
+            ROLE_VICE_PRINCIPAL => 'vice_principal',
+            ROLE_SUPERADMIN => 'admin'
         ];
-        $path = $map[$this->session_data['designation']] ?? 'hod';
+        $path = $map[$user_designation] ?? 'hod';
         $class["sidebar_href"] = base_url($this->url . "/" . $path);
         
         // Get filter parameters
@@ -150,7 +124,8 @@ class Report extends CI_Controller
 
         if ($total_enrollments > 0) {
             foreach ($data['enrollments'] as $enrollment) {
-                if ($enrollment['is_active'] == 1) {
+                // Count enrollments that are not 'dropped'
+                if (isset($enrollment['status']) && $enrollment['status'] !== 'dropped') {
                     $active_enrollments++;
                 }
             }
@@ -302,7 +277,6 @@ class Report extends CI_Controller
         );
         
         $this->db->where('course_students.course_id', $course_id);
-        $this->db->where('course_students.is_active', 1);
         $this->db->where('students.is_active', 1);
         
         $data['students'] = $this->db->get()->result_array();
@@ -378,7 +352,7 @@ class Report extends CI_Controller
                     students.batch,
                     courses.name as course_title,
                     course_enrollments.enrolled_at,
-                    course_enrollments.is_active
+                    course_enrollments.status as enrollment_status
                 ');
 
                 $this->db->from(TABLE_COURSE_ENROLLMENTS);
@@ -413,7 +387,6 @@ class Report extends CI_Controller
                 $this->db->select('
                     courses.name as course_title,
                     course_enrollments.enrolled_at,
-                    course_enrollments.is_active,
                     course_enrollments.status
                 ');
 
@@ -445,7 +418,6 @@ class Report extends CI_Controller
                     students.name as student_name,
                     students.email as student_email,
                     course_enrollments.enrolled_at,
-                    course_enrollments.is_active,
                     course_enrollments.status
                 ');
 
@@ -1141,7 +1113,7 @@ class Report extends CI_Controller
         
         $this->db->join(
             TABLE_COURSE_STUDENTS . ' as course_students',
-            'courses.id = course_students.course_id AND course_students.is_active = 1',
+            'courses.id = course_students.course_id',
             'left'
         );
         

@@ -14,22 +14,18 @@ class Announcement extends CI_Controller
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Announcement_model', 'announcement');
 
-        $this->url = $this->uri->segment(1);
-
-        // Check for unified session (used by portal access)
-        $unified_user = $this->session->userdata('user');
-        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
-            // Unified session access (portal, etc.)
-            $this->college = $this->faculty_common->get_default_college();
-            $this->session_data = $unified_user;
-        } else {
-            // Legacy faculty session approach
-        $this->faculty_common->check_user_session($this->url);
-        $this->college = $this->faculty_common->get_default_college();
-        $this->session_data = $this->session->userdata($this->url);
+        // Check unified session (similar to Course controller)
+        $user = $this->session->userdata('user');
+        if (!$user || $user['user_type'] !== 'faculty') {
+            redirect('Welcome');
         }
 
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $this->user_session = $user;
+        $this->url = $this->uri->segment(1) ?: 'admin';
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $user; // Use unified session data
+
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
         // Define access levels for announcements
         $create_edit_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];

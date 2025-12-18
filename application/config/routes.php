@@ -174,3 +174,26 @@ $route['(:any)/api/inventory/update/(:num)'] = 'Inventory/update_api/$2';
 $route['(:any)/api/inventory/issue'] = 'Inventory/issue_api';
 $route['(:any)/api/inventory/return'] = 'Inventory/return_item_api';
 $route['(:any)/api/inventory/maintenance'] = 'Inventory/maintenance_api';
+
+// Announcements Management routes
+$route['(:any)/announcements'] = 'Announcement/index';
+$route['(:any)/announcements/create'] = 'Announcement/create';
+$route['(:any)/announcements/edit/(:num)'] = 'Announcement/edit/$2';
+$route['(:any)/announcements/delete/(:num)'] = 'Announcement/delete/$2';
+$route['(:any)/announcements/view/(:num)'] = 'Announcement/view/$2';
+$route['(:any)/announcements/user'] = 'Announcement/get_user_announcements';
+
+// Reports Management routes
+$route['(:any)/reports'] = 'Report/index';
+$route['(:any)/report'] = 'Report/index'; // Singular alias
+$route['(:any)/reports/student/(:num)'] = 'Report/student_detail/$2';
+$route['(:any)/reports/course/(:num)'] = 'Report/course_detail/$2';
+$route['(:any)/reports/export/(:any)/(:num)'] = 'Report/export_csv/$2/$3';
+$route['(:any)/reports/export/(:any)'] = 'Report/export_csv/$2';
+$route['(:any)/reports/dashboard'] = 'Report/dashboard';
+$route['(:any)/reports/dashboard/export/(:any)'] = 'Report/export_dashboard/$2';
+$route['(:any)/reports/kpis'] = 'Report/kpis';
+
+// Settings routes
+$route['(:any)/settings'] = 'College/edit/1';
+$route['(:any)/college/edit/(:num)'] = 'College/edit/$2';

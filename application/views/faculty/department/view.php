@@ -80,18 +80,13 @@
                                                 </td>
                                                 <?php if (isset($can_manage) && $can_manage): ?>
                                                     <td>
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                                                <i class="feather icon-more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/departments/edit/'.$dept['id']); ?>">
-                                                                    <i class="feather icon-edit"></i> Edit
-                                                                </a>
-                                                                <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $dept['id']; ?>, '<?php echo htmlspecialchars($dept['name']); ?>')">
-                                                                    <i class="feather icon-trash"></i> Delete
-                                                                </a>
-                                                            </div>
+                                                        <div class="btn-group" role="group">
+                                                            <a href="<?php echo base_url($url.'/departments/edit/'.$dept['id']); ?>" class="btn btn-sm btn-success" title="Edit Department">
+                                                                <i class="feather icon-edit"></i>
+                                                            </a>
+                                                            <a href="#" onclick="confirmDelete(<?php echo $dept['id']; ?>, '<?php echo htmlspecialchars($dept['name']); ?>')" class="btn btn-sm btn-danger" title="Delete Department">
+                                                                <i class="feather icon-trash"></i>
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 <?php endif; ?>
@@ -110,8 +105,61 @@
 
 <script>
 function confirmDelete(id, name) {
-    if (confirm('Are you sure you want to delete the department "' + name + '"? This action cannot be undone.')) {
-        window.location.href = '<?php echo base_url($url.'/departments/delete/'); ?>' + id;
+    // Set modal content
+    document.getElementById('deleteModalLabel').textContent = 'Delete Department';
+    document.getElementById('deleteModalBody').innerHTML = 'Are you sure you want to delete the department "' + name + '"? This action cannot be undone.';
+
+    // Store the delete URL
+    window.deleteUrl = '<?php echo base_url($url.'/departments/delete/'); ?>' + id;
+
+    // Show modal using Bootstrap's JavaScript API
+    var deleteModalElement = document.getElementById('deleteModal');
+    var modal = new bootstrap.Modal(deleteModalElement);
+    modal.show();
+
+    // Manually handle modal dismissal for delete modal
+    setTimeout(function() {
+        var cancelBtn = document.querySelector('#deleteModal .btn-secondary');
+        var closeBtn = document.querySelector('#deleteModal .close');
+
+        if (cancelBtn) {
+            cancelBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+    }, 100);
+}
+
+function proceedDelete() {
+    if (window.deleteUrl) {
+        window.location.href = window.deleteUrl;
     }
 }
 </script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="deleteModalBody">
+                Are you sure you want to delete this department? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="proceedDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

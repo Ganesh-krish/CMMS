@@ -27,7 +27,7 @@
                     <div class="card-body">
                         <form method="post" action="">
                             <div class="form-group">
-                                <label for="name">Department Name *</label>
+                                <label for="name"><i class="feather icon-briefcase mr-2"></i>Department Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        value="<?php echo isset($department) ? htmlspecialchars($department['name']) : ''; ?>"
                                        required>
@@ -46,3 +46,51 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Form label icons styling */
+.form-group label i {
+    color: #6c757d;
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Enhanced form styling */
+.card-body .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.card-body .form-control {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+}
+
+.card-body .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+</style>

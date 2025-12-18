@@ -86,3 +86,10 @@ $route['(:any)/faculty/custodian/edit/(:num)'] = 'Faculty/edit_custodian/$2';
 $route['(:any)/faculty/custodian/delete/(:num)'] = 'Faculty/delete_custodian/$2';
 $route['(:any)/faculty/reset_password_instructor'] = 'Faculty/reset_password_instructor';
 $route['(:any)/faculty/reset_password_custodian'] = 'Faculty/reset_password_custodian';
+
+// Department Management routes
+$route['(:any)/departments'] = 'Department/view';
+$route['(:any)/departments/add'] = 'Department/add';
+$route['(:any)/departments/add/(:num)'] = 'Department/add/$2';
+$route['(:any)/departments/edit/(:num)'] = 'Department/edit/$2';
+$route['(:any)/departments/delete/(:num)'] = 'Department/delete/$2';

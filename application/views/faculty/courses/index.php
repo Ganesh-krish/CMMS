@@ -15,6 +15,61 @@
             </div>
         <?php } ?>
 
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <!-- Total Courses -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-book text-primary mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-primary mb-0"><?php echo $stats['total_courses']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Modules -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-folder text-success mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-success mb-0"><?php echo $stats['total_modules']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Total Modules</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Lessons -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-file-text text-info mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-info mb-0"><?php echo $stats['total_lessons']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Total Lessons</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Students Enrolled -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-users text-warning mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-warning mb-0"><?php echo $stats['total_students_enrolled']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Students Enrolled</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Actions Bar -->
         <div class="row mb-4">
             <div class="col-md-12">

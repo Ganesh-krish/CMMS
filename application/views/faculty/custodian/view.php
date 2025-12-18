@@ -60,7 +60,6 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone Number</th>
-                                            <th>Department</th>
                                             <th>Status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
@@ -73,16 +72,6 @@
                                                 <td><?php echo htmlspecialchars($custodian['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($custodian['email']); ?></td>
                                                 <td><?php echo htmlspecialchars($custodian['phone'] ?? '-'); ?></td>
-                                                <td>
-                                                    <?php
-                                                    if (isset($custodian['department']) && $custodian['department']) {
-                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $custodian['department']]);
-                                                        echo $dept ? htmlspecialchars($dept['name']) : 'N/A';
-                                                    } else {
-                                                        echo 'N/A';
-                                                    }
-                                                    ?>
-                                                </td>
                                                 <td>
                                                     <span class="badge badge-<?php echo $custodian['is_active'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $custodian['is_active'] ? 'Active' : 'Inactive'; ?>

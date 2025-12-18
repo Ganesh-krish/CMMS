@@ -82,11 +82,29 @@ class Course extends CI_Controller {
         $data['departments'] = $departments;
 
         // Statistics for course management
+        $course_ids = array_column($data["courses"], 'id');
+
+        // Count modules and lessons for visible courses
+        $total_modules = 0;
+        $total_lessons = 0;
+
+        if (!empty($course_ids)) {
+            $total_modules = $this->db_model->count(TABLE_COURSE_MODULES, [
+                "is_active" => 1,
+                "course_id IN (" . implode(',', $course_ids) . ")" => null
+            ]);
+
+            $total_lessons = $this->db_model->count(TABLE_LESSONS, [
+                "is_active" => 1,
+                "module_id IN (SELECT id FROM " . TABLE_COURSE_MODULES . " WHERE course_id IN (" . implode(',', $course_ids) . ") AND is_active = 1)" => null
+            ]);
+        }
+
         $data["stats"] = array(
             "total_courses" => count($data["courses"]),
-            "total_modules" => $this->db_model->count(TABLE_MODULES, ["is_active" => 1, "college_id" => $this->college['id']]),
-            "total_lessons" => $this->db_model->count(TABLE_LESSONS, ["is_active" => 1, "college_id" => $this->college['id']]),
-            "total_students_enrolled" => $this->db_model->count(TABLE_COURSE_ENROLLMENTS, ["status" => "enrolled", "college_id" => $this->college['id']])
+            "total_modules" => $total_modules,
+            "total_lessons" => $total_lessons,
+            "total_students_enrolled" => $this->db_model->count(TABLE_COURSE_ENROLLMENTS, ["status" => "enrolled"])
         );
 
         $this->load->view('common/sidebar', $class);

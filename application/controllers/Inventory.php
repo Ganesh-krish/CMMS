@@ -14,37 +14,20 @@ class Inventory extends CI_Controller
         $this->load->model('Db_model', 'db_model');
         $this->load->model('Inventory_model', 'inventory');
 
-        $this->url = $this->uri->segment(1);
-
-        // Handle both faculty and admin sessions
-        $owner_session = $this->session->userdata('owner');
-        if ($owner_session && !empty($owner_session)) {
-            // Admin/owner session - use owner session
-            $this->faculty_common->check_user_session(); // Validate session
-            $this->session_data = [
-                'id' => $owner_session['id'] ?? null,
-                'name' => $owner_session['name'] ?? 'Admin',
-                'role' => ROLE_SUPERADMIN,
-                'designation' => DESIGNATION_PRINCIPAL,
-                'department' => null // Admin can see all departments
-            ];
-        } else {
-            // Check for unified session (used by portal access)
-            $unified_user = $this->session->userdata('user');
-            if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
-                // Unified session access (portal, etc.)
-                $this->college = $this->faculty_common->get_default_college();
-                $this->session_data = $unified_user;
-            } else {
-                // Legacy faculty session approach
-            $this->faculty_common->check_user_session($this->url);
-            $this->session_data = $this->session->userdata($this->url);
-            }
+        // Check unified session (similar to Course controller)
+        $user = $this->session->userdata('user');
+        if (!$user || $user['user_type'] !== 'faculty') {
+            redirect('Welcome');
         }
+
+        $this->user_session = $user;
+        $this->url = $this->uri->segment(1) ?: 'admin';
+        $this->college = $this->faculty_common->get_default_college();
+        $this->session_data = $user; // Use unified session data
 
         $this->college = $this->faculty_common->get_default_college();
 
-        $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
         // Define access levels
         $full_access_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_CUSTODIAN];

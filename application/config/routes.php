@@ -155,3 +155,22 @@ $route['(:any)/courses/get_shared_colleges/(:num)'] = 'Course/get_shared_college
 $route['(:any)/courses/assign_course'] = 'Course/assign_course';
 $route['(:any)/courses/remove_course_assign/(:num)/(:num)'] = 'Course/remove_course_assign/$2/$3';
 $route['(:any)/courses/get_exclude_colleges/(:num)/(:num)'] = 'Course/get_exclude_colleges/$2/$3';
+
+// Musical Instruments/Inventory Management routes
+$route['(:any)/inventory'] = 'Inventory/index';
+$route['(:any)/inventory/create'] = 'Inventory/create';
+$route['(:any)/inventory/update/(:num)'] = 'Inventory/update/$2';
+$route['(:any)/inventory/view/(:num)'] = 'Inventory/get_instrument/$2';
+$route['(:any)/inventory/issue'] = 'Inventory/issue';
+$route['(:any)/inventory/return/(:num)'] = 'Inventory/return_item/$2';
+$route['(:any)/inventory/maintenance'] = 'Inventory/maintenance';
+$route['(:any)/inventory/issues'] = 'Inventory/issues';
+$route['(:any)/inventory/maintenance_logs'] = 'Inventory/maintenance_logs';
+$route['(:any)/inventory/reports'] = 'Inventory/reports';
+
+// Musical Instruments API routes (for AJAX operations)
+$route['(:any)/api/inventory/create'] = 'Inventory/create_api';
+$route['(:any)/api/inventory/update/(:num)'] = 'Inventory/update_api/$2';
+$route['(:any)/api/inventory/issue'] = 'Inventory/issue_api';
+$route['(:any)/api/inventory/return'] = 'Inventory/return_item_api';
+$route['(:any)/api/inventory/maintenance'] = 'Inventory/maintenance_api';

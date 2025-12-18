@@ -16,6 +16,53 @@
             </div>
         <?php } ?>
 
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <!-- Total Departments -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-briefcase text-primary mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-primary mb-0"><?php echo $stats['total_departments']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Total Departments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Instructors -->
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="feather icon-users text-success mr-2" style="font-size: 24px;"></i>
+                            <h4 class="text-success mb-0"><?php echo $stats['total_instructors']; ?></h4>
+                        </div>
+                        <p class="mb-0 text-muted">Total Instructors</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department-wise Instructor Count -->
+            <?php if (!empty($department_stats)): ?>
+                <?php foreach ($department_stats as $dept_stat): ?>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div class="d-flex align-items-center justify-content-center mb-2">
+                                    <i class="feather icon-user-check text-info mr-2" style="font-size: 24px;"></i>
+                                    <h4 class="text-info mb-0"><?php echo $dept_stat['instructor_count']; ?></h4>
+                                </div>
+                                <p class="mb-0 text-muted"><?php echo htmlspecialchars($dept_stat['name']); ?></p>
+                                <small class="text-muted">Instructors</small>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
         <!-- Actions Bar -->
         <div class="row mb-4">
             <div class="col-md-12">

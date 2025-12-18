@@ -81,6 +81,14 @@ class Course extends CI_Controller {
 
         $data['departments'] = $departments;
 
+        // Statistics for course management
+        $data["stats"] = array(
+            "total_courses" => count($data["courses"]),
+            "total_modules" => $this->db_model->count(TABLE_MODULES, ["is_active" => 1, "college_id" => $this->college['id']]),
+            "total_lessons" => $this->db_model->count(TABLE_LESSONS, ["is_active" => 1, "college_id" => $this->college['id']]),
+            "total_students_enrolled" => $this->db_model->count(TABLE_COURSE_ENROLLMENTS, ["status" => "enrolled", "college_id" => $this->college['id']])
+        );
+
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/courses/index', $data);
         $this->load->view('common/footer');

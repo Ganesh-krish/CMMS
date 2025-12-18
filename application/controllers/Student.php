@@ -80,6 +80,29 @@ class Student extends CI_Controller {
             "college_id" => $this->college['id']
         ]);
 
+        // Statistics for student management
+        $data["stats"] = array(
+            "total_departments" => count($data["departments"]),
+            "total_students" => count($data["students"])
+        );
+
+        // Get students count per department
+        $department_stats = array();
+        foreach ($data["departments"] as $dept) {
+            $student_count = $this->db_model->count(TABLE_STUDENT, [
+                "department" => $dept['id'],
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+            if ($student_count > 0) {
+                $department_stats[] = array(
+                    "name" => $dept['name'],
+                    "student_count" => $student_count
+                );
+            }
+        }
+        $data["department_stats"] = $department_stats;
+
         $data["url"] = $this->url;
         $class["classname"] = "students";
         $class["url"] = $this->url;

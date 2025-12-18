@@ -51,21 +51,6 @@
                                        required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="department"><i class="feather icon-briefcase mr-2"></i>Department *</label>
-                                <select class="form-control" id="department" name="department" required>
-                                    <option value="">Select Department</option>
-                                    <?php if(isset($departments) && !empty($departments)): ?>
-                                        <?php foreach($departments as $dept): ?>
-                                            <option value="<?php echo $dept['id']; ?>"
-                                                <?php echo (isset($custodian) && $custodian['department'] == $dept['id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($dept['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-
                             <?php if (!isset($custodian)): ?>
                                 <div class="form-group">
                                     <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>

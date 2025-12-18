@@ -43,6 +43,30 @@ class Faculty extends CI_Controller {
     public function instructor() {
         $data["instructors"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_STAFF, "is_active" => 1]);
 
+        // Statistics for instructor management
+        $data["stats"] = array(
+            "total_departments" => $this->db_model->count(TABLE_DEPARTMENT, ["is_active" => 1]),
+            "total_instructors" => $this->db_model->count(TABLE_FACULTY, ["role" => ROLE_STAFF, "is_active" => 1])
+        );
+
+        // Get instructors count per department
+        $departments = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
+        $department_stats = array();
+        foreach ($departments as $dept) {
+            $instructor_count = $this->db_model->count(TABLE_FACULTY, [
+                "role" => ROLE_STAFF,
+                "department" => $dept['id'],
+                "is_active" => 1
+            ]);
+            if ($instructor_count > 0) {
+                $department_stats[] = array(
+                    "name" => $dept['name'],
+                    "instructor_count" => $instructor_count
+                );
+            }
+        }
+        $data["department_stats"] = $department_stats;
+
         $data["url"] = $this->url;
         $class["classname"] = "faculty_instructor";
         $class["url"] = $this->url;
@@ -179,7 +203,6 @@ class Faculty extends CI_Controller {
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
-            $this->form_validation->set_rules('department', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -193,7 +216,6 @@ class Faculty extends CI_Controller {
                     'role' => ROLE_CUSTODIAN,
                     'designation' => DESIGNATION_CUSTODIAN,
                     'college_id' => $this->college['id'],
-                    'department' => $this->input->post('department'),
                     'is_active' => 1,
                     'created_at' => date('Y-m-d H:i:s'),
                     'created_by' => $this->session_data['id']
@@ -208,7 +230,6 @@ class Faculty extends CI_Controller {
             }
         } else {
             $data["url"] = $this->url;
-            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "faculty_custodian";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/faculty/custodian");
@@ -225,7 +246,6 @@ class Faculty extends CI_Controller {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('department', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -235,7 +255,6 @@ class Faculty extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'department' => $this->input->post('department'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
                 );
@@ -255,7 +274,6 @@ class Faculty extends CI_Controller {
             }
 
             $data["url"] = $this->url;
-            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "faculty_custodian";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/faculty/custodian");

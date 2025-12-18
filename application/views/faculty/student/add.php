@@ -97,7 +97,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="department"><i class="feather icon-briefcase mr-2"></i>Department *</label>
-                                        <select class="form-control" id="department" name="department" required>
+                                        <select class="form-control select2" id="department" name="department" required>
                                             <option value="">Select Department</option>
                                             <?php foreach ($departments as $dept): ?>
                                                 <option value="<?php echo $dept['id']; ?>"
@@ -132,3 +132,14 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2
+    $('.select2').select2({
+        placeholder: "Select an option",
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>

@@ -341,12 +341,20 @@ class Groups extends CI_Controller
         ]);
 
         // Get student count for each group
+        $total_students_in_groups = 0;
         foreach ($data["groups"] as &$group) {
             $group['student_count'] = count($this->db_model->get_all(TABLE_MEMGROUPS, [
                 "group_id" => $group['id'],
                 "is_active" => 1
             ]));
+            $total_students_in_groups += $group['student_count'];
         }
+
+        // Statistics for music groups
+        $data["stats"] = array(
+            "total_groups" => count($data["groups"]),
+            "total_students_in_groups" => $total_students_in_groups
+        );
 
         $data["url"] = $this->url;
         $class["classname"] = "groups";

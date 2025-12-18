@@ -423,7 +423,17 @@
                             </a>
                         </li>
                     <?php endif; ?>
+                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
 
+                        <li class="sidenav-item <?php if ($classname == "students") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= "$sidebar_href/students" ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-user"></i>
+                                <div>Students</div>
+                            </a>
+                        </li>
+                    <?php endif; ?>
                     <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "courses") {
@@ -465,17 +475,6 @@
                             <a href="<?= base_url($url . "/announcements") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-bell"></i>
                                 <div>Announcements</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if (in_array($designation, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "students") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= "$sidebar_href/students" ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-user"></i>
-                                <div>Learner</div>
                             </a>
                         </li>
                     <?php endif; ?>

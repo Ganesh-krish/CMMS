@@ -28,14 +28,14 @@
                     <div class="card-body">
                         <form method="post" action="">
                             <div class="form-group">
-                                <label for="name">Full Name *</label>
+                                <label for="name"><i class="feather icon-user mr-2"></i>Full Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['name']) : ''; ?>"
                                        required>
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Email Address *</label>
+                                <label for="email"><i class="feather icon-mail mr-2"></i>Email Address *</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['email']) : ''; ?>"
                                        required <?php echo isset($user) ? 'readonly' : ''; ?>>
@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="phone">Phone Number *</label>
+                                <label for="phone"><i class="feather icon-phone mr-2"></i>Phone Number *</label>
                                 <input type="tel" class="form-control" id="phone" name="phone"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['phone']) : ''; ?>"
                                        required>
@@ -53,7 +53,7 @@
 
                             <?php if (!isset($user)): ?>
                                 <div class="form-group">
-                                    <label for="password">Password *</label>
+                                    <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>
                                     <input type="password" class="form-control" id="password" name="password"
                                            required minlength="6">
                                     <small class="form-text text-muted">Minimum 6 characters</small>
@@ -76,3 +76,51 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Form label icons styling */
+.form-group label i {
+    color: #6c757d;
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Enhanced form styling */
+.card-body .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.card-body .form-control {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+}
+
+.card-body .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+</style>

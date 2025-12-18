@@ -30,8 +30,6 @@
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/bootstrap-material.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/shreerang-material.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/uikit.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-multiselect/bootstrap-multiselect.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -630,3 +628,5 @@
                         </form>
                     </div>
                 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

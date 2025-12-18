@@ -40,21 +40,21 @@
                     </div>
                     <div class="card-body">
                         <form method="post" action="">
-                            <div class="form-group">
-                                <label for="name"><i class="feather icon-tag mr-2"></i>Group Name *</label>
+                            <div class="mb-3">
+                                <label for="name" class="form-label"><i class="feather icon-tag mr-2"></i>Group Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        value="<?php echo isset($group) ? htmlspecialchars($group['name']) : ''; ?>"
                                        placeholder="Enter music group name" required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="description"><i class="feather icon-file-text mr-2"></i>Description</label>
+                            <div class="mb-3">
+                                <label for="description" class="form-label"><i class="feather icon-file-text mr-2"></i>Description</label>
                                 <textarea class="form-control" id="description" name="description" rows="3"
                                           placeholder="Enter group description (optional)"><?php echo isset($group) ? htmlspecialchars($group['description']) : ''; ?></textarea>
                                 <small class="form-text text-muted">Optional description for the music group</small>
                             </div>
 
-                            <div class="form-group">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="feather icon-save"></i>
                                     <?php echo isset($group) ? 'Update Music Group' : 'Create Music Group'; ?>

@@ -26,14 +26,14 @@
                     </div>
                     <div class="card-body">
                         <form method="post" action="">
-                            <div class="form-group">
-                                <label for="name"><i class="feather icon-briefcase mr-2"></i>Department Name *</label>
+                            <div class="mb-3">
+                                <label for="name" class="form-label"><i class="feather icon-briefcase mr-2"></i>Department Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        value="<?php echo isset($department) ? htmlspecialchars($department['name']) : ''; ?>"
                                        required>
                             </div>
 
-                            <div class="form-group">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="submit" class="btn btn-primary">
                                     <?php echo isset($department) ? 'Update Department' : 'Add Department'; ?>
                                 </button>

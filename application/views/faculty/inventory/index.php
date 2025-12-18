@@ -65,8 +65,8 @@
                                 </button>
                             </div>
                             <div class="col-md-3">
-                                <a href="<?php echo base_url($url.'/inventory/reports'); ?>" class="btn btn-info btn-block mb-2">
-                                    <i class="feather icon-bar-chart"></i> View Reports
+                                <a href="<?php echo base_url($url.'/inventory/categories'); ?>" class="btn btn-info btn-block mb-2">
+                                    <i class="feather icon-tag"></i> Add Categories
                                 </a>
                             </div>
                             <div class="col-md-3">
@@ -131,11 +131,13 @@
                         <thead>
                             <tr>
                                 <th>S.No</th>
+                                <th>Image</th>
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Serial No</th>
                                 <th>Status</th>
-                                <th>Last Updated</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -145,6 +147,13 @@
                                 foreach ($instruments as $instrument) { ?>
                                     <tr>
                                         <td><?php echo $i++; ?></td>
+                                        <td>
+                                            <?php if (!empty($instrument['instrument_image'])): ?>
+                                                <img src="<?php echo base_url($instrument['instrument_image']); ?>" class="img-thumbnail" style="max-width: 50px; max-height: 50px;" alt="Instrument Image">
+                                            <?php else: ?>
+                                                <span class="text-muted">No Image</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo $instrument['name']; ?></td>
                                         <td><?php echo $categories[$instrument['category']] ?? $instrument['category']; ?></td>
                                         <td><?php echo $instrument['serial_no']; ?></td>
@@ -157,7 +166,8 @@
                                                 <?php echo ucfirst($instrument['availability_status']); ?>
                                             </span>
                                         </td>
-                                        <td><?php echo date('d M Y', strtotime($instrument['updated_at'])); ?></td>
+                                        <td><?php echo $instrument['issue_date'] ? date('d M Y', strtotime($instrument['issue_date'])) : 'N/A'; ?></td>
+                                        <td><?php echo $instrument['due_date'] ? date('d M Y', strtotime($instrument['due_date'])) : 'N/A'; ?></td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
                                             <button class="btn btn-sm btn-info" onclick="viewInstrument(<?php echo $instrument['id']; ?>)">
                                                 <i class="feather icon-eye"></i> View
@@ -182,7 +192,7 @@
                             <?php }
                             } else { ?>
                                 <tr>
-                                    <td colspan="7" class="text-center">No instruments found</td>
+                                    <td colspan="9" class="text-center">No instruments found</td>
                                 </tr>
                             <?php } ?>
                         </tbody>
@@ -228,9 +238,18 @@ function editInstrument(id) {
                 document.getElementById('edit_serial_no').value = instrument.serial_no;
                 document.getElementById('edit_model').value = instrument.model || '';
                 document.getElementById('edit_description').value = instrument.description || '';
-                document.getElementById('edit_purchase_date').value = instrument.purchase_date ? instrument.purchase_date.substring(0, 10) : '';
-                document.getElementById('edit_purchase_cost').value = instrument.purchase_cost || '';
+                document.getElementById('edit_issue_date').value = instrument.issue_date ? instrument.issue_date.substring(0, 10) : '';
+                document.getElementById('edit_instrument_price').value = instrument.instrument_price || '';
+                document.getElementById('edit_due_date').value = instrument.due_date ? instrument.due_date.substring(0, 10) : '';
                 document.getElementById('edit_condition').value = instrument.condition || 'good';
+
+                // Handle image display
+                const imageContainer = document.getElementById('current_image_display');
+                if (instrument.instrument_image) {
+                    imageContainer.innerHTML = '<img src="<?php echo base_url(); ?>' + instrument.instrument_image + '" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">';
+                } else {
+                    imageContainer.innerHTML = '<small class="text-muted">No image uploaded</small>';
+                }
 
                 new bootstrap.Modal(document.getElementById('editInstrumentModal')).show();
             }
@@ -255,11 +274,4 @@ function logMaintenance(id, name) {
     new bootstrap.Modal(document.getElementById('maintenanceModal')).show();
 }
 
-// Initialize DataTable
-$(document).ready(function() {
-    $('#instrumentsTable').DataTable({
-        "pageLength": 25,
-        "order": [[ 0, "asc" ]]
-    });
-});
 </script>

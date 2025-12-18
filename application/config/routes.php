@@ -167,6 +167,9 @@ $route['(:any)/inventory/maintenance'] = 'Inventory/maintenance';
 $route['(:any)/inventory/issues'] = 'Inventory/issues';
 $route['(:any)/inventory/maintenance_logs'] = 'Inventory/maintenance_logs';
 $route['(:any)/inventory/reports'] = 'Inventory/reports';
+$route['(:any)/inventory/categories'] = 'Inventory/categories';
+$route['(:any)/inventory/add_category'] = 'Inventory/add_category';
+$route['(:any)/inventory/update_category'] = 'Inventory/update_category';
 
 // Musical Instruments API routes (for AJAX operations)
 $route['(:any)/api/inventory/create'] = 'Inventory/create_api';

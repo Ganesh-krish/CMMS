@@ -58,7 +58,7 @@ class College extends CI_Controller {
             $this->session->set_flashdata('message', array('warning',"Single-college mode enabled. Only the default college can be managed."));
             return redirect($this->url.'/college/view');
         }
-
+sw
         $post = $this->input->post();
         if($post){
             $data = array(

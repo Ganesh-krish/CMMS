@@ -27,15 +27,15 @@
                     </div>
                     <div class="card-body">
                         <form method="post" action="">
-                            <div class="form-group">
-                                <label for="name">Full Name *</label>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['name']) : ''; ?>"
                                        required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="email">Email Address *</label>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['email']) : ''; ?>"
                                        required <?php echo isset($user) ? 'readonly' : ''; ?>>
@@ -44,16 +44,16 @@
                                 <?php endif; ?>
                             </div>
 
-                            <div class="form-group">
-                                <label for="phone">Phone Number *</label>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
                                 <input type="tel" class="form-control" id="phone" name="phone"
                                        value="<?php echo isset($user) ? htmlspecialchars($user['phone']) : ''; ?>"
                                        required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="department_id">Department *</label>
-                                <select class="form-control" id="department_id" name="department_id" required>
+                            <div class="mb-3">
+                                <label for="department_id" class="form-label">Department *</label>
+                                <select class="form-control select2" id="department_id" name="department_id" required>
                                     <option value="">Select Department</option>
                                     <?php if(isset($departments) && !empty($departments)): ?>
                                         <?php foreach($departments as $dept): ?>
@@ -67,15 +67,15 @@
                             </div>
 
                             <?php if (!isset($user)): ?>
-                                <div class="form-group">
-                                    <label for="password">Password *</label>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password *</label>
                                     <input type="password" class="form-control" id="password" name="password"
                                            required minlength="6">
                                     <small class="form-text text-muted">Minimum 6 characters</small>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="form-group">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="feather icon-save"></i>
                                     <?php echo isset($user) ? 'Update Staff' : 'Add Staff'; ?>
@@ -91,3 +91,13 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Initialize Select2 for dropdowns
+    $('.select2').select2({
+        placeholder: "Select an option",
+        allowClear: true
+    });
+});
+</script>

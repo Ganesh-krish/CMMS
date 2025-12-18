@@ -6,12 +6,19 @@
                 <h5 class="modal-title" id="addInstrumentModalLabel">Add Musical Instrument</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url($url . '/inventory/create') ?>" method="POST">
+            <form action="<?= base_url($url . '/inventory/create') ?>" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
+                    <!-- Instrument Image -->
+                    <div class="mb-3">
+                        <label for="instrument_image" class="form-label">Instrument Image</label>
+                        <input type="file" class="form-control" id="instrument_image" name="instrument_image" accept="image/*">
+                        <small class="text-muted">Upload a photo of the instrument (JPG, PNG, GIF)</small>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Instrument Name *</label>
-                            <select class="form-control" id="name" name="name" required>
+                            <select class="form-control select2" id="name" name="name" required>
                                 <option value="">Select Instrument</option>
                                 <?php
                                 $common_instruments = [
@@ -46,7 +53,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="category" class="form-label">Category *</label>
-                            <select class="form-control" id="category" name="category" required>
+                            <select class="form-control select2" id="category" name="category" required>
                                 <option value="">Select Category</option>
                                 <option value="string">String Instruments</option>
                                 <option value="percussion">Percussion Instruments</option>
@@ -79,13 +86,17 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="purchase_date" class="form-label">Purchase Date</label>
-                            <input type="date" class="form-control" id="purchase_date" name="purchase_date">
+                        <div class="col-md-4 mb-3">
+                            <label for="issue_date" class="form-label">Issue Date</label>
+                            <input type="date" class="form-control" id="issue_date" name="issue_date">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="purchase_cost" class="form-label">Purchase Cost</label>
-                            <input type="number" class="form-control" id="purchase_cost" name="purchase_cost" step="0.01">
+                        <div class="col-md-4 mb-3">
+                            <label for="instrument_price" class="form-label">Instrument Price</label>
+                            <input type="number" class="form-control" id="instrument_price" name="instrument_price" step="0.01">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="due_date" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date">
                         </div>
                     </div>
 
@@ -111,9 +122,24 @@
                 <h5 class="modal-title" id="editInstrumentModalLabel">Edit Musical Instrument</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url($url . '/inventory/update') ?>" method="POST">
+            <form action="<?= base_url($url . '/inventory/update') ?>" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="edit_instrument_id" name="id">
                 <div class="modal-body">
+                    <!-- Current Instrument Image Display -->
+                    <div class="mb-3" id="current_image_container">
+                        <label class="form-label">Current Image</label>
+                        <div id="current_image_display">
+                            <small class="text-muted">No image uploaded</small>
+                        </div>
+                    </div>
+
+                    <!-- Instrument Image Upload -->
+                    <div class="mb-3">
+                        <label for="edit_instrument_image" class="form-label">Update Instrument Image</label>
+                        <input type="file" class="form-control" id="edit_instrument_image" name="instrument_image" accept="image/*">
+                        <small class="text-muted">Leave empty to keep current image (JPG, PNG, GIF)</small>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_name" class="form-label">Instrument Name *</label>
@@ -134,7 +160,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_category" class="form-label">Category *</label>
-                            <select class="form-control" id="edit_category" name="category" required>
+                            <select class="form-control select2" id="edit_category" name="category" required>
                                 <option value="">Select Category</option>
                                 <option value="string">String Instruments</option>
                                 <option value="percussion">Percussion Instruments</option>
@@ -167,13 +193,17 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_purchase_date" class="form-label">Purchase Date</label>
-                            <input type="date" class="form-control" id="edit_purchase_date" name="purchase_date">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_issue_date" class="form-label">Issue Date</label>
+                            <input type="date" class="form-control" id="edit_issue_date" name="issue_date">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_purchase_cost" class="form-label">Purchase Cost</label>
-                            <input type="number" class="form-control" id="edit_purchase_cost" name="purchase_cost" step="0.01">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_instrument_price" class="form-label">Instrument Price</label>
+                            <input type="number" class="form-control" id="edit_instrument_price" name="instrument_price" step="0.01">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_due_date" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="edit_due_date" name="due_date">
                         </div>
                     </div>
 
@@ -362,6 +392,14 @@
 </div>
 
 <script>
+$(document).ready(function() {
+    // Initialize Select2 for all select dropdowns
+    $('.select2').select2({
+        placeholder: "Select an option",
+        allowClear: true
+    });
+});
+
 function toggleIssueFields() {
     // This function can be extended to dynamically load student/staff lists
     // For now, it's a placeholder for future enhancement

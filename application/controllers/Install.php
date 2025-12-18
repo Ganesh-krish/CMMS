@@ -335,9 +335,13 @@ class Install extends CI_Controller
                 `model` varchar(100) DEFAULT NULL,
                 `brand` varchar(100) DEFAULT NULL,
                 `condition_notes` text,
-                `purchase_date` date DEFAULT NULL,
+                `issue_date` date DEFAULT NULL,
+                `due_date` date DEFAULT NULL,
+                `instrument_price` decimal(10,2) DEFAULT NULL,
+                `instrument_image` varchar(255) DEFAULT NULL,
                 `location` varchar(255) DEFAULT NULL,
                 `availability_status` enum('available','issued','maintenance','damaged') NOT NULL DEFAULT 'available',
+                `condition` enum('excellent','good','fair','poor','damaged') NOT NULL DEFAULT 'good',
                 `notes` text,
                 `college_id` int(11) NOT NULL,
                 `created_by` int(11) NOT NULL,
@@ -348,6 +352,7 @@ class Install extends CI_Controller
                 PRIMARY KEY (`id`),
                 KEY `college_id` (`college_id`),
                 KEY `availability_status` (`availability_status`),
+                KEY `category` (`category`),
                 CONSTRAINT `fk_instruments_college_id` FOREIGN KEY (`college_id`) REFERENCES `college` (`id`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");

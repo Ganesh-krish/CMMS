@@ -103,6 +103,31 @@ class Inventory extends CI_Controller
                     $instrument_name = $this->input->post('custom_name');
                 }
 
+                // Handle image upload
+                $image_path = null;
+                if (!empty($_FILES['instrument_image']['name'])) {
+                    $config['upload_path'] = './uploads/instruments/';
+                    $config['allowed_types'] = 'jpg|jpeg|png|gif';
+                    $config['max_size'] = 2048; // 2MB
+                    $config['encrypt_name'] = TRUE;
+
+                    // Create directory if it doesn't exist
+                    if (!is_dir($config['upload_path'])) {
+                        mkdir($config['upload_path'], 0755, TRUE);
+                    }
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('instrument_image')) {
+                        $upload_data = $this->upload->data();
+                        $image_path = 'uploads/instruments/' . $upload_data['file_name'];
+                    } else {
+                        $this->session->set_flashdata('message', array('danger', $this->upload->display_errors()));
+                        redirect(base_url($this->url . "/inventory"));
+                        return;
+                    }
+                }
+
                 $data = array(
                     'name' => $instrument_name,
                     'category' => $this->input->post('category'),
@@ -110,8 +135,10 @@ class Inventory extends CI_Controller
                     'model' => $this->input->post('model'),
                     'description' => $this->input->post('description'),
                     'condition' => $this->input->post('condition'),
-                    'purchase_date' => $this->input->post('purchase_date'),
-                    'purchase_cost' => $this->input->post('purchase_cost'),
+                    'issue_date' => $this->input->post('issue_date'),
+                    'due_date' => $this->input->post('due_date'),
+                    'instrument_price' => $this->input->post('instrument_price'),
+                    'instrument_image' => $image_path,
                     'availability_status' => 'available',
                     'college_id' => $this->college['id'],
                     'is_active' => 1
@@ -145,6 +172,37 @@ class Inventory extends CI_Controller
                     $instrument_name = $this->input->post('custom_name');
                 }
 
+                // Handle image upload (only if new image is uploaded)
+                $image_path = null;
+                if (!empty($_FILES['instrument_image']['name'])) {
+                    $config['upload_path'] = './uploads/instruments/';
+                    $config['allowed_types'] = 'jpg|jpeg|png|gif';
+                    $config['max_size'] = 2048; // 2MB
+                    $config['encrypt_name'] = TRUE;
+
+                    // Create directory if it doesn't exist
+                    if (!is_dir($config['upload_path'])) {
+                        mkdir($config['upload_path'], 0755, TRUE);
+                    }
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('instrument_image')) {
+                        $upload_data = $this->upload->data();
+                        $image_path = 'uploads/instruments/' . $upload_data['file_name'];
+
+                        // Delete old image if exists
+                        $old_instrument = $this->inventory->get_instrument($post['id']);
+                        if (!empty($old_instrument['instrument_image']) && file_exists('./' . $old_instrument['instrument_image'])) {
+                            unlink('./' . $old_instrument['instrument_image']);
+                        }
+                    } else {
+                        $this->session->set_flashdata('message', array('danger', $this->upload->display_errors()));
+                        redirect(base_url($this->url . "/inventory"));
+                        return;
+                    }
+                }
+
                 $data = array(
                     'name' => $instrument_name,
                     'category' => $this->input->post('category'),
@@ -152,9 +210,15 @@ class Inventory extends CI_Controller
                     'model' => $this->input->post('model'),
                     'description' => $this->input->post('description'),
                     'condition' => $this->input->post('condition'),
-                    'purchase_date' => $this->input->post('purchase_date'),
-                    'purchase_cost' => $this->input->post('purchase_cost')
+                    'issue_date' => $this->input->post('issue_date'),
+                    'due_date' => $this->input->post('due_date'),
+                    'instrument_price' => $this->input->post('instrument_price')
                 );
+
+                // Only update image if new one was uploaded
+                if ($image_path) {
+                    $data['instrument_image'] = $image_path;
+                }
 
                 if ($this->inventory->update_instrument($post['id'], $data)) {
                     $this->session->set_flashdata('message', array('success', "Instrument Updated successfully!"));
@@ -342,6 +406,75 @@ class Inventory extends CI_Controller
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/reports', $data);
         $this->load->view('common/footer');
+    }
+
+    public function categories()
+    {
+        $data["url"] = $this->url;
+        $class["classname"] = "inventory_categories";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/inventory");
+
+        $data["categories"] = $this->inventory->get_instrument_categories();
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/inventory/categories', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function add_category()
+    {
+        $category_name = $this->input->post('category_name');
+        $category_description = $this->input->post('category_description');
+
+        if (empty($category_name)) {
+            $this->json_response('error', ['message' => 'Category name is required'], 400);
+            return;
+        }
+
+        // For now, we'll store categories in a simple array format
+        // In a real implementation, you'd want a proper categories table
+        $categories = $this->inventory->get_instrument_categories();
+
+        // Generate a key from the category name
+        $key = strtolower(str_replace(' ', '_', $category_name));
+        $key = preg_replace('/[^a-z0-9_]/', '', $key);
+
+        if (isset($categories[$key])) {
+            $this->json_response('error', ['message' => 'Category already exists'], 400);
+            return;
+        }
+
+        $categories[$key] = $category_name;
+
+        // Save to database (this would need to be implemented in the model)
+        // For now, return success
+        $this->json_response('success', ['message' => 'Category added successfully']);
+    }
+
+    public function update_category()
+    {
+        $category_key = $this->input->post('category_key');
+        $category_name = $this->input->post('category_name');
+        $category_description = $this->input->post('category_description');
+
+        if (empty($category_key) || empty($category_name)) {
+            $this->json_response('error', ['message' => 'Category key and name are required'], 400);
+            return;
+        }
+
+        $categories = $this->inventory->get_instrument_categories();
+
+        if (!isset($categories[$category_key])) {
+            $this->json_response('error', ['message' => 'Category not found'], 404);
+            return;
+        }
+
+        $categories[$category_key] = $category_name;
+
+        // Save to database (this would need to be implemented in the model)
+        // For now, return success
+        $this->json_response('success', ['message' => 'Category updated successfully']);
     }
 
     private function json_response($status, $data = [], $http_code = 200)

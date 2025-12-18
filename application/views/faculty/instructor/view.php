@@ -75,8 +75,8 @@
                                                 <td><?php echo htmlspecialchars($instructor['phone'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php
-                                                    if (isset($instructor['department_id']) && $instructor['department_id']) {
-                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $instructor['department_id']]);
+                                                    if (isset($instructor['department']) && $instructor['department']) {
+                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $instructor['department']]);
                                                         echo $dept ? htmlspecialchars($dept['name']) : 'N/A';
                                                     } else {
                                                         echo 'N/A';

@@ -75,8 +75,8 @@
                                                 <td><?php echo htmlspecialchars($custodian['phone'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php
-                                                    if (isset($custodian['department_id']) && $custodian['department_id']) {
-                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $custodian['department_id']]);
+                                                    if (isset($custodian['department']) && $custodian['department']) {
+                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $custodian['department']]);
                                                         echo $dept ? htmlspecialchars($dept['name']) : 'N/A';
                                                     } else {
                                                         echo 'N/A';

@@ -1,11 +1,10 @@
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-0">Groups</h4>
+        <h4 class="font-weight-bold py-3 mb-0">Music Groups</h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
-                <!-- <li class="breadcrumb-item">Principal</li> -->
-                <li class="breadcrumb-item">Groups</li>
+                <li class="breadcrumb-item"><a href="<?php echo base_url($url.'/dashboard'); ?>"><i class="feather icon-home"></i></a></li>
+                <li class="breadcrumb-item active">Music Groups</li>
             </ol>
         </div>
         <?php if ($this->session->flashdata('message')) { ?>
@@ -14,74 +13,155 @@
                 <span><?= $this->session->flashdata('message')[1] ?></span>
             </div>
         <?php   } ?>
-        <div class="card p-2">
-            <div style="display: flex; justify-content:space-between; align-items: center;
-            border-bottom: 0 solid rgba(24, 28, 33, 0.13);
-            border-color: rgba(24, 28, 33, 0.13);
-            border-radius: 0.125rem 0.125rem 0 0; 
-            border-bottom-width: 1px;">
-                <h6 class="card-header" style="border:none">List of Groups</h6>
-                <div>
-                    <a href="<?= base_url($url.'/groups/add') ?>" class="btn btn-primary mr-3">Add Groupss</a>
-                    </button>
+        <!-- Actions Bar -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Music Groups Management</h6>
+                                <p class="mb-0">Create and manage music groups for students</p>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <a href="<?php echo base_url($url.'/groups/add'); ?>" class="btn btn-success">
+                                    <i class="feather icon-plus"></i> Add Music Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-datatable container table-responsive">
-                <table id="mytable" class="datatables-demo table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>Group Name</th>
-                            <th>Description</th>
-                            <th>Group Expiry</th>
-                            <th>Created At</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php 
-                        if (!empty($groups)) { $no=0;
-                            // var_dump($groups);die;
-                            foreach ($groups as $row) {  $no++?>
-                                <tr>
-                                    <td> <?= $no;?></td>   
-                                    <td><?php if (isset($row['name'])) {
-                                            echo $row['name'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>   
-                                    <td> <?php 
-                                    if (isset($row['group_description'])) {
-                                        echo $row['group_description'];
-                                    } else {
-                                        echo "-";
-                                    }
-                                    ?>
-                                    </td>   
-                                    <td><?php if (isset($row['group_expiry'])) {
-                                            echo $row['group_expiry'];
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>   
-                                    <td><?php if (isset($row['created_at'])) {
-                                            echo $this->common->display_date($row['created_at']);
-                                        } else {
-                                            echo "-";
-                                        } ?>
-                                    </td>  
-                                    <td>
-                                        <a href="<?= base_url($url.'/groups/edit/'.$row['id']) ?>" class="btn btn-warning btn-sm" ><i class="feather icon-edit"></i>&nbsp;Edit Group </a>
-                                        <a href="<?= base_url($url.'/groups/delete_group/'.$row['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?')"><i class="feather icon-trash"></i>&nbsp;Delete </a>
-                                    </td>
-                                </tr>
-                        <?php }
-                        } ?>
-                    </tbody>
-                </table>
+        </div>
+
+        <!-- Groups List -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <?php if (empty($groups)): ?>
+                            <div class="text-center py-5">
+                                <i class="feather icon-users" style="font-size: 4rem; color: #ccc;"></i>
+                                <h4 class="mt-3">No Music Groups</h4>
+                                <p class="text-muted">There are no music groups to display.</p>
+                                <a href="<?php echo base_url($url.'/groups/add'); ?>" class="btn btn-primary">
+                                    Add First Music Group
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Group Name</th>
+                                            <th>Description</th>
+                                            <th>Students</th>
+                                            <th>Status</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($groups as $group): ?>
+                                            <tr>
+                                                <td><?php echo $group['id']; ?></td>
+                                                <td><?php echo htmlspecialchars($group['name']); ?></td>
+                                                <td><?php echo htmlspecialchars($group['description'] ?? '-'); ?></td>
+                                                <td>
+                                                    <a href="<?php echo base_url($url.'/groups/group_students/'.$group['id']); ?>" class="btn btn-sm btn-outline-info" title="View Students">
+                                                        <i class="feather icon-users"></i> <?php echo $group['student_count'] ?? 0; ?> Students
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-<?php echo $group['is_active'] ? 'success' : 'secondary'; ?>">
+                                                        <?php echo $group['is_active'] ? 'Active' : 'Inactive'; ?>
+                                                    </span>
+                                                </td>
+                                                <td><?php echo date('d M Y', strtotime($group['created_at'])); ?></td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="<?php echo base_url($url.'/groups/edit/'.$group['id']); ?>" class="btn btn-sm btn-success" title="Edit Group">
+                                                            <i class="feather icon-edit"></i>
+                                                        </a>
+                                                        <a href="#" onclick="confirmDelete(<?php echo $group['id']; ?>, '<?php echo htmlspecialchars($group['name']); ?>')" class="btn btn-sm btn-danger" title="Delete Group">
+                                                            <i class="feather icon-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id, name) {
+    // Set modal content
+    document.getElementById('deleteModalLabel').textContent = 'Delete Music Group';
+    document.getElementById('deleteModalBody').innerHTML = 'Are you sure you want to delete the music group "' + name + '"? This action cannot be undone.';
+
+    // Store the delete URL
+    window.deleteUrl = '<?php echo base_url($url.'/groups/delete/'); ?>' + id;
+
+    // Show modal using Bootstrap's JavaScript API
+    var deleteModalElement = document.getElementById('deleteModal');
+    var modal = new bootstrap.Modal(deleteModalElement);
+    modal.show();
+
+    // Manually handle modal dismissal for delete modal
+    setTimeout(function() {
+        var cancelBtn = document.querySelector('#deleteModal .btn-secondary');
+        var closeBtn = document.querySelector('#deleteModal .close');
+
+        if (cancelBtn) {
+            cancelBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.hide();
+            };
+        }
+    }, 100);
+}
+
+function proceedDelete() {
+    if (window.deleteUrl) {
+        window.location.href = window.deleteUrl;
+    }
+}
+</script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="deleteModalBody">
+                Are you sure you want to delete this music group? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="proceedDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
     </div>
 </div>
 <!-- Create Course Modal for add cource -->

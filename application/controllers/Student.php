@@ -2405,4 +2405,214 @@ class Student extends CI_Controller {
             'data' => $lessons
         ]);
     }
+
+    // ============ ADMIN STUDENT MANAGEMENT METHODS ============
+
+    public function students() {
+        // Switch to HTML output for admin interface
+        $this->output->set_content_type('text/html');
+
+        $this->load->model('faculty/common', 'faculty_common');
+
+        // Use unified session approach for admin
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
+        $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
+            "is_active" => 1,
+            "college_id" => $this->college['id']
+        ]);
+
+        $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+            "is_active" => 1,
+            "college_id" => $this->college['id']
+        ]);
+
+        $data["url"] = $this->url;
+        $class["classname"] = "students";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/students");
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/student/view', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function add_student() {
+        // Switch to HTML output for admin interface
+        $this->output->set_content_type('text/html');
+
+        $this->load->model('faculty/common', 'faculty_common');
+
+        // Use unified session approach for admin
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
+            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|is_unique[student.email]');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required|is_unique[student.registration_number]');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
+            $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array('danger', validation_errors()));
+                redirect($this->url.'/students');
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'registration_number' => $this->input->post('registration_number'),
+                    'department' => $this->input->post('department'),
+                    'batch' => $this->input->post('batch'),
+                    'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+                    'college_id' => $this->college['id'],
+                    'is_active' => 1,
+                    'created_at' => date('Y-m-d H:i:s')
+                );
+
+                if ($this->db_model->insert(TABLE_STUDENT, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Student added successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to add student."));
+                }
+                redirect($this->url.'/students');
+            }
+        } else {
+            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+
+            $data["url"] = $this->url;
+            $class["classname"] = "students";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/students");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/student/add', $data);
+            $this->load->view('common/footer');
+        }
+    }
+
+    public function edit_student($id) {
+        // Switch to HTML output for admin interface
+        $this->output->set_content_type('text/html');
+
+        $this->load->model('faculty/common', 'faculty_common');
+
+        // Use unified session approach for admin
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
+            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email');
+            $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
+            $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array('danger', validation_errors()));
+                redirect($this->url.'/students');
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'email' => $this->input->post('email'),
+                    'phone' => $this->input->post('phone'),
+                    'registration_number' => $this->input->post('registration_number'),
+                    'department' => $this->input->post('department'),
+                    'batch' => $this->input->post('batch'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                );
+
+                if ($this->db_model->update(TABLE_STUDENT, $data, ["id" => $id])) {
+                    $this->session->set_flashdata('message', array('success', "Student updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update student."));
+                }
+                redirect($this->url.'/students');
+            }
+        } else {
+            $data["student"] = $this->db_model->get_row(TABLE_STUDENT, ["id" => $id, "is_active" => 1]);
+            if (!$data["student"]) {
+                $this->session->set_flashdata('message', array('danger', "Student not found."));
+                redirect($this->url.'/students');
+            }
+
+            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+
+            $data["url"] = $this->url;
+            $class["classname"] = "students";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/students");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/student/add', $data);
+            $this->load->view('common/footer');
+        }
+    }
+
+    public function delete_student($id) {
+        // Switch to HTML output for admin interface
+        $this->output->set_content_type('text/html');
+
+        $this->load->model('faculty/common', 'faculty_common');
+
+        // Use unified session approach for admin
+        $unified_user = $this->session->userdata('user');
+        if ($unified_user && isset($unified_user['user_type']) && $unified_user['user_type'] === 'faculty') {
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $unified_user;
+        } else {
+            $this->faculty_common->check_user_session($this->url);
+            $this->college = $this->faculty_common->get_default_college();
+            $this->session_data = $this->session->userdata($this->url);
+        }
+
+        // Prevent deletion of own account if student
+        if ($id == $this->session_data['id']) {
+            $this->session->set_flashdata('message', array('warning', "You cannot delete your own account."));
+            redirect($this->url.'/students');
+            return;
+        }
+
+        $result = $this->db_model->update(TABLE_STUDENT, ["is_active" => 0], ["id" => $id]);
+        $message = array('success', "Student deleted successfully!");
+        if (!$result) {
+            $message = array('danger', "Failed to delete student.");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect($this->url.'/students');
+    }
 }

@@ -13,13 +13,14 @@
 </style>
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
-        <h4 id="Title" class="font-weight-bold py-3 mb-0">
-            <?php echo $title ?>
+        <h4 class="font-weight-bold py-3 mb-0">
+            <?php echo isset($group) ? 'Edit Music Group' : 'Add New Music Group'; ?>
         </h4>
         <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
-                <li class="breadcrumb-item">Student</li>
+                <li class="breadcrumb-item"><a href="<?php echo base_url($url.'/dashboard'); ?>"><i class="feather icon-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="<?php echo base_url($url.'/groups'); ?>">Music Groups</a></li>
+                <li class="breadcrumb-item active"><?php echo isset($group) ? 'Edit' : 'Add'; ?> Group</li>
             </ol>
         </div>
 
@@ -31,54 +32,41 @@
             </div>
         <?php } ?>
 
-        <div class="card p-4 shadow-sm rounded">
-            <form action="<?= isset($groups) ? base_url($url . '/groups/edit/' . $groups['id']) : base_url($url . '/groups/add') ?>" method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="group_name">Group Name</label>
-                            <input type="text" class="form-control" id="group_name" name="group_name" value="<?php if (isset($groups['name'])) {
-                                                                                                                    echo $groups['name'];
-                                                                                                                } ?>" required>
-                        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Music Group Information</h5>
                     </div>
-                    <!-- <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="group_expiry">Group Expiry (in days)</label>
-                            <input type="date" class="form-control" id="group_expiry" name="group_expiry" value="<?php if (isset($groups['group_expiry'])) {
-                                                                                                                        echo $groups['group_expiry'];
-                                                                                                                    } ?>" required>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="group_members">Select Group Members</label>
-                            <select class="form-control choices-multiple" id="group_members" name="group_members[]" multiple>
-                                <?php if (!empty($staff)) {
-                                    foreach ($staff as $row) {    
-                                        $selected = (in_array($row['id'], $studentIds)) ? 'selected' : '';
-                                        ?>
-                                        <option value="<?php echo $row['id'] ?>" <?php echo $selected ?>>
-                                            <?php echo $row['name']; ?>
-                                        </option>
-                                    <?php } 
-                                } ?>
-                            </select>
-                        </div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            <div class="form-group">
+                                <label for="name"><i class="feather icon-tag mr-2"></i>Group Name *</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                       value="<?php echo isset($group) ? htmlspecialchars($group['name']) : ''; ?>"
+                                       placeholder="Enter music group name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description"><i class="feather icon-file-text mr-2"></i>Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          placeholder="Enter group description (optional)"><?php echo isset($group) ? htmlspecialchars($group['description']) : ''; ?></textarea>
+                                <small class="form-text text-muted">Optional description for the music group</small>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="feather icon-save"></i>
+                                    <?php echo isset($group) ? 'Update Music Group' : 'Create Music Group'; ?>
+                                </button>
+                                <a href="<?php echo base_url($url.'/groups'); ?>" class="btn btn-secondary">
+                                    <i class="feather icon-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" required><?php
-                                                                                                                    if (isset($groups['group_description'])) {
-                                                                                                                        echo $groups['group_description'];
-                                                                                                                    } ?></textarea>
-                        </div>
-                    </div> -->
                 </div>
-                <button type="submit" class="btn btn-primary"><?php echo isset($groups) ? 'Update' : 'Save Group' ?></button>
-                <a href="<?= base_url($url . '/'.$designation. '/students') ?>" class="btn btn-secondary">Cancel</a>
-            </form>
+            </div>
         </div>
     </div>
 </div>

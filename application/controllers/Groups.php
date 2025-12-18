@@ -354,4 +354,215 @@ class Groups extends CI_Controller
         }
 
     }
+
+    // ============ MUSIC GROUPS MANAGEMENT METHODS ============
+
+    public function groups() {
+        $data["groups"] = $this->db_model->get_all(TABLE_GROUPS, [
+            "is_active" => 1,
+            "college_id" => $this->college['id']
+        ]);
+
+        // Get student count for each group
+        foreach ($data["groups"] as &$group) {
+            $group['student_count'] = count($this->db_model->get_all(TABLE_MEMGROUPS, [
+                "group_id" => $group['id'],
+                "is_active" => 1
+            ]));
+        }
+
+        $data["url"] = $this->url;
+        $class["classname"] = "groups";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/groups");
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/groups/view', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function add_group() {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Group Name', 'trim|required|min_length[2]|max_length[100]');
+            $this->form_validation->set_rules('description', 'Description', 'trim|max_length[500]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array('danger', validation_errors()));
+                redirect($this->url.'/groups');
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'description' => $this->input->post('description'),
+                    'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
+                    'is_active' => 1,
+                    'created_at' => date('Y-m-d H:i:s')
+                );
+
+                if ($this->db_model->insert(TABLE_GROUPS, $data)) {
+                    $this->session->set_flashdata('message', array('success', "Music Group created successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to create music group."));
+                }
+                redirect($this->url.'/groups');
+            }
+        } else {
+            $data["url"] = $this->url;
+            $class["classname"] = "groups";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/groups");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/groups/add', $data);
+            $this->load->view('common/footer');
+        }
+    }
+
+    public function edit_group($id) {
+        $post = $this->input->post();
+        if($post){
+            $this->form_validation->set_rules('name', 'Group Name', 'trim|required|min_length[2]|max_length[100]');
+            $this->form_validation->set_rules('description', 'Description', 'trim|max_length[500]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('message', array('danger', validation_errors()));
+                redirect($this->url.'/groups');
+            } else {
+                $data = array(
+                    'name' => $this->input->post('name'),
+                    'description' => $this->input->post('description'),
+                    'updated_by' => $this->session_data['id'],
+                    'updated_at' => date('Y-m-d H:i:s')
+                );
+
+                if ($this->db_model->update(TABLE_GROUPS, $data, ["id" => $id])) {
+                    $this->session->set_flashdata('message', array('success', "Music Group updated successfully!"));
+                } else {
+                    $this->session->set_flashdata('message', array('danger', "Failed to update music group."));
+                }
+                redirect($this->url.'/groups');
+            }
+        } else {
+            $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $id, "is_active" => 1]);
+            if (!$data["group"]) {
+                $this->session->set_flashdata('message', array('danger', "Music Group not found."));
+                redirect($this->url.'/groups');
+            }
+
+            $data["url"] = $this->url;
+            $class["classname"] = "groups";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/groups");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/groups/add', $data);
+            $this->load->view('common/footer');
+        }
+    }
+
+    public function delete_group($id) {
+        $result = $this->db_model->update(TABLE_GROUPS, ["is_active" => 0], ["id" => $id]);
+        $message = array('success', "Music Group deleted successfully!");
+        if (!$result) {
+            $message = array('danger', "Failed to delete music group.");
+        }
+        $this->session->set_flashdata('message', $message);
+        redirect($this->url.'/groups');
+    }
+
+    public function group_students($group_id) {
+        $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "is_active" => 1]);
+        if (!$data["group"]) {
+            $this->session->set_flashdata('message', array('danger', "Music Group not found."));
+            redirect($this->url.'/groups');
+        }
+
+        // Get students in this group
+        $data["group_students"] = $this->db_model->get_with_joins(
+            TABLE_MEMGROUPS,
+            'student',
+            'student_id',
+            ['group_id' => $group_id, 'memgroups.is_active' => 1],
+            'student.*'
+        );
+
+        // Get all students not in this group for adding
+        $existing_student_ids = array_column($data["group_students"], 'id');
+        $conditions = ["is_active" => 1, "college_id" => $this->college['id']];
+        if (!empty($existing_student_ids)) {
+            $this->db_model->db->where_not_in('id', $existing_student_ids);
+        }
+        $data["available_students"] = $this->db_model->get_all(TABLE_STUDENT, $conditions);
+
+        $data["url"] = $this->url;
+        $class["classname"] = "groups";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/groups");
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/groups/group_students', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function add_students_to_group($group_id) {
+        $post = $this->input->post();
+        if($post){
+            $student_ids = $this->input->post('student_ids');
+            $group = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "is_active" => 1]);
+
+            if (!$group) {
+                $this->session->set_flashdata('message', array('danger', 'Music Group not found.'));
+                redirect($this->url.'/groups');
+                return;
+            }
+
+            if (empty($student_ids) || !is_array($student_ids)) {
+                $this->session->set_flashdata('message', array('danger', "No students selected."));
+                redirect($this->url.'/groups/group_students/'.$group_id);
+                return;
+            }
+
+            $success_count = 0;
+            foreach ($student_ids as $student_id) {
+                // Check if student is already in the group
+                $exists = $this->db_model->get_row(TABLE_MEMGROUPS, ['group_id' => $group_id, 'student_id' => $student_id]);
+                if (!$exists) {
+                    $data = array(
+                        'group_id' => $group_id,
+                        'student_id' => $student_id,
+                        'added_by' => $this->session_data['id'],
+                        'is_active' => 1,
+                        'added_at' => date('Y-m-d H:i:s')
+                    );
+                    if ($this->db_model->insert(TABLE_MEMGROUPS, $data)) {
+                        $success_count++;
+                    }
+                }
+            }
+
+            if ($success_count > 0) {
+                $this->session->set_flashdata('message', array('success', "$success_count student(s) added to music group successfully!"));
+            } else {
+                $this->session->set_flashdata('message', array('warning', "Selected students are already in this music group."));
+            }
+            redirect($this->url.'/groups/group_students/'.$group_id);
+        } else {
+            redirect($this->url.'/groups');
+        }
+    }
+
+    public function remove_student_from_group($group_id, $student_id) {
+        $result = $this->db_model->update(TABLE_MEMGROUPS,
+            ["is_active" => 0],
+            ["group_id" => $group_id, "student_id" => $student_id]
+        );
+
+        if ($result) {
+            $this->session->set_flashdata('message', array('success', "Student removed from music group successfully!"));
+        } else {
+            $this->session->set_flashdata('message', array('danger', "Failed to remove student from music group."));
+        }
+        redirect($this->url.'/groups/group_students/'.$group_id);
+    }
 }

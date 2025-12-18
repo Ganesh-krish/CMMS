@@ -119,3 +119,39 @@ $route['(:any)/groups/delete/(:num)'] = 'Groups/delete_group/$2';
 $route['(:any)/groups/group_students/(:num)'] = 'Groups/group_students/$2';
 $route['(:any)/groups/add_students_to_group/(:num)'] = 'Groups/add_students_to_group/$2';
 $route['(:any)/groups/remove_student/(:num)/(:num)'] = 'Groups/remove_student_from_group/$2/$3';
+
+// Course Management routes
+$route['(:any)/courses'] = 'Course/index';
+$route['(:any)/courses/add'] = 'Course/add';
+$route['(:any)/courses/edit/(:num)'] = 'Course/edit/$2';
+$route['(:any)/courses/delete/(:num)'] = 'Course/delete/$2';
+
+// Course Modules routes
+$route['(:any)/courses/modules/(:num)'] = 'Course/modules/$2';
+$route['(:any)/courses/add_module'] = 'Course/add_module';
+$route['(:any)/courses/edit_module/(:num)/(:num)'] = 'Course/edit_module/$2/$3';
+$route['(:any)/courses/delete_module/(:num)/(:num)'] = 'Course/delete_module/$2/$3';
+
+// Course Lessons routes
+$route['(:any)/courses/lessons/(:num)/(:num)'] = 'Course/lessons/$2/$3';
+$route['(:any)/courses/add_lesson'] = 'Course/add_lesson';
+$route['(:any)/courses/edit_lesson/(:num)/(:num)/(:num)'] = 'Course/edit_lesson/$2/$3/$4';
+$route['(:any)/courses/delete_lesson/(:num)/(:num)/(:num)'] = 'Course/delete_lesson/$2/$3/$4';
+
+// Course Enrollments routes
+$route['(:any)/courses/enrollments/(:num)'] = 'Course/enrollments/$2';
+$route['(:any)/courses/enroll_student'] = 'Course/enroll_student';
+$route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'Course/update_enrollment_status/$2/$3';
+$route['(:any)/courses/unenroll_student/(:num)'] = 'Course/unenroll_student/$2';
+
+// Course Students overview route
+$route['(:any)/courses/students'] = 'Course/students';
+
+// System-level Course Management (SuperAdmin only)
+$route['(:any)/system_courses'] = 'Course/system_courses';
+$route['(:any)/courses/add_colleges/(:num)'] = 'Course/add_colleges/$2';
+$route['(:any)/courses/get_colleges'] = 'Course/get_colleges';
+$route['(:any)/courses/get_shared_colleges/(:num)'] = 'Course/get_shared_colleges/$2';
+$route['(:any)/courses/assign_course'] = 'Course/assign_course';
+$route['(:any)/courses/remove_course_assign/(:num)/(:num)'] = 'Course/remove_course_assign/$2/$3';
+$route['(:any)/courses/get_exclude_colleges/(:num)/(:num)'] = 'Course/get_exclude_colleges/$2/$3';

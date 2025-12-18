@@ -25,7 +25,7 @@ class Course extends CI_Controller {
 
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
 
-        $role = $this->session_data['role'];
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
         if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
             redirect('Welcome');
         }
@@ -43,9 +43,11 @@ class Course extends CI_Controller {
 
         $conditions = ["is_active" => true, "college_id" => $this->college['id']];
 
-        // HOD and Staff can only see courses from their department
+        // HOD and Staff can only see courses from their department (if department column exists)
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-            $conditions['department'] = $user_department;
+            if ($this->db->field_exists('department', TABLE_COURCES)) {
+                $conditions['department'] = $user_department;
+            }
             $data["can_edit_all_courses"] = false;
             $data["can_delete_courses"] = false;
         } else {
@@ -162,11 +164,15 @@ class Course extends CI_Controller {
                         'name' => $course_name,
                         'course_code' => $course_code, // Fixed column name
                         'description' => $this->input->post('description'),
-                        'department' => $requested_department,
                         'college_id' => $this->college['id'],
                         'created_by' => $this->session_data['id'],
                         'is_active' => 1
                     );
+
+                    // Only add department column if it exists in the table
+                    if ($this->db->field_exists('department', TABLE_COURCES)) {
+                        $data['department'] = $requested_department;
+                    }
 
                     if ($this->db_model->insert(TABLE_COURCES, $data)) {
                         $course_id = $this->db->insert_id();
@@ -212,6 +218,21 @@ class Course extends CI_Controller {
                 }
                 redirect(base_url($this->url . "/courses"));
             }
+        } else {
+            // Load the add course form for GET requests
+            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+
+            $data["url"] = $this->url;
+            $class["classname"] = "courses";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/courses");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/courses/add', $data);
+            $this->load->view('common/footer');
         }
     }
 
@@ -244,9 +265,13 @@ class Course extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'code' => $this->input->post('code'),
                     'description' => $this->input->post('description'),
-                    'department' => $requested_department,
                     'updated_by' => $this->session_data['id']
                 );
+
+                // Only update department column if it exists in the table
+                if ($this->db->field_exists('department', TABLE_COURCES)) {
+                    $data['department'] = $requested_department;
+                }
 
                 if ($this->db_model->update(TABLE_COURCES, $data, ["id" => $post['id']])) {
                     $this->session->set_flashdata('message', array('success', "Course Updated successfully!"));
@@ -255,6 +280,39 @@ class Course extends CI_Controller {
                 }
                 redirect(base_url($this->url . "/courses"));
             }
+        } else {
+            // Load the edit course form for GET requests
+            $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $id, "is_active" => 1]);
+            if (!$course) {
+                $this->session->set_flashdata('message', array('danger', "Course not found."));
+                redirect(base_url($this->url.'/courses'));
+                return;
+            }
+
+            // Check role-based access for editing
+            $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+                if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
+                    $this->session->set_flashdata('message', array('danger', "You can only edit courses in your department."));
+                    redirect(base_url($this->url.'/courses'));
+                    return;
+                }
+            }
+
+            $data["course"] = $course;
+            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+
+            $data["url"] = $this->url;
+            $class["classname"] = "courses";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/courses");
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/courses/add', $data);
+            $this->load->view('common/footer');
         }
     }
 
@@ -295,7 +353,7 @@ class Course extends CI_Controller {
         // Check role-based access
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-            if ($course['department'] != $this->session_data['department']) {
+            if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                 $this->session->set_flashdata('message', array('danger', "You can only access modules for courses in your department."));
                 redirect(base_url($this->url . "/courses"));
                 return;
@@ -333,7 +391,7 @@ class Course extends CI_Controller {
 
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-            if ($course['department'] != $this->session_data['department']) {
+            if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                 $this->session->set_flashdata('message', array('danger', "You can only access lessons for courses in your department."));
                 redirect(base_url($this->url . "/courses"));
                 return;
@@ -370,7 +428,7 @@ class Course extends CI_Controller {
         // Check role-based access
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-            if ($course['department'] != $this->session_data['department']) {
+            if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                 $this->session->set_flashdata('message', array('danger', "You can only access enrollments for courses in your department."));
                 redirect(base_url($this->url . "/courses"));
                 return;
@@ -379,8 +437,7 @@ class Course extends CI_Controller {
 
         $data["course"] = $course;
         $data["enrollments"] = $this->db_model->get_all(TABLE_COURSE_ENROLLMENTS, [
-            "course_id" => $course_id,
-            "is_active" => 1
+            "course_id" => $course_id
         ]);
 
         // Get student details for each enrollment
@@ -419,7 +476,7 @@ class Course extends CI_Controller {
 
                 $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
                 if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-                    if ($course['department'] != $this->session_data['department']) {
+                    if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                         $this->session->set_flashdata('message', array('danger', "You can only add modules to courses in your department."));
                         return redirect($_SERVER['HTTP_REFERER']);
                     }
@@ -465,7 +522,7 @@ class Course extends CI_Controller {
 
                 $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
                 if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-                    if ($course['department'] != $this->session_data['department']) {
+                    if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                         $this->session->set_flashdata('message', array('danger', "You can only edit modules for courses in your department."));
                         return redirect($_SERVER['HTTP_REFERER']);
                     }
@@ -543,7 +600,7 @@ class Course extends CI_Controller {
 
                 $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
                 if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-                    if ($course['department'] != $this->session_data['department']) {
+                    if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                         $this->session->set_flashdata('message', array('danger', "You can only add lessons to courses in your department."));
                         return redirect($_SERVER['HTTP_REFERER']);
                     }
@@ -594,7 +651,7 @@ class Course extends CI_Controller {
 
                 $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
                 if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-                    if ($course['department'] != $this->session_data['department']) {
+                    if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                         $this->session->set_flashdata('message', array('danger', "You can only edit lessons for courses in your department."));
                         return redirect($_SERVER['HTTP_REFERER']);
                     }
@@ -676,8 +733,7 @@ class Course extends CI_Controller {
                 // Check if student is already enrolled
                 $existing_enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, [
                 "student_id" => $student_id,
-                "course_id" => $course_id,
-                    "is_active" => 1
+                "course_id" => $course_id
                 ]);
 
                 if ($existing_enrollment) {
@@ -688,7 +744,7 @@ class Course extends CI_Controller {
 
                 $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
                 if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-                    if ($course['department'] != $this->session_data['department']) {
+                    if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                         $this->session->set_flashdata('message', array('danger', "You can only enroll students in courses from your department."));
                         return redirect($_SERVER['HTTP_REFERER']);
                     }
@@ -702,10 +758,9 @@ class Course extends CI_Controller {
             'course_id' => $course_id,
                     'student_id' => $student_id,
                     'enrolled_by' => $this->session_data['id'],
-                    'status' => 'active',
-                    'progress_percentage' => 0,
-                    'enrolled_at' => date('Y-m-d H:i:s'),
-                    'is_active' => 1
+                    'status' => 'enrolled',
+                    'progress_percentage' => 0.00,
+                    'enrolled_at' => date('Y-m-d H:i:s')
                 );
 
                 if ($this->db_model->insert(TABLE_COURSE_ENROLLMENTS, $data)) {
@@ -720,7 +775,7 @@ class Course extends CI_Controller {
 
     public function update_enrollment_status($enrollment_id = null, $status = null) {
         // Check enrollment access permission
-        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id, "is_active" => 1]);
+        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id]);
         if (!$enrollment) {
             $this->session->set_flashdata('message', array('danger', "Enrollment not found."));
             redirect(base_url($this->url . "/courses"));
@@ -736,7 +791,7 @@ class Course extends CI_Controller {
 
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
-            if ($course['department'] != $this->session_data['department']) {
+            if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
                 $this->session->set_flashdata('message', array('danger', "You can only manage enrollments for courses in your department."));
                 redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
                 return;
@@ -754,7 +809,7 @@ class Course extends CI_Controller {
 
     public function unenroll_student($enrollment_id = null) {
         // Check enrollment access permission
-        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id, "is_active" => 1]);
+        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ["id" => $enrollment_id]);
         if (!$enrollment) {
             $this->session->set_flashdata('message', array('danger', "Enrollment not found."));
             redirect(base_url($this->url . "/courses"));
@@ -777,7 +832,7 @@ class Course extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_COURSE_ENROLLMENTS, ["is_active" => 0], ["id" => $enrollment_id]);
+        $result = $this->db_model->update(TABLE_COURSE_ENROLLMENTS, ["status" => "dropped"], ["id" => $enrollment_id]);
         $message = array('success', "Student Unenrolled Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");

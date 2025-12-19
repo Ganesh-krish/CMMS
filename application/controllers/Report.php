@@ -48,7 +48,6 @@ class Report extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "reports";
         $class["url"] = $this->url;
-        $class["college_id"] = $this->college['id'];
 
         // Determine the path based on user role/designation
         $user_designation = $this->session_data['designation'] ?? $this->session_data['role'] ?? null;
@@ -61,7 +60,6 @@ class Report extends CI_Controller
             ROLE_SUPERADMIN => 'admin'
         ];
         $path = $map[$user_designation] ?? 'hod';
-        $class["sidebar_href"] = base_url($this->url . "/" . $path);
         
         // Get filter parameters
         $student_id = $this->input->get('student_id');
@@ -152,7 +150,6 @@ class Report extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "reports";
         $class["url"] = $this->url;
-        $class["college_id"] = $this->college['id'];
         
         // Determine the path based on user designation
         $map = [
@@ -160,7 +157,6 @@ class Report extends CI_Controller
             DESIGNATION_PRINCIPAL => 'principal'
         ];
         $path = $map[$this->session_data['designation']] ?? 'hod';
-        $class["sidebar_href"] = base_url($this->url . "/" . $path);
         
         // Get student details
         $data['student'] = $this->db_model->get_row(TABLE_STUDENT, ['id' => $student_id, 'college_id' => $this->college['id']]);
@@ -242,7 +238,6 @@ class Report extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "reports";
         $class["url"] = $this->url;
-        $class["college_id"] = $this->college['id'];
         
         // Determine the path based on user designation
         $map = [
@@ -250,7 +245,6 @@ class Report extends CI_Controller
             DESIGNATION_PRINCIPAL => 'principal'
         ];
         $path = $map[$this->session_data['designation']] ?? 'hod';
-        $class["sidebar_href"] = base_url($this->url . "/" . $path);
         
         // Get course details
         $data['course'] = $this->db_model->get_row(TABLE_COURCES, ['id' => $course_id]);
@@ -462,7 +456,6 @@ class Report extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "reports";
         $class["url"] = $this->url;
-        $class["college_id"] = $this->college['id'];
         
         // Determine the path based on user designation
         $map = [
@@ -470,7 +463,6 @@ class Report extends CI_Controller
             DESIGNATION_PRINCIPAL => 'principal'
         ];
         $path = $map[$this->session_data['designation']] ?? 'hod';
-        $class["sidebar_href"] = base_url($this->url . "/" . $path);
         
         // Get filter parameters
         $course_id = $this->input->get('course_id');
@@ -1553,7 +1545,7 @@ class Report extends CI_Controller
             'batches' => $this->db->table_exists(TABLE_BATCHES) ? $this->db->where('college_id', $college_id)->count_all_results(TABLE_BATCHES) : 0,
             'modules' => $this->db->table_exists('course_modules') ? $this->db->where('course_id !=', null)->count_all_results('course_modules') : 0,
             'lessons' => $this->db->table_exists('lessons') ? $this->db->count_all('lessons') : 0,
-            'instruments_available' => $this->db->table_exists(TABLE_INSTRUMENTS) ? $this->db->where(['availability_status' => 'available', 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENTS) : 0,
+            'instruments_available' => $this->db->table_exists(TABLE_INSTRUMENTS) ? $this->db->where(['availability_status' => INSTRUMENT_STATUS_AVAILABLE, 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENTS) : 0,
             'instruments_issued' => $this->db->table_exists(TABLE_INSTRUMENT_TRANSACTIONS) ? $this->db->where(['status' => 'issued', 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENT_TRANSACTIONS) : 0,
             'maintenance_open' => $this->db->table_exists(TABLE_INSTRUMENT_MAINTENANCE) ? $this->db->where(['status' => 'open', 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENT_MAINTENANCE) : 0,
         ];

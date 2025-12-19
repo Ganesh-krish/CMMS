@@ -233,7 +233,65 @@ class common extends CI_Model {
             ];
         }
 
-        return ['read' => [], 'modify' => false]; 
+        return ['read' => [], 'modify' => false];
+    }
+
+    /**
+     * Check if user has permission for a specific action on a resource
+     * @param array $session User session data
+     * @param string $action The action to check (create, edit, delete, etc.)
+     * @param string $resource The resource type (course, module, lesson, inventory, etc.)
+     * @return bool
+     */
+    public function has_permission($session, $action, $resource = 'general') {
+        $user_role = $session['role'] ?? $session['designation'] ?? null;
+
+        // Define permission rules by role and resource
+        $permissions = [
+            // Course-related permissions
+            'course' => [
+                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+            ],
+            'module' => [
+                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+            ],
+            'lesson' => [
+                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+            ],
+            // Inventory-related permissions
+            'inventory' => [
+                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'issue' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'return' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'maintenance' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
+            ],
+            // Announcement permissions
+            'announcement' => [
+                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD],
+                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD],
+                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD]
+            ],
+            // General permissions
+            'general' => [
+                'manage_users' => [ROLE_SUPERADMIN],
+                'manage_departments' => [ROLE_SUPERADMIN],
+                'view_reports' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
+            ]
+        ];
+
+        if (!isset($permissions[$resource][$action])) {
+            return false; // Permission not defined, deny access
+        }
+
+        return in_array($user_role, $permissions[$resource][$action]);
     }
 
     public function check_student_session($url)

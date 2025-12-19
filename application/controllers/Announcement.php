@@ -36,12 +36,13 @@ class Announcement extends CI_Controller
             $this->faculty_common->redirect_route($role, $this->url);
         }
 
-        // Set permissions based on role
-        $this->permissions = [
-            'can_create' => in_array($role, $create_edit_roles),
-            'can_edit' => in_array($role, $create_edit_roles),
-            'can_delete' => in_array($role, $create_edit_roles)
-        ];
+        // Set permissions using unified permission system
+        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+
+        // Add announcement-specific permissions using common method
+        $this->permissions['can_create'] = $this->faculty_common->has_permission($this->session_data, 'create', 'announcement');
+        $this->permissions['can_edit'] = $this->faculty_common->has_permission($this->session_data, 'edit', 'announcement');
+        $this->permissions['can_delete'] = $this->faculty_common->has_permission($this->session_data, 'delete', 'announcement');
     }
 
     public function index()
@@ -49,7 +50,6 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/announcements");
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'];
         $department = $this->session_data['department'] ?? null;
@@ -144,7 +144,6 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/announcements");
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
@@ -218,7 +217,6 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/announcements");
 
         $data["announcement"] = $announcement;
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
@@ -286,7 +284,6 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/announcements");
 
         $data["announcement"] = $announcement;
 

@@ -343,10 +343,8 @@ class Course extends CI_Controller {
     }
 
     public function delete($id) {
-        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-
-        // Only Principal and Vice-Principal can delete courses
-        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        // Check if user has permission to delete courses
+        if (!$this->faculty_common->has_permission($this->session_data, 'delete', 'course')) {
             $this->session->set_flashdata('message', array('danger', "You do not have permission to delete courses."));
             redirect(base_url($this->url . "/courses"));
             return;
@@ -583,7 +581,7 @@ class Course extends CI_Controller {
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Only Principal and Vice-Principal can delete modules
-        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        if (!$this->faculty_common->has_permission($this->session_data, 'delete', 'module')) {
             $this->session->set_flashdata('message', array('danger', "You do not have permission to delete modules."));
             redirect(base_url($this->url . "/courses/modules/" . $course_id));
             return;
@@ -717,7 +715,7 @@ class Course extends CI_Controller {
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Only Principal and Vice-Principal can delete lessons
-        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        if (!$this->faculty_common->has_permission($this->session_data, 'delete', 'lesson')) {
             $this->session->set_flashdata('message', array('danger', "You do not have permission to delete lessons."));
             redirect(base_url($this->url . "/courses/lessons/" . $course_id . "/" . $module_id));
             return;

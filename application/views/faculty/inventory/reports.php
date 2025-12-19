@@ -165,11 +165,19 @@
                                         <td><?php echo $item['serial_no']; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
-                                                echo $item['availability_status'] == 'available' ? 'success' :
-                                                     ($item['availability_status'] == 'issued' ? 'warning' :
-                                                     ($item['availability_status'] == 'maintenance' ? 'info' : 'danger'));
+                                                echo $item['availability_status'] == INSTRUMENT_STATUS_AVAILABLE ? 'success' :
+                                                     ($item['availability_status'] == INSTRUMENT_STATUS_ISSUED ? 'warning' :
+                                                     ($item['availability_status'] == INSTRUMENT_STATUS_MAINTENANCE ? 'info' : 'danger'));
                                             ?>">
-                                                <?php echo ucfirst($item['availability_status']); ?>
+                                                <?php
+                                                switch($item['availability_status']) {
+                                                    case INSTRUMENT_STATUS_AVAILABLE: echo 'Available'; break;
+                                                    case INSTRUMENT_STATUS_ISSUED: echo 'Issued'; break;
+                                                    case INSTRUMENT_STATUS_MAINTENANCE: echo 'Under Maintenance'; break;
+                                                    case INSTRUMENT_STATUS_DAMAGED: echo 'Damaged'; break;
+                                                    default: echo 'Unknown';
+                                                }
+                                                ?>
                                             </span>
                                         </td>
                                         <td><?php echo $item['status_details'] ?? '-'; ?></td>

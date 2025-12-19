@@ -106,7 +106,6 @@ class Student extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "students";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/students");
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/student/view', $data);
@@ -173,7 +172,6 @@ class Student extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] = $this->url;
-            $class["sidebar_href"] = base_url($this->url."/students");
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/student/add', $data);
@@ -243,7 +241,6 @@ class Student extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] = $this->url;
-            $class["sidebar_href"] = base_url($this->url."/students");
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/student/add', $data);

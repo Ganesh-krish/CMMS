@@ -93,10 +93,10 @@
                         <label class="form-label">Status</label>
                         <select class="form-control" id="statusFilter">
                             <option value="">All Status</option>
-                            <option value="available">Available</option>
-                            <option value="issued">Issued</option>
-                            <option value="maintenance">Under Maintenance</option>
-                            <option value="damaged">Damaged</option>
+                            <option value="<?php echo INSTRUMENT_STATUS_AVAILABLE; ?>">Available</option>
+                            <option value="<?php echo INSTRUMENT_STATUS_ISSUED; ?>">Issued</option>
+                            <option value="<?php echo INSTRUMENT_STATUS_MAINTENANCE; ?>">Under Maintenance</option>
+                            <option value="<?php echo INSTRUMENT_STATUS_DAMAGED; ?>">Damaged</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -159,11 +159,19 @@
                                         <td><?php echo $instrument['serial_no']; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
-                                                echo $instrument['availability_status'] == 'available' ? 'success' :
-                                                     ($instrument['availability_status'] == 'issued' ? 'warning' :
-                                                     ($instrument['availability_status'] == 'maintenance' ? 'info' : 'danger'));
+                                                echo $instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE ? 'success' :
+                                                     ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED ? 'warning' :
+                                                     ($instrument['availability_status'] == INSTRUMENT_STATUS_MAINTENANCE ? 'info' : 'danger'));
                                             ?>">
-                                                <?php echo ucfirst($instrument['availability_status']); ?>
+                                                <?php
+                                                switch($instrument['availability_status']) {
+                                                    case INSTRUMENT_STATUS_AVAILABLE: echo 'Available'; break;
+                                                    case INSTRUMENT_STATUS_ISSUED: echo 'Issued'; break;
+                                                    case INSTRUMENT_STATUS_MAINTENANCE: echo 'Under Maintenance'; break;
+                                                    case INSTRUMENT_STATUS_DAMAGED: echo 'Damaged'; break;
+                                                    default: echo 'Unknown';
+                                                }
+                                                ?>
                                             </span>
                                         </td>
                                         <td><?php echo $instrument['issue_date'] ? date('d M Y', strtotime($instrument['issue_date'])) : 'N/A'; ?></td>
@@ -172,11 +180,11 @@
                                             <button class="btn btn-sm btn-info" onclick="viewInstrument(<?php echo $instrument['id']; ?>)">
                                                 <i class="feather icon-eye"></i> View
                                             </button>
-                                            <?php if ($instrument['availability_status'] == 'available'): ?>
+                                            <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE): ?>
                                                 <button class="btn btn-sm btn-warning" onclick="issueInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-send"></i> Issue
                                                 </button>
-                                            <?php elseif ($instrument['availability_status'] == 'issued'): ?>
+                                            <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED): ?>
                                                 <button class="btn btn-sm btn-success" onclick="returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-rotate-ccw"></i> Return
                                                 </button>

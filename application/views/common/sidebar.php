@@ -373,7 +373,17 @@
 <?php
     // Get url from controller data, default to 'admin'
     $url = $url ?? 'admin';
-    $designation = $this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN;
+
+    // Get designation from session data
+    $designation = null;
+    if ($this->session->userdata($url)) {
+        $designation = $this->session->userdata($url)['role'] ?? $this->session->userdata($url)['designation'] ?? null;
+    }
+
+    // Fallback to other session keys if needed
+    if (!$designation) {
+        $designation = ROLE_SUPERADMIN; // Default fallback
+    }
     $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
 ?>
                     <li class="sidenav-item <?php if ($classname == "home") {

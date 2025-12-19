@@ -38,15 +38,16 @@ class Inventory extends CI_Controller
             $this->faculty_common->redirect_route($role,$this->url);
         }
 
-        // Set permissions based on role
-        $this->permissions = [
-            'can_create' => in_array($role, $full_access_roles),
-            'can_edit' => in_array($role, $full_access_roles),
-            'can_delete' => in_array($role, $full_access_roles),
-            'can_issue' => in_array($role, $full_access_roles),
-            'can_return' => in_array($role, $full_access_roles),
-            'can_maintenance' => in_array($role, $full_access_roles)
-        ];
+        // Set permissions using unified permission system
+        $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
+
+        // Add inventory-specific permissions using common method
+        $this->permissions['can_create'] = $this->faculty_common->has_permission($this->session_data, 'create', 'inventory');
+        $this->permissions['can_edit'] = $this->faculty_common->has_permission($this->session_data, 'edit', 'inventory');
+        $this->permissions['can_delete'] = $this->faculty_common->has_permission($this->session_data, 'delete', 'inventory');
+        $this->permissions['can_issue'] = $this->faculty_common->has_permission($this->session_data, 'issue', 'inventory');
+        $this->permissions['can_return'] = $this->faculty_common->has_permission($this->session_data, 'return', 'inventory');
+        $this->permissions['can_maintenance'] = $this->faculty_common->has_permission($this->session_data, 'maintenance', 'inventory');
     }
 
     public function index()
@@ -59,7 +60,7 @@ class Inventory extends CI_Controller
         // Get filters from URL
         $filters = [
             'college_id' => $this->college['id'],
-            'availability_status' => $this->input->get('status'),
+            'availability_status' => $this->input->get('status') ? intval($this->input->get('status')) : null,
             'category' => $this->input->get('category'),
             'search' => $this->input->get('search'),
         ];
@@ -139,8 +140,9 @@ class Inventory extends CI_Controller
                     'due_date' => $this->input->post('due_date'),
                     'instrument_price' => $this->input->post('instrument_price'),
                     'instrument_image' => $image_path,
-                    'availability_status' => 'available',
+                    'availability_status' => INSTRUMENT_STATUS_AVAILABLE,
                     'college_id' => $this->college['id'],
+                    'created_by' => $this->session_data['id'],
                     'is_active' => 1
                 );
 
@@ -331,7 +333,7 @@ class Inventory extends CI_Controller
 
                 if ($this->inventory->log_maintenance($maintenance_data)) {
                     // Update instrument status to maintenance
-                    $this->inventory->update_instrument($post['instrument_id'], ['availability_status' => 'maintenance']);
+                    $this->inventory->update_instrument($post['instrument_id'], ['availability_status' => INSTRUMENT_STATUS_MAINTENANCE]);
                     $this->session->set_flashdata('message', array('success', "Maintenance logged successfully!"));
                 } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to log maintenance."));
@@ -544,7 +546,7 @@ class Inventory extends CI_Controller
             'condition_notes' => $this->input->post('condition_notes'),
             'purchase_date' => $this->input->post('purchase_date'),
             'location' => $this->input->post('location'),
-            'availability_status' => $this->input->post('availability_status') ?? 'available',
+            'availability_status' => $this->input->post('availability_status') ?? INSTRUMENT_STATUS_AVAILABLE,
             'notes' => $this->input->post('notes'),
             'college_id' => $this->college['id'] ?? null,
             'created_at' => date('Y-m-d H:i:s'),
@@ -571,7 +573,7 @@ class Inventory extends CI_Controller
             'condition_notes' => $this->input->post('condition_notes'),
             'purchase_date' => $this->input->post('purchase_date'),
             'location' => $this->input->post('location'),
-            'availability_status' => $this->input->post('availability_status'),
+            'availability_status' => intval($this->input->post('availability_status')),
             'notes' => $this->input->post('notes'),
             'updated_at' => date('Y-m-d H:i:s'),
         ], static function ($value) {

@@ -359,7 +359,6 @@ class Groups extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "groups";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/groups");
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/view', $data);
@@ -491,7 +490,6 @@ class Groups extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "groups";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/groups");
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/group_students', $data);

@@ -93,7 +93,7 @@ class Inventory_model extends CI_Model
         // Update instrument status
         $this->db->where('id', $data['instrument_id'])
             ->update(TABLE_INSTRUMENTS, [
-                'availability_status' => 'issued',
+                'availability_status' => INSTRUMENT_STATUS_ISSUED,
                 'current_issue_id' => $issue_id,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
@@ -129,7 +129,7 @@ class Inventory_model extends CI_Model
         // Update instrument status
         $this->db->where('id', $issue['instrument_id'])
             ->update(TABLE_INSTRUMENTS, [
-                'availability_status' => 'available',
+                'availability_status' => INSTRUMENT_STATUS_AVAILABLE,
                 'current_issue_id' => null,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);

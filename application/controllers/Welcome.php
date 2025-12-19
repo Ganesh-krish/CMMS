@@ -124,7 +124,7 @@ class Welcome extends CI_Controller {
 
         $role = $user['role'];
         switch ($role) {
-            case ROLE_SUPERADMIN: // Principal
+            case ROLE_PRINCIPAL: // Principal
                 redirect('portal/dashboard');
                 break;
 

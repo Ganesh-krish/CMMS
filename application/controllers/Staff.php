@@ -31,7 +31,7 @@ class Staff extends CI_Controller
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Allow Staff and higher roles to access staff functions
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
         if (!in_array($role, $allowed_roles, true)) {
             redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }

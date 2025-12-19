@@ -26,7 +26,7 @@ class Course extends CI_Controller {
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
 
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        if(!in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
+        if(!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF], true)){
             redirect('Welcome');
         }
     }
@@ -850,7 +850,7 @@ class Course extends CI_Controller {
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Only Principal and Vice-Principal can unenroll students
-        if (!in_array($user_role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        if (!in_array($user_role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])) {
             $this->session->set_flashdata('message', array('danger', "You do not have permission to unenroll students."));
             redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
             return;
@@ -917,7 +917,7 @@ class Course extends CI_Controller {
     public function system_courses()
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -1015,7 +1015,7 @@ class Course extends CI_Controller {
     public function add_colleges($course_id)
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;
@@ -1046,7 +1046,7 @@ class Course extends CI_Controller {
     public function get_colleges()
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;
@@ -1059,7 +1059,7 @@ class Course extends CI_Controller {
     public function get_shared_colleges($course_id)
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;
@@ -1080,7 +1080,7 @@ class Course extends CI_Controller {
     public function assign_course()
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;
@@ -1116,7 +1116,7 @@ class Course extends CI_Controller {
     public function remove_course_assign($course_id, $college_id)
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;
@@ -1132,7 +1132,7 @@ class Course extends CI_Controller {
     public function get_exclude_colleges($course_id, $creator_college_id)
     {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;

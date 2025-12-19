@@ -41,7 +41,7 @@ class Groups extends CI_Controller
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
         // print_r($role);
         
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
     }
@@ -112,7 +112,7 @@ class Groups extends CI_Controller
                 }
 
                 // Redirect based on user role
-                if ($this->session_data['role'] === ROLE_SUPERADMIN) {
+                if ($this->session_data['role'] === ROLE_PRINCIPAL) {
                     // Admin user - redirect to students page
                     redirect(base_url('Dashboard/students'));
                 } else {
@@ -134,7 +134,7 @@ class Groups extends CI_Controller
             $data["department"] = $this->session_data['department'];
 
             // Set sidebar href based on user role
-            if ($this->session_data['role'] === ROLE_SUPERADMIN) {
+            if ($this->session_data['role'] === ROLE_PRINCIPAL) {
                 // Admin user
                 $class["sidebar_href"] = base_url('Dashboard/students');
             } else {

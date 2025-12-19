@@ -28,7 +28,7 @@ class Announcement extends CI_Controller
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
         // Define access levels for announcements
-        $create_edit_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        $create_edit_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
         $read_only_roles = [ROLE_STAFF, ROLE_CUSTODIAN];
         $allowed_roles = array_merge($create_edit_roles, $read_only_roles);
 
@@ -240,7 +240,7 @@ class Announcement extends CI_Controller
         }
 
         // Check permissions - only sender or SuperAdmin can delete
-        if ($announcement['sender_id'] != $user_id && $role != ROLE_SUPERADMIN) {
+        if ($announcement['sender_id'] != $user_id && $role != ROLE_PRINCIPAL) {
             $this->session->set_flashdata('message', [0, 'You do not have permission to delete this announcement.']);
             redirect($this->url.'/announcements');
         }
@@ -272,7 +272,7 @@ class Announcement extends CI_Controller
             $can_view = true;
         } elseif ($announcement['visibility'] === 'department' && $announcement['department_id'] == $department) {
             $can_view = true;
-        } elseif (in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        } elseif (in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])) {
             $can_view = true;
         }
 

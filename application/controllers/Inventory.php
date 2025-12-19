@@ -30,7 +30,7 @@ class Inventory extends CI_Controller
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
         // Define access levels
-        $full_access_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_CUSTODIAN];
+        $full_access_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_CUSTODIAN];
         $read_only_roles = [ROLE_HOD, ROLE_STAFF];
         $allowed_roles = array_merge($full_access_roles, $read_only_roles);
 

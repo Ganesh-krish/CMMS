@@ -132,17 +132,15 @@ define('COURSE_MODES', json_encode([
 ]));
 
 // New role hierarchy for educational institution
-defined('ROLE_SUPERADMIN')      or define('ROLE_SUPERADMIN', 1);      // Principal
+defined('ROLE_PRINCIPAL')      or define('ROLE_PRINCIPAL', 1);      // Principal
 defined('ROLE_VICE_PRINCIPAL')  or define('ROLE_VICE_PRINCIPAL', 2);  // Vice-Principal
-defined('ROLE_HOD')             or define('ROLE_HOD', 4);             // HOD (Department Admin)
-defined('ROLE_STAFF')           or define('ROLE_STAFF', 5);           // Staff (Instructor)
-defined('ROLE_CUSTODIAN')       or define('ROLE_CUSTODIAN', 6);         // Custodian (Inventory)
-
-// Backward compatibility - ROLE_ADMIN now maps to Vice-Principal
-defined('ROLE_ADMIN')           or define('ROLE_ADMIN', ROLE_VICE_PRINCIPAL);
+defined('ROLE_HOD')             or define('ROLE_HOD', 3);             // HOD (Department Admin)
+defined('ROLE_STAFF')           or define('ROLE_STAFF', 4);           // Staff (Instructor)
+defined('ROLE_CUSTODIAN')       or define('ROLE_CUSTODIAN', 5);         // Custodian (Inventory)
+defined('ROLE_STUDENT')         or define('ROLE_STUDENT',6);
 
 // Designation aliases for the new hierarchy
-defined('DESIGNATION_PRINCIPAL')     or define('DESIGNATION_PRINCIPAL', ROLE_SUPERADMIN);
+defined('DESIGNATION_PRINCIPAL')     or define('DESIGNATION_PRINCIPAL', ROLE_PRINCIPAL);
 defined('DESIGNATION_VICE_PRINCIPAL') or define('DESIGNATION_VICE_PRINCIPAL', ROLE_VICE_PRINCIPAL);
 defined('DESIGNATION_HOD')           or define('DESIGNATION_HOD', ROLE_HOD);
 defined('DESIGNATION_STAFF')         or define('DESIGNATION_STAFF', ROLE_STAFF);

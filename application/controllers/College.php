@@ -34,7 +34,7 @@ class College extends CI_Controller {
 
         // Only SuperAdmin can manage colleges
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
     }

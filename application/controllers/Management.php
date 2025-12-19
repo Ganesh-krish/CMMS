@@ -46,7 +46,7 @@ class Management extends CI_Controller {
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
         // print_r($role);
         
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
     }
@@ -58,7 +58,7 @@ class Management extends CI_Controller {
         // print_r($this->url);
         // exit;   
 
-        $data["administrators"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_SUPERADMIN, "is_active" => 1]);
+        $data["administrators"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_PRINCIPAL, "is_active" => 1]);
         $data["current_user_id"] = $this->session_data['id'];
 
         $data["url"] = $this->url;
@@ -88,7 +88,7 @@ class Management extends CI_Controller {
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
-                    'role' => ROLE_SUPERADMIN,
+                    'role' => ROLE_PRINCIPAL,
                     'designation' => DESIGNATION_PRINCIPAL,
                     'college_id' => $this->college['id'],
                     'department_id' => null,
@@ -144,7 +144,7 @@ class Management extends CI_Controller {
                 redirect($this->url.'/management/principal');
             }
         } else {
-            $data["administrator"] = $this->db_model->get_row(TABLE_FACULTY, ["id" => $id, "role" => ROLE_SUPERADMIN, "is_active" => 1]);
+            $data["administrator"] = $this->db_model->get_row(TABLE_FACULTY, ["id" => $id, "role" => ROLE_PRINCIPAL, "is_active" => 1]);
             if (!$data["administrator"]) {
                 $this->session->set_flashdata('message', array('danger', "Administrator not found."));
                 redirect($this->url.'/management/principal');
@@ -170,7 +170,7 @@ class Management extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_SUPERADMIN]);
+        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_PRINCIPAL]);
         $message = array('success', "Administrator deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Administrator.");
@@ -436,7 +436,7 @@ class Management extends CI_Controller {
                 $this->session->set_flashdata('message',array("danger",validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/principal"));
             }
-            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_SUPERADMIN]);
+            $update = $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id'], "role" => ROLE_PRINCIPAL]);
             if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong"));
                 return redirect($_SERVER['HTTP_REFERER'] ?? base_url($this->url."/management/principal"));

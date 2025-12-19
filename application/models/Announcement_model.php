@@ -46,7 +46,7 @@ class Announcement_model extends CI_Model
             $user_role = $filters['user_role'];
             $user_department = $filters['user_department'] ?? null;
 
-            if ($user_role == ROLE_SUPERADMIN || $user_role == ROLE_VICE_PRINCIPAL) {
+            if ($user_role == ROLE_PRINCIPAL || $user_role == ROLE_VICE_PRINCIPAL) {
                 // SuperAdmin and Admin can see all announcements
             } elseif ($user_role == ROLE_HOD) {
                 // HOD can see all announcements + their department's announcements
@@ -155,6 +155,7 @@ class Announcement_model extends CI_Model
         return 0;
     }
 }
+
 
 
 

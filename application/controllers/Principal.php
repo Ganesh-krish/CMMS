@@ -24,7 +24,7 @@ class Principal extends CI_Controller {
             $this->session_data = [
                 'id' => 0,
                 'name' => 'Administrator',
-                'role' => ROLE_SUPERADMIN,
+                'role' => ROLE_PRINCIPAL,
                 'designation' => DESIGNATION_PRINCIPAL,
                 'department' => null,
                 'college_id' => $this->college['id'] ?? SINGLE_COLLEGE_ID,
@@ -38,7 +38,7 @@ class Principal extends CI_Controller {
             $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Allow Principal (SuperAdmin) and Vice-Principal access to principal functions
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL];
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL];
             if(!in_array($role, $allowed_roles)){
             redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
@@ -250,7 +250,7 @@ class Principal extends CI_Controller {
             TABLE_FACULTY,
             [
                 "is_active" => true,
-                "role" => ROLE_SUPERADMIN
+                "role" => ROLE_PRINCIPAL
             ]
         );
 
@@ -693,7 +693,7 @@ class Principal extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'role' => ROLE_SUPERADMIN,
+                    'role' => ROLE_PRINCIPAL,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
                     "is_active" => 1,

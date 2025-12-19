@@ -142,7 +142,7 @@
                                                         <a class="dropdown-item" href="<?php echo base_url($url.'/announcements/view/'.$announcement['id']); ?>">
                                                             <i class="feather icon-eye"></i> View
                                                         </a>
-                                                        <?php if ($announcement['sender_id'] == $this->session->userdata($url)['id'] || $this->session->userdata($url)['role'] == ROLE_SUPERADMIN): ?>
+                                                        <?php if ($announcement['sender_id'] == $this->session->userdata($url)['id'] || $this->session->userdata($url)['role'] == ROLE_PRINCIPAL): ?>
                                                             <a class="dropdown-item" href="<?php echo base_url($url.'/announcements/edit/'.$announcement['id']); ?>">
                                                                 <i class="feather icon-edit"></i> Edit
                                                             </a>

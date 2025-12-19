@@ -76,7 +76,7 @@ class common extends CI_Model {
         }
 
         switch ($designation) {
-            case ROLE_SUPERADMIN:
+            case ROLE_PRINCIPAL:
             case DESIGNATION_PRINCIPAL:
                 redirect( base_url("OAuth"));
                 break;
@@ -84,7 +84,7 @@ class common extends CI_Model {
             case DESIGNATION_VICE_PRINCIPAL:
                 redirect( base_url("$url/vice_principal"));
                 break;
-            case ROLE_ADMIN:
+            case ROLE_VICE_PRINCIPAL:
             case DESIGNATION_HOD:
                 redirect( base_url("$url/hod"));
                 break;
@@ -175,7 +175,7 @@ class common extends CI_Model {
             return ['read' => [], 'modify' => false]; 
         }
 
-        if ($role == ROLE_SUPERADMIN || $role == DESIGNATION_PRINCIPAL) {
+        if ($role == ROLE_PRINCIPAL || $role == DESIGNATION_PRINCIPAL) {
             $query = $this->db->select('id')->from(TABLE_FACULTY)->where('is_active',1)->get();
             $ids = array_column($query->result_array(), 'id');
             return [
@@ -183,7 +183,7 @@ class common extends CI_Model {
                 'modify' => $ids,
                 'departments' => [],'additional_departments' => []
             ];
-        } elseif ($role == ROLE_ADMIN || $role == DESIGNATION_HOD) {
+        } elseif ($role == ROLE_VICE_PRINCIPAL || $role == DESIGNATION_HOD) {
 
             if (!$department) {
                 return ['read' => [], 'modify' => false,'departments' => [],'additional_departments' => []]; 
@@ -250,40 +250,40 @@ class common extends CI_Model {
         $permissions = [
             // Course-related permissions
             'course' => [
-                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
             ],
             'module' => [
-                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
             ],
             'lesson' => [
-                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
             ],
             // Inventory-related permissions
             'inventory' => [
-                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'issue' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'return' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'maintenance' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'issue' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'return' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'maintenance' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
             ],
             // Announcement permissions
             'announcement' => [
-                'create' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD],
-                'edit' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD],
-                'delete' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD]
             ],
             // General permissions
             'general' => [
-                'manage_users' => [ROLE_SUPERADMIN],
-                'manage_departments' => [ROLE_SUPERADMIN],
-                'view_reports' => [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
+                'manage_users' => [ROLE_PRINCIPAL],
+                'manage_departments' => [ROLE_PRINCIPAL],
+                'view_reports' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
             ]
         ];
 

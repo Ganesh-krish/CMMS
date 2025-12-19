@@ -42,7 +42,7 @@ class Student extends CI_Controller {
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
         // print_r($role);
         
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
     }

@@ -29,7 +29,7 @@ class Hod extends CI_Controller {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
 
         // Allow HOD and higher roles to access department administration
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
         if(!in_array($role, $allowed_roles)){
             redirect($this->url . '/dashboard'); // Redirect to appropriate dashboard
         }
@@ -293,7 +293,7 @@ class Hod extends CI_Controller {
             TABLE_FACULTY,
             [
                 "is_active"=>true,
-                "role"=>ROLE_ADMIN
+                "role"=>ROLE_VICE_PRINCIPAL
             ]
         );
 		$this->load->view('common/sidebar',$class); 
@@ -421,7 +421,7 @@ class Hod extends CI_Controller {
             }
             $departments = explode(";", $this->session_data['other_department']);
             array_push($departments, $this->session_data['department']);
-           $update= $this->db_model->update(TABLE_FACULTY,["password"=>$post['password']],["role !="=>ROLE_ADMIN,"is_active"=>1,"id"=>$post['id'],"department"=>$departments]);
+           $update= $this->db_model->update(TABLE_FACULTY,["password"=>$post['password']],["role !="=>ROLE_VICE_PRINCIPAL,"is_active"=>1,"id"=>$post['id'],"department"=>$departments]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));

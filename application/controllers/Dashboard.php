@@ -39,7 +39,7 @@ class Dashboard extends CI_Controller
 
         // Basic access check - all faculty roles can access dashboard
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN];
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN];
         if (!in_array($role, $allowed_roles, true)) {
             redirect('Welcome');
         }
@@ -69,7 +69,7 @@ class Dashboard extends CI_Controller
             $data["title"] = "Staff Dashboard";
             $data["show_staff_view"] = true;
             $view_file = 'faculty/admin_view';
-        } elseif ($role == ROLE_SUPERADMIN) {
+        } elseif ($role == ROLE_PRINCIPAL) {
             // SuperAdmin dashboard - show unified dashboard
             $data = array_merge($data, $this->get_principal_dashboard_data());
             $data["title"] = "Dashboard Overview";
@@ -103,7 +103,7 @@ class Dashboard extends CI_Controller
 
         // Get data based on user permissions
         $role = $this->session_data['role'];
-        if ($role == ROLE_SUPERADMIN) {
+        if ($role == ROLE_PRINCIPAL) {
             $data["title"] = "Administrative Overview";
             $data["stats"] = $this->get_admin_stats();
             $data["show_full_admin"] = true;
@@ -133,7 +133,7 @@ class Dashboard extends CI_Controller
     {
         // Only SuperAdmin can access administrator management
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -166,7 +166,7 @@ class Dashboard extends CI_Controller
         $role = $this->session_data['role'];
 
         // Get departments based on permissions
-        if (in_array($role, [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL])) {
+        if (in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])) {
             // Full access to all departments
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $data["can_manage"] = true;
@@ -208,7 +208,7 @@ class Dashboard extends CI_Controller
     private function get_principal_dashboard_data()
     {
         // Get comprehensive stats for principal - all 8 metrics
-        $data["total_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_SUPERADMIN]));
+        $data["total_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_PRINCIPAL]));
         $data["total_asst_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_VICE_PRINCIPAL]));
         $data["total_dept_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_HOD]));
         $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_STAFF]));
@@ -274,7 +274,7 @@ class Dashboard extends CI_Controller
     {
         // Only SuperAdmin can access system student management
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -433,7 +433,7 @@ class Dashboard extends CI_Controller
 
     public function add_student() {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -455,7 +455,7 @@ class Dashboard extends CI_Controller
 
     public function edit_student($id) {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -483,7 +483,7 @@ class Dashboard extends CI_Controller
 
     public function delete_student($id) {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             redirect($this->url.'/dashboard');
         }
 
@@ -494,7 +494,7 @@ class Dashboard extends CI_Controller
 
     public function get_student($id) {
         $role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
-        if ($role !== ROLE_SUPERADMIN) {
+        if ($role !== ROLE_PRINCIPAL) {
             $this->output->set_status_header(403);
             echo json_encode(['error' => 'Access denied']);
             return;

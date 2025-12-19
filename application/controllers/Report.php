@@ -27,7 +27,7 @@ class Report extends CI_Controller
 
         // Check role permissions - allow multiple roles to access reports
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        $allowed_roles = [ROLE_SUPERADMIN, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
         if (!in_array($role, $allowed_roles, true)) {
             $this->common->redirect_route($role, $this->url);
         }
@@ -57,7 +57,7 @@ class Report extends CI_Controller
             DESIGNATION_PRINCIPAL => 'principal',
             ROLE_STAFF => 'staff',
             ROLE_VICE_PRINCIPAL => 'vice_principal',
-            ROLE_SUPERADMIN => 'admin'
+            ROLE_PRINCIPAL => 'admin'
         ];
         $path = $map[$user_designation] ?? 'hod';
         

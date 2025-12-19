@@ -17,21 +17,26 @@ class Welcome extends CI_Controller {
         }
 
         $data['error'] = $this->session->flashdata('error');
+
+        // Get college information
+        $college = $this->db_model->get_row(TABLE_COLLEGE, ['is_active' => 1]);
+        $data['college'] = $college;
+
         $this->load->view('login', $data);
     }
 
     public function authenticate() {
-        $email = $this->input->post('email');
+        $username = $this->input->post('email'); // Username field (using email as username)
         $password = $this->input->post('password');
 
-        if (empty($email) || empty($password)) {
-            $this->session->set_flashdata('error', 'Email and password are required');
+        if (empty($username) || empty($password)) {
+            $this->session->set_flashdata('error', 'Username and password are required');
             redirect('Welcome');
             return;
         }
 
         // Check all user types in order of priority
-        $user = $this->authenticate_user($email, $password);
+        $user = $this->authenticate_user($username, $password);
 
         if ($user) {
             // Set unified session
@@ -48,12 +53,12 @@ class Welcome extends CI_Controller {
         redirect('Welcome');
     }
 
-    private function authenticate_user($email, $password) {
+    private function authenticate_user($username, $password) {
         // Priority order: Admin → Faculty → Students
 
-        // 1. Check faculty table (includes admins, principals, etc.)
+        // 1. Check faculty table (includes admins, principals, etc.) - using email as username
         $faculty = $this->db_model->get_row(TABLE_FACULTY, [
-            'email' => $email,
+            'email' => $username,
             'is_active' => 1
         ]);
 
@@ -69,9 +74,9 @@ class Welcome extends CI_Controller {
             ];
         }
 
-        // 2. Check students table
+        // 2. Check students table - using email as username
         $student = $this->db_model->get_row(TABLE_STUDENT, [
-            'email' => $email,
+            'email' => $username,
             'is_active' => 1
         ]);
 

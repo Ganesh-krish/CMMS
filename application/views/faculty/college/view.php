@@ -20,111 +20,106 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5>College Details</h5>
+                        <a href="<?php echo base_url($url.'/college/edit/'.SINGLE_COLLEGE_ID); ?>" class="btn btn-primary">
+                            <i class="feather icon-edit"></i> Edit Settings
+                        </a>
                     </div>
                     <div class="card-body">
                         <?php if(isset($college) && $college): ?>
-                        <form method="post" action="" enctype="multipart/form-data">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name">College Name *</label>
-                                        <input type="text" class="form-control" id="name" name="name"
-                                               value="<?php echo isset($college['name']) ? htmlspecialchars($college['name']) : ''; ?>" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="established_year">Established Year</label>
-                                        <input type="number" class="form-control" id="established_year" name="established_year"
-                                               value="<?php echo isset($college['established_year']) ? htmlspecialchars($college['established_year']) : ''; ?>">
-                                    </div>
-                                </div>
+                        <div class="row">
+                            <!-- College Logo -->
+                            <?php if(!empty($college['logo'])): ?>
+                            <div class="col-md-12 mb-4 text-center">
+                                <img src="<?php echo base_url('uploads/college/' . $college['logo']); ?>" alt="College Logo" class="img-fluid rounded" style="max-height: 150px;">
                             </div>
+                            <?php endif; ?>
+                        </div>
 
-                            <div class="form-group">
-                                <label for="address">Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3"><?php echo isset($college['address']) ? htmlspecialchars($college['address']) : ''; ?></textarea>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">College Name:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['name'] ?? 'N/A'); ?></p>
+                                </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Established Year:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['established_year'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="city">City</label>
-                                        <input type="text" class="form-control" id="city" name="city"
-                                               value="<?php echo isset($college['city']) ? htmlspecialchars($college['city']) : ''; ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="state">State</label>
-                                        <input type="text" class="form-control" id="state" name="state"
-                                               value="<?php echo isset($college['state']) ? htmlspecialchars($college['state']) : ''; ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="phone">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phone" name="phone"
-                                               value="<?php echo isset($college['phone']) ? htmlspecialchars($college['phone']) : ''; ?>">
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Address:</label>
+                            <p class="form-control-plaintext"><?php echo nl2br(htmlspecialchars($college['address'] ?? 'N/A')); ?></p>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email"
-                                               value="<?php echo isset($college['email']) ? htmlspecialchars($college['email']) : ''; ?>">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">City:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['city'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">State:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['state'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Phone:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['phone'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Email:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['email'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Website:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['website'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description:</label>
+                            <p class="form-control-plaintext"><?php echo nl2br(htmlspecialchars($college['description'] ?? 'N/A')); ?></p>
+                        </div>
+
+                        <!-- College Banner -->
+                        <?php if(!empty($college['banner'])): ?>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Banner:</label>
+                                    <div class="mt-2">
+                                        <img src="<?php echo base_url('uploads/college/' . $college['banner']); ?>" alt="College Banner" class="img-fluid rounded" style="max-height: 200px; width: 100%; object-fit: cover;">
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <?php endif; ?>
 
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="4"><?php echo isset($college['description']) ? htmlspecialchars($college['description']) : ''; ?></textarea>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="logo">College Logo</label>
-                                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
-                                        <small class="form-text text-muted">Upload a logo image (PNG, JPG, JPEG, GIF). Max size: 2MB</small>
-                                        <?php if(isset($college['logo']) && $college['logo']): ?>
-                                            <div class="mt-2">
-                                                <img src="<?php echo base_url('uploads/college/' . $college['logo']); ?>" alt="Current Logo" style="max-width: 100px; max-height: 100px;">
-                                                <p class="text-muted">Current logo</p>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="banner">College Banner</label>
-                                        <input type="file" class="form-control" id="banner" name="banner" accept="image/*">
-                                        <small class="form-text text-muted">Upload a banner image (PNG, JPG, JPEG, GIF). Max size: 5MB</small>
-                                        <?php if(isset($college['banner']) && $college['banner']): ?>
-                                            <div class="mt-2">
-                                                <img src="<?php echo base_url('uploads/college/' . $college['banner']); ?>" alt="Current Banner" style="max-width: 200px; max-height: 100px;">
-                                                <p class="text-muted">Current banner</p>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="feather icon-save"></i> Update College Information
-                                </button>
-                            </div>
-                        </form>
                         <?php else: ?>
-                        <div class="alert alert-warning">
-                            <i class="feather icon-alert-triangle"></i> College information not found.
+                        <div class="text-center py-5">
+                            <i class="feather icon-building" style="font-size: 4rem; color: #ccc;"></i>
+                            <h4 class="mt-3">No College Information</h4>
+                            <p class="text-muted">College information has not been configured yet.</p>
+                            <a href="<?php echo base_url($url.'/college/edit/'.SINGLE_COLLEGE_ID); ?>" class="btn btn-primary">
+                                <i class="feather icon-plus"></i> Add College Information
+                            </a>
                         </div>
                         <?php endif; ?>
                     </div>

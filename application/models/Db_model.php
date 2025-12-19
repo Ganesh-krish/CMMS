@@ -275,15 +275,13 @@ public function get_max($table, $field, $where = []) {
 }
 
 
-   public function get_subscription_count($college_id){
-
-    // Student table where college_id and (user_token and external_id) is not null
-    $student_count = $this->db->where(['college_id' => $college_id, 'user_token !=' => null, 'external_id !=' => null])
-                              ->count_all_results(TABLE_STUDENT);
-
-    return $student_count; // Return the count
-
-   }
+   // Commented out - this method references non-existent columns (user_token, external_id)
+   // public function get_subscription_count($college_id){
+   //     // Student table where college_id and (user_token and external_id) is not null
+   //     $student_count = $this->db->where(['college_id' => $college_id, 'user_token !=' => null, 'external_id !=' => null])
+   //                               ->count_all_results(TABLE_STUDENT);
+   //     return $student_count; // Return the count
+   // }
 
     public function get_groupMembers($college_id=null,$created_by=null){
         return $this->get_groupMembers_test($college_id, $created_by);

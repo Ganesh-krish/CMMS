@@ -517,32 +517,13 @@
                     
 
                     
-                    <!-- <?php 
-                    if (in_array($this->session->userdata($url)['role'] ?? ROLE_SUPERADMIN, [ROLE_SUPERADMIN, ROLE_ADMIN, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "questions") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="#questionBankSubmenu" class="sidenav-link" data-toggle="collapse" aria-expanded="false">
-                                <i class="sidenav-icon feather icon-users"></i>
-                                <div>Question Bank</div>
-                            </a>
-                            <ul class="collapse list-unstyled" id="questionBankSubmenu">
-                                <li class="sidenav-item">
-                                    <a href="<?= "$sidebar_href/questions" ?>" class="sidenav-link">All Questions</a>
-                                </li>
-                                <li class="sidenav-item">
-                                    <a href="<?= "$sidebar_href/topics" ?>" class="sidenav-link">Topics</a>
-                                </li>
-                            </ul>
-                        </li>
-                    <?php endif; ?> -->
+            
 
                     <?php if (in_array($designation, [ROLE_SUPERADMIN])): ?>
                         <li class="sidenav-item <?php if ($classname == "profile") {
                                                     echo "active";
                                                 } ?>">
-                            <a href="<?= base_url("$url/college/edit/1") ?>" class="sidenav-link ">
+                            <a href="<?= base_url("$url/college/view") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-settings"></i>
                                 <div>Settings Page</div>
                             </a>

@@ -198,5 +198,6 @@ $route['(:any)/reports/dashboard/export/(:any)'] = 'Report/export_dashboard/$2';
 $route['(:any)/reports/kpis'] = 'Report/kpis';
 
 // Settings routes
-$route['(:any)/settings'] = 'College/edit/1';
+$route['(:any)/settings'] = 'College/view';
+$route['(:any)/college/view'] = 'College/view';
 $route['(:any)/college/edit/(:num)'] = 'College/edit/$2';

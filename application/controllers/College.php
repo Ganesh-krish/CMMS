@@ -101,19 +101,14 @@ class College extends CI_Controller {
             $class["sidebar_href"] = base_url($this->url."/college/view");
 
             $this->load->view('common/sidebar', $class);
-            $this->load->view('faculty/college/view', $data);
+            $this->load->view('faculty/college/edit', $data);
             $this->load->view('common/footer');
         }
     }
 
     public function view(){
         $college = $this->db_model->get_row(TABLE_COLLEGE,["id"=>SINGLE_COLLEGE_ID]);
-        if ($college) {
-            $college["subscription_count"] = $this->db_model->get_subscription_count($college["id"]);
-            $data["colleges"] = [$college];
-        } else {
-            $data["colleges"] = [];
-        }
+        $data["college"] = $college;
 
         $data["url"] = $this->url;
         $class["classname"] = "college";

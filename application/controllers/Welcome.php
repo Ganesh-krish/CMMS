@@ -54,9 +54,7 @@ class Welcome extends CI_Controller {
     }
 
     private function authenticate_user($username, $password) {
-        // Priority order: Admin → Faculty → Students
-
-        // 1. Check faculty table (includes admins, principals, etc.) - using email as username
+        // Check faculty table (includes admins, principals, staff, etc.) - using email as username
         $faculty = $this->db_model->get_row(TABLE_FACULTY, [
             'email' => $username,
             'is_active' => 1
@@ -71,24 +69,6 @@ class Welcome extends CI_Controller {
                 'department' => $faculty['department'] ?? null,
                 'college_id' => $faculty['college_id'],
                 'user_type' => 'faculty'
-            ];
-        }
-
-        // 2. Check students table - using email as username
-        $student = $this->db_model->get_row(TABLE_STUDENT, [
-            'email' => $username,
-            'is_active' => 1
-        ]);
-
-        if ($student && $this->verify_password($password, $student['password'])) {
-            return [
-                'id' => $student['id'],
-                'name' => $student['name'],
-                'email' => $student['email'],
-                'role' => 'student', // Add role field to students table
-                'department' => $student['department'] ?? null,
-                'college_id' => $student['college_id'],
-                'user_type' => 'student'
             ];
         }
 
@@ -125,27 +105,27 @@ class Welcome extends CI_Controller {
         $role = $user['role'];
         switch ($role) {
             case ROLE_PRINCIPAL: // Principal
-                redirect('portal/dashboard');
+                redirect('panel/principal/dashboard');
                 break;
 
             case ROLE_VICE_PRINCIPAL:
-                redirect('portal/dashboard'); // Unified dashboard for vice-principal too
+                redirect('panel/vice_principal/dashboard'); // Unified dashboard for vice-principal too
                 break;
 
             case ROLE_HOD:
-                redirect('portal/dashboard'); // Unified dashboard adapts to role
+                redirect('panel/hod/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_STAFF:
-                redirect('portal/dashboard'); // Unified dashboard adapts to role
+                redirect('panel/staff/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_CUSTODIAN:
-                redirect('portal/dashboard'); // Unified dashboard adapts to role
+                redirect('panel/custodian/dashboard'); // Unified dashboard adapts to role
                 break;
 
-            case 'student':
-                redirect('portal/student/dashboard');
+            case ROLE_STUDENT:
+                redirect('panel/student/dashboard');
                 break;
 
             default:

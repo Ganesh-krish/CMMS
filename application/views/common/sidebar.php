@@ -374,19 +374,15 @@
                 <ul class="sidenav-inner py-1 ps ps--active-y">
 <?php
     // Get url from controller data, default to 'admin'
-    $url = $url ?? 'admin';
-
+    $url = $url;
+    print_r($this->session->userdata('user'));
+    exit;   
     // Get designation from session data
     $designation = null;
     if ($this->session->userdata($url)) {
-        $designation = $this->session->userdata($url)['role'] ?? $this->session->userdata($url)['designation'] ?? null;
+        $designation = $this->session->userdata($url)['role'];
     }
 
-    // Fallback to other session keys if needed
-    if (!$designation) {
-        $designation = ROLE_PRINCIPAL; // Default fallback
-    }
-    $fallbackHref = base_url($url ? "$url/principal" : "Dashboard");
 ?>
                     <li class="sidenav-item <?php if ($classname == "home") {
                                                 echo "active";

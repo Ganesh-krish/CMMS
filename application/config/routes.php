@@ -56,7 +56,7 @@ $route['translate_uri_dashes'] = FALSE;
 
 
 //Dashboard routes
-$route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
+$route['(:any)/(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
 
 // Management routes (Administrator dropdown)
 $route['(:any)/management/principal'] = 'Management/principal';

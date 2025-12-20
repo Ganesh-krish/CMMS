@@ -180,9 +180,7 @@
                                     <option value="">Select Type</option>
                                     <option value="video">Video</option>
                                     <option value="text">Text</option>
-                                    <option value="quiz">Quiz</option>
-                                    <option value="assignment">Assignment</option>
-                                    <option value="presentation">Presentation</option>
+                                    <option value="file">File</option>
                                 </select>
                                 <?php echo form_error('type', '<small class="text-danger">', '</small>'); ?>
                             </div>
@@ -258,9 +256,7 @@
                                     <option value="">Select Type</option>
                                     <option value="video">Video</option>
                                     <option value="text">Text</option>
-                                    <option value="quiz">Quiz</option>
-                                    <option value="assignment">Assignment</option>
-                                    <option value="presentation">Presentation</option>
+                                    <option value="file">File</option>
                                 </select>
                                 <?php echo form_error('type', '<small class="text-danger">', '</small>'); ?>
                             </div>

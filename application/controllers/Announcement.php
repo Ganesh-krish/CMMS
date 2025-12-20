@@ -76,6 +76,8 @@ class Announcement extends CI_Controller
 
         // Add permissions to view data
         $data["permissions"] = $this->permissions;
+        $data["current_user"] = $this->session_data;
+        $data["url"] = $this->url;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/index', $data);
@@ -286,6 +288,7 @@ class Announcement extends CI_Controller
         $class["url"] = $this->url;
 
         $data["announcement"] = $announcement;
+        $data["current_user"] = $this->session_data;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/view', $data);

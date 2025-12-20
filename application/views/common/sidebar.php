@@ -477,6 +477,7 @@
                     <?php endif; ?>
 
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
+                        <!--
                         <li class="sidenav-item <?php if ($classname == "reports") {
                                                     echo "active";
                                                 } ?>">
@@ -485,6 +486,7 @@
                                 <div>Reports</div>
                             </a>
                         </li>
+                        -->
                     <?php endif; ?>
 
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>

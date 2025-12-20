@@ -59,7 +59,7 @@
                                 <a href="<?php echo base_url($url.'/announcements'); ?>" class="btn btn-secondary btn-sm">
                                     <i class="feather icon-arrow-left"></i> Back to Announcements
                                 </a>
-                                <?php if ($announcement['sender_id'] == $this->session->userdata($url)['id'] || $this->session->userdata($url)['role'] == ROLE_PRINCIPAL): ?>
+                                <?php if ($announcement['sender_id'] == $current_user['id'] || $current_user['role'] == ROLE_PRINCIPAL): ?>
                                     <a href="<?php echo base_url($url.'/announcements/edit/'.$announcement['id']); ?>" class="btn btn-primary btn-sm">
                                         <i class="feather icon-edit"></i> Edit
                                     </a>

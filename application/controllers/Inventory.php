@@ -47,7 +47,6 @@ class Inventory extends CI_Controller
         $this->permissions['can_delete'] = $this->faculty_common->has_permission($this->session_data, 'delete', 'inventory');
         $this->permissions['can_issue'] = $this->faculty_common->has_permission($this->session_data, 'issue', 'inventory');
         $this->permissions['can_return'] = $this->faculty_common->has_permission($this->session_data, 'return', 'inventory');
-        $this->permissions['can_maintenance'] = $this->faculty_common->has_permission($this->session_data, 'maintenance', 'inventory');
     }
 
     public function index()
@@ -61,7 +60,7 @@ class Inventory extends CI_Controller
         // Get filters from URL
         $filters = [
             'college_id' => $this->college['id'],
-            'availability_status' => $this->input->get('status') ? intval($this->input->get('status')) : null,
+            'availability_status' => $this->input->get('status') ?: null,
             'category' => $this->input->get('category'),
             'search' => $this->input->get('search'),
         ];
@@ -77,6 +76,23 @@ class Inventory extends CI_Controller
         $this->load->view('faculty/inventory/index', $data);
         $this->load->view('faculty/inventory/modals');
         $this->load->view('common/footer');
+    }
+
+    public function delete($id)
+    {
+        // Check permissions
+        if (!$this->permissions['can_delete']) {
+            $this->session->set_flashdata('message', array("danger", "You don't have permission to delete inventory items."));
+            redirect($this->url.'/inventory');
+            return;
+        }
+
+        if ($this->inventory->delete_instrument($id)) {
+            $this->session->set_flashdata('message', array('success', "Instrument deleted successfully!"));
+        } else {
+            $this->session->set_flashdata('message', array('danger', "Failed to delete instrument."));
+        }
+        redirect($this->url.'/inventory');
     }
 
     public function create()
@@ -99,11 +115,8 @@ class Inventory extends CI_Controller
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
-                // Handle custom name for "other" instruments
+                // Get instrument name
                 $instrument_name = $this->input->post('name');
-                if ($instrument_name === 'other') {
-                    $instrument_name = $this->input->post('custom_name');
-                }
 
                 // Handle image upload
                 $image_path = null;
@@ -135,13 +148,13 @@ class Inventory extends CI_Controller
                     'category' => $this->input->post('category'),
                     'serial_no' => $this->input->post('serial_no'),
                     'model' => $this->input->post('model'),
-                    'description' => $this->input->post('description'),
-                    'condition' => $this->input->post('condition'),
-                    'issue_date' => $this->input->post('issue_date'),
-                    'due_date' => $this->input->post('due_date'),
+                    'brand' => $this->input->post('brand'),
+                    'condition_notes' => $this->input->post('condition_notes'),
                     'instrument_price' => $this->input->post('instrument_price'),
                     'instrument_image' => $image_path,
-                    'availability_status' => INSTRUMENT_STATUS_AVAILABLE,
+                    'condition' => $this->input->post('condition'),
+                    'description' => $this->input->post('description'),
+                    'availability_status' => $this->input->post('availability_status') ?: INSTRUMENT_STATUS_AVAILABLE,
                     'college_id' => $this->college['id'],
                     'created_by' => $this->session_data['id'],
                     'is_active' => 1
@@ -171,9 +184,6 @@ class Inventory extends CI_Controller
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $instrument_name = $this->input->post('name');
-                if ($instrument_name === 'other') {
-                    $instrument_name = $this->input->post('custom_name');
-                }
 
                 // Handle image upload (only if new image is uploaded)
                 $image_path = null;
@@ -211,11 +221,12 @@ class Inventory extends CI_Controller
                     'category' => $this->input->post('category'),
                     'serial_no' => $this->input->post('serial_no'),
                     'model' => $this->input->post('model'),
-                    'description' => $this->input->post('description'),
+                    'brand' => $this->input->post('brand'),
+                    'condition_notes' => $this->input->post('condition_notes'),
+                    'instrument_price' => $this->input->post('instrument_price'),
                     'condition' => $this->input->post('condition'),
-                    'issue_date' => $this->input->post('issue_date'),
-                    'due_date' => $this->input->post('due_date'),
-                    'instrument_price' => $this->input->post('instrument_price')
+                    'description' => $this->input->post('description'),
+                    'availability_status' => $this->input->post('availability_status')
                 );
 
                 // Only update image if new one was uploaded
@@ -260,14 +271,23 @@ class Inventory extends CI_Controller
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER']);
             } else {
+                $issued_to_type = $this->input->post('issued_to_type');
+                $issued_to_id = $this->input->post('issued_to_id');
+
                 $issue_data = array(
                     'instrument_id' => $this->input->post('instrument_id'),
-                    'issued_to' => $this->input->post('issued_to_type') . ': ' . $this->input->post('issued_to_id'),
                     'issued_by' => $this->session_data['id'],
                     'issue_date' => $this->input->post('issue_date') ?: date('Y-m-d H:i:s'),
                     'expected_return_date' => $this->input->post('expected_return_date'),
-                    'purpose' => $this->input->post('purpose')
+                    'notes' => $this->input->post('purpose')
                 );
+
+                // Set student_id or faculty_id based on type
+                if ($issued_to_type === 'student') {
+                    $issue_data['student_id'] = $issued_to_id;
+                } elseif ($issued_to_type === 'staff') {
+                    $issue_data['faculty_id'] = $issued_to_id;
+                }
 
                 if ($this->inventory->issue_instrument($issue_data)) {
                     $this->session->set_flashdata('message', array('success', "Instrument Issued successfully!"));
@@ -308,41 +328,6 @@ class Inventory extends CI_Controller
         }
     }
 
-    public function maintenance()
-    {
-        $post = $this->input->post();
-        if($post){
-            $this->form_validation->set_rules('instrument_id', 'Instrument', 'trim|required');
-            $this->form_validation->set_rules('maintenance_type', 'Maintenance Type', 'trim|required');
-            $this->form_validation->set_rules('description', 'Description', 'trim|required');
-
-            if ($this->form_validation->run() == FALSE) {
-                $this->session->set_flashdata('message', array("danger", validation_errors()));
-                return redirect($_SERVER['HTTP_REFERER']);
-            } else {
-                $maintenance_data = array(
-                    'instrument_id' => $this->input->post('instrument_id'),
-                    'maintenance_type' => $this->input->post('maintenance_type'),
-                    'description' => $this->input->post('description'),
-                    'priority' => $this->input->post('priority'),
-                    'scheduled_date' => $this->input->post('scheduled_date'),
-                    'estimated_cost' => $this->input->post('estimated_cost'),
-                    'assigned_to' => $this->input->post('assigned_to'),
-                    'status' => 'pending',
-                    'logged_by' => $this->session_data['id']
-                );
-
-                if ($this->inventory->log_maintenance($maintenance_data)) {
-                    // Update instrument status to maintenance
-                    $this->inventory->update_instrument($post['instrument_id'], ['availability_status' => INSTRUMENT_STATUS_MAINTENANCE]);
-                    $this->session->set_flashdata('message', array('success', "Maintenance logged successfully!"));
-                } else {
-                    $this->session->set_flashdata('message', array('danger', "Failed to log maintenance."));
-                }
-                redirect(base_url($this->url . "/inventory"));
-            }
-        }
-    }
 
     public function issues()
     {
@@ -651,33 +636,40 @@ class Inventory extends CI_Controller
         return $this->json_response('success', ['transaction_id' => $transaction_id]);
     }
 
-    public function maintenance_api()
+    public function get_students_api()
     {
-        if ($this->input->method() !== 'post') {
+        if ($this->input->method() !== 'get') {
             return $this->json_response('error', 'Invalid method', 405);
         }
 
-        $instrument_id = (int)$this->input->post('instrument_id');
-        if (!$instrument_id) {
-            return $this->json_response('error', 'Instrument is required', 400);
+        $students = $this->db->select('id, student_id, name')
+                            ->from(TABLE_STUDENT)
+                            ->where('college_id', $this->college['id'])
+                            ->where('is_active', 1)
+                            ->order_by('name', 'ASC')
+                            ->get()
+                            ->result_array();
+
+        return $this->json_response('success', $students);
+    }
+
+    public function get_staff_api()
+    {
+        if ($this->input->method() !== 'get') {
+            return $this->json_response('error', 'Invalid method', 405);
         }
 
-        $payload = [
-            'college_id' => $this->college['id'] ?? null,
-            'instrument_id' => $instrument_id,
-            'type' => $this->input->post('type'),
-            'description' => $this->input->post('description'),
-            'status' => $this->input->post('status') ?: 'open',
-            'cost' => $this->input->post('cost'),
-            'started_at' => $this->input->post('started_at'),
-            'completed_at' => $this->input->post('completed_at'),
-            'technician' => $this->input->post('technician'),
-            'next_due_date' => $this->input->post('next_due_date'),
-            'created_at' => date('Y-m-d H:i:s'),
-        ];
+        $staff = $this->db->select('f.id, f.name, d.designation_name as designation')
+                         ->from(TABLE_FACULTY . ' f')
+                         ->join('designations d', 'd.id = f.designation', 'left')
+                         ->where('f.college_id', $this->college['id'])
+                         ->where('f.is_active', 1)
+                         ->order_by('f.name', 'ASC')
+                         ->get()
+                         ->result_array();
 
-        $id = $this->inventory->log_maintenance($payload);
-        return $this->json_response('success', ['id' => $id], 201);
+        return $this->json_response('success', $staff);
     }
+
 }
 

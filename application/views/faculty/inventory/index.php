@@ -1,3 +1,61 @@
+<style>
+/* Custom styles for instrument popover */
+.popover {
+    max-width: 420px !important;
+    z-index: 1060;
+}
+
+.popover-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+}
+
+.instrument-popover {
+    font-size: 0.875rem;
+}
+
+.instrument-popover .no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.instrument-popover .condition-notes {
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.instrument-popover .description {
+    min-height: 60px;
+    line-height: 1.4;
+}
+
+/* Table row hover effect */
+#instrumentsTable tbody tr:hover {
+    background-color: #e3f2fd !important;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Prevent text selection on hover */
+#instrumentsTable tbody tr:hover * {
+    user-select: none;
+}
+
+/* Custom popover arrow */
+.popover.right .arrow {
+    left: -11px;
+}
+
+.popover.right .arrow::after {
+    border-right-color: #fff;
+}
+</style>
+
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
         <h4 class="font-weight-bold py-3 mb-0">Musical Instrument Inventory</h4>
@@ -74,11 +132,6 @@
                                     <i class="feather icon-repeat"></i> Issue/Return Log
                                 </a>
                             </div>
-                            <div class="col-md-3">
-                                <a href="<?php echo base_url($url.'/inventory/maintenance'); ?>" class="btn btn-secondary btn-block mb-2">
-                                    <i class="feather icon-settings"></i> Maintenance Log
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,9 +188,11 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Serial No</th>
+                                <th>Model</th>
+                                <th>Brand</th>
+                                <th>Condition</th>
+                                <th>Price</th>
                                 <th>Status</th>
-                                <th>Issue Date</th>
-                                <th>Due Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -145,7 +200,7 @@
                             <?php if (!empty($instruments)) {
                                 $i = 1;
                                 foreach ($instruments as $instrument) { ?>
-                                    <tr>
+                                    <tr class="instrument-row" data-instrument-id="<?php echo $instrument['id']; ?>">
                                         <td><?php echo $i++; ?></td>
                                         <td>
                                             <?php if (!empty($instrument['instrument_image'])): ?>
@@ -153,10 +208,32 @@
                                             <?php else: ?>
                                                 <span class="text-muted">No Image</span>
                                             <?php endif; ?>
+                                            <span class="instrument-image-src d-none"><?php echo !empty($instrument['instrument_image']) ? base_url($instrument['instrument_image']) : ''; ?></span>
+                                            <span class="instrument-condition-notes d-none"><?php
+                                                $notes = $instrument['condition_notes'] ?? '';
+                                                echo htmlspecialchars(strlen($notes) > 100 ? substr($notes, 0, 100) . '...' : $notes);
+                                            ?></span>
+                                            <span class="instrument-description d-none"><?php
+                                                $desc = $instrument['description'] ?? '';
+                                                echo htmlspecialchars(strlen($desc) > 150 ? substr($desc, 0, 150) . '...' : $desc);
+                                            ?></span>
                                         </td>
                                         <td><?php echo $instrument['name']; ?></td>
                                         <td><?php echo $categories[$instrument['category']] ?? $instrument['category']; ?></td>
                                         <td><?php echo $instrument['serial_no']; ?></td>
+                                        <td><?php echo $instrument['model'] ?? 'N/A'; ?></td>
+                                        <td><?php echo $instrument['brand'] ?? 'N/A'; ?></td>
+                                        <td>
+                                            <span class="badge badge-<?php
+                                                echo $instrument['condition'] == INSTRUMENT_CONDITION_EXCELLENT ? 'success' :
+                                                     ($instrument['condition'] == INSTRUMENT_CONDITION_GOOD ? 'primary' :
+                                                     ($instrument['condition'] == INSTRUMENT_CONDITION_FAIR ? 'warning' :
+                                                     ($instrument['condition'] == INSTRUMENT_CONDITION_POOR ? 'secondary' : 'danger')));
+                                            ?>">
+                                                <?php echo ucfirst($instrument['condition']); ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo $instrument['instrument_price'] ? '₹' . number_format($instrument['instrument_price'], 2) : 'N/A'; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
                                                 echo $instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE ? 'success' :
@@ -174,33 +251,30 @@
                                                 ?>
                                             </span>
                                         </td>
-                                        <td><?php echo $instrument['issue_date'] ? date('d M Y', strtotime($instrument['issue_date'])) : 'N/A'; ?></td>
-                                        <td><?php echo $instrument['due_date'] ? date('d M Y', strtotime($instrument['due_date'])) : 'N/A'; ?></td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                            <button class="btn btn-sm btn-info" onclick="viewInstrument(<?php echo $instrument['id']; ?>)">
-                                                <i class="feather icon-eye"></i> View
-                                            </button>
                                             <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE): ?>
-                                                <button class="btn btn-sm btn-warning" onclick="issueInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); issueInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-send"></i> Issue
                                                 </button>
                                             <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED): ?>
-                                                <button class="btn btn-sm btn-success" onclick="returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-rotate-ccw"></i> Return
                                                 </button>
                                             <?php endif; ?>
-                                            <button class="btn btn-sm btn-secondary" onclick="logMaintenance(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
-                                                <i class="feather icon-settings"></i> Maintenance
-                                            </button>
-                                            <button class="btn btn-sm btn-primary" onclick="editInstrument(<?php echo $instrument['id']; ?>)">
+                                            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); editInstrument(<?php echo $instrument['id']; ?>)">
                                                 <i class="feather icon-edit"></i> Edit
                                             </button>
+                                            <?php if ($permissions['can_delete']): ?>
+                                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                    <i class="feather icon-trash"></i> Delete
+                                                </button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                             <?php }
                             } else { ?>
                                 <tr>
-                                    <td colspan="9" class="text-center">No instruments found</td>
+                                    <td colspan="11" class="text-center">No instruments found</td>
                                 </tr>
                             <?php } ?>
                         </tbody>
@@ -229,10 +303,6 @@ function applyFilters() {
     window.location.href = url.toString();
 }
 
-function viewInstrument(id) {
-    window.location.href = '<?php echo base_url($url.'/inventory/view/'); ?>' + id;
-}
-
 function editInstrument(id) {
     // Load edit modal with data
     fetch('<?php echo base_url($url.'/inventory/get_instrument/'); ?>' + id)
@@ -245,11 +315,12 @@ function editInstrument(id) {
                 document.getElementById('edit_category').value = instrument.category;
                 document.getElementById('edit_serial_no').value = instrument.serial_no;
                 document.getElementById('edit_model').value = instrument.model || '';
-                document.getElementById('edit_description').value = instrument.description || '';
-                document.getElementById('edit_issue_date').value = instrument.issue_date ? instrument.issue_date.substring(0, 10) : '';
+                document.getElementById('edit_brand').value = instrument.brand || '';
                 document.getElementById('edit_instrument_price').value = instrument.instrument_price || '';
-                document.getElementById('edit_due_date').value = instrument.due_date ? instrument.due_date.substring(0, 10) : '';
                 document.getElementById('edit_condition').value = instrument.condition || 'good';
+                document.getElementById('edit_condition_notes').value = instrument.condition_notes || '';
+                document.getElementById('edit_description').value = instrument.description || '';
+                document.getElementById('edit_availability_status').value = instrument.availability_status || 'available';
 
                 // Handle image display
                 const imageContainer = document.getElementById('current_image_display');
@@ -259,7 +330,7 @@ function editInstrument(id) {
                     imageContainer.innerHTML = '<small class="text-muted">No image uploaded</small>';
                 }
 
-                new bootstrap.Modal(document.getElementById('editInstrumentModal')).show();
+                $('#editInstrumentModal').modal('show');
             }
         });
 }
@@ -267,19 +338,278 @@ function editInstrument(id) {
 function issueInstrument(id, name) {
     document.getElementById('issue_instrument_id').value = id;
     document.getElementById('issue_instrument_name').textContent = name;
-    new bootstrap.Modal(document.getElementById('issueInstrumentModal')).show();
+
+    // Reset form fields
+    document.getElementById('issued_to_type').value = '';
+    document.getElementById('issued_to_id').innerHTML = '<option value="">Select Student/Staff</option>';
+    document.getElementById('issued_to_id').disabled = true;
+    document.getElementById('expected_return_date').value = '';
+    document.getElementById('purpose').value = '';
+
+    // Set default issue date
+    document.getElementById('issue_date').value = '<?php echo date('Y-m-d'); ?>';
+
+    // Reset select2 elements
+    $('#issued_to_type').val('').trigger('change');
+    $('#issued_to_id').val('').trigger('change');
+
+    // Initialize select2 for issue modal when shown
+    $('#issueInstrumentModal').on('shown.bs.modal', function() {
+        // Small delay to ensure modal is fully rendered
+        setTimeout(function() {
+            if (typeof $.fn.select2 !== 'undefined') {
+                $('#issued_to_type').select2({
+                    placeholder: "Select Type",
+                    allowClear: true,
+                    minimumResultsForSearch: Infinity,
+                    width: '100%'
+                });
+
+                $('#issued_to_id').select2({
+                    placeholder: "Select Student/Staff",
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                // Bind change event for issue type selection
+                $('#issued_to_type').on('change', function() {
+                    toggleIssueFields();
+                });
+            }
+        }, 100);
+    });
+
+    $('#issueInstrumentModal').modal('show');
+
+    // Clean up select2 when modal is hidden
+    $('#issueInstrumentModal').on('hidden.bs.modal', function() {
+        if ($('#issued_to_type').hasClass('select2-hidden-accessible')) {
+            $('#issued_to_type').select2('destroy');
+        }
+        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
+            $('#issued_to_id').select2('destroy');
+        }
+    });
 }
 
 function returnInstrument(id, name) {
     document.getElementById('return_instrument_id').value = id;
     document.getElementById('return_instrument_name').textContent = name;
-    new bootstrap.Modal(document.getElementById('returnInstrumentModal')).show();
+    $('#returnInstrumentModal').modal('show');
 }
 
-function logMaintenance(id, name) {
-    document.getElementById('maintenance_instrument_id').value = id;
-    document.getElementById('maintenance_instrument_name').textContent = name;
-    new bootstrap.Modal(document.getElementById('maintenanceModal')).show();
+// Global variable to store instrument ID for deletion
+let instrumentToDelete = null;
+
+function deleteInstrument(id, name) {
+    // Store the instrument details
+    instrumentToDelete = { id: id, name: name };
+
+    // Update modal content
+    document.getElementById('deleteInstrumentName').textContent = name;
+
+    // Show the modal
+    $('#deleteInstrumentModal').modal('show');
 }
 
+function toggleIssueFields() {
+    const type = document.getElementById('issued_to_type').value;
+    const idField = document.getElementById('issued_to_id');
+    const idLabel = document.querySelector('label[for="issued_to_id"]');
+
+    if (type === 'student') {
+        idLabel.textContent = 'Issue To Student *';
+        loadStudents();
+    } else if (type === 'staff') {
+        idLabel.textContent = 'Issue To Staff *';
+        loadStaff();
+    } else {
+        idField.innerHTML = '<option value="">Select Student/Staff</option>';
+        idField.disabled = true;
+        // Reset select2
+        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
+            $('#issued_to_id').select2('destroy');
+            $('#issued_to_id').select2({
+                placeholder: "Select Student/Staff",
+                allowClear: true,
+                width: '100%'
+            });
+        }
+    }
+}
+
+function loadStudents() {
+    const selectField = document.getElementById('issued_to_id');
+    selectField.disabled = true;
+    selectField.innerHTML = '<option value="">Loading...</option>';
+
+    fetch('<?php echo base_url($url.'/api/get_students'); ?>')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                let options = '<option value="">Select Student</option>';
+                data.data.forEach(student => {
+                    options += `<option value="${student.id}">${student.student_id} - ${student.name}</option>`;
+                });
+                selectField.innerHTML = options;
+                selectField.disabled = false;
+
+                // Reinitialize select2
+                if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
+                    $('#issued_to_id').select2('destroy');
+                }
+                $('#issued_to_id').select2({
+                    placeholder: "Select Student",
+                    allowClear: true,
+                    width: '100%'
+                });
+            } else {
+                selectField.innerHTML = '<option value="">Error loading students</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading students:', error);
+            selectField.innerHTML = '<option value="">Error loading students</option>';
+        });
+}
+
+function loadStaff() {
+    const selectField = document.getElementById('issued_to_id');
+    selectField.disabled = true;
+    selectField.innerHTML = '<option value="">Loading...</option>';
+
+    fetch('<?php echo base_url($url.'/api/get_staff'); ?>')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                let options = '<option value="">Select Staff</option>';
+                data.data.forEach(staff => {
+                    options += `<option value="${staff.id}">${staff.designation} - ${staff.name}</option>`;
+                });
+                selectField.innerHTML = options;
+                selectField.disabled = false;
+
+                // Reinitialize select2
+                if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
+                    $('#issued_to_id').select2('destroy');
+                }
+                $('#issued_to_id').select2({
+                    placeholder: "Select Staff",
+                    allowClear: true,
+                    width: '100%'
+                });
+            } else {
+                selectField.innerHTML = '<option value="">Error loading staff</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading staff:', error);
+            selectField.innerHTML = '<option value="">Error loading staff</option>';
+        });
+}
+
+$(document).ready(function() {
+    // Initialize popovers for instrument table rows
+    $('.instrument-row').popover({
+        container: 'body',
+        boundary: 'viewport',
+        delay: { show: 500, hide: 200 },
+        html: true,
+        trigger: 'hover focus',
+        placement: 'right auto',
+        title: function() {
+            var instrumentId = $(this).data('instrument-id');
+            // Find the instrument name from the table row
+            var instrumentName = $(this).find('td:nth-child(3)').text();
+            return '<strong>' + instrumentName + '</strong>';
+        },
+        content: function() {
+            var row = $(this);
+            var imageSrc = row.find('.instrument-image-src').text();
+            var conditionNotes = row.find('.instrument-condition-notes').text() || 'No condition notes available.';
+            var description = row.find('.instrument-description').text() || 'No description available.';
+
+            // Create content using DOM manipulation instead of string concatenation
+            var $content = $('<div class="instrument-popover"></div>');
+            var $row = $('<div class="row no-gutters"></div>');
+            var $imageCol = $('<div class="col-5 pr-2"></div>');
+            var $textCol = $('<div class="col-7 pl-2"></div>');
+
+            // Add image
+            if (imageSrc) {
+                $('<img>', {
+                    src: imageSrc,
+                    class: 'img-fluid rounded',
+                    style: 'width: 100%; max-height: 120px; object-fit: cover;',
+                    alt: 'Instrument Image'
+                }).appendTo($imageCol);
+            } else {
+                var $noImageDiv = $('<div>', {
+                    class: 'text-center text-muted p-2 border rounded',
+                    style: 'height: 120px; display: flex; align-items: center; justify-content: center;'
+                }).appendTo($imageCol);
+
+                $('<div>').append(
+                    $('<i>', { class: 'feather icon-image', style: 'font-size: 2rem;' }),
+                    $('<br>'),
+                    $('<small>').text('No Image')
+                ).appendTo($noImageDiv);
+            }
+
+            // Add condition notes
+            $('<div>', {
+                class: 'condition-notes mb-2 p-2 bg-light rounded',
+                style: 'font-size: 0.85rem;'
+            }).append(
+                $('<strong>', { class: 'text-warning' }).text('📝 Condition:'),
+                $('<br>'),
+                conditionNotes
+            ).appendTo($textCol);
+
+            $row.append($imageCol).append($textCol);
+            $content.append($row);
+
+            // Add description
+            $('<div>', {
+                class: 'description mt-2 p-2 bg-light rounded',
+                style: 'font-size: 0.85rem;'
+            }).append(
+                $('<strong>', { class: 'text-info' }).text('📄 Description:'),
+                $('<br>'),
+                description
+            ).appendTo($content);
+
+            return $content[0].outerHTML;
+        }
+    });
+
+    // Hide popover when clicking elsewhere
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.instrument-row, .popover').length) {
+            $('.instrument-row').popover('hide');
+        }
+    });
+
+    // Clean up popovers when page unloads
+    $(window).on('beforeunload', function() {
+        $('.instrument-row').popover('dispose');
+    });
+
+    // Handle confirm delete button click
+    $('#confirmDeleteBtn').on('click', function() {
+        if (instrumentToDelete) {
+            // Hide the modal
+            $('#deleteInstrumentModal').modal('hide');
+
+            // Redirect to delete URL
+            window.location.href = '<?php echo base_url($url.'/inventory/delete/'); ?>' + instrumentToDelete.id;
+        }
+    });
+
+    // Reset the global variable and modal content when modal is hidden
+    $('#deleteInstrumentModal').on('hidden.bs.modal', function() {
+        instrumentToDelete = null;
+        document.getElementById('deleteInstrumentName').textContent = '';
+    });
+});
 </script>

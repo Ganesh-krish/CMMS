@@ -18,35 +18,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Instrument Name *</label>
-                            <select class="form-control select2" id="name" name="name" required>
-                                <option value="">Select Instrument</option>
-                                <?php
-                                $common_instruments = [
-                                    'guitar' => 'Guitar',
-                                    'piano' => 'Piano',
-                                    'violin' => 'Violin',
-                                    'tabla' => 'Tabla',
-                                    'drums' => 'Drums',
-                                    'flute' => 'Flute',
-                                    'saxophone' => 'Saxophone',
-                                    'trumpet' => 'Trumpet',
-                                    'keyboard' => 'Keyboard',
-                                    'harmonium' => 'Harmonium',
-                                    'sitar' => 'Sitar',
-                                    'tambourine' => 'Tambourine',
-                                    'bongos' => 'Bongos',
-                                    'ukulele' => 'Ukulele',
-                                    'cello' => 'Cello'
-                                ];
-                                foreach ($common_instruments as $key => $name): ?>
-                                    <option value="<?php echo $key; ?>"><?php echo $name; ?></option>
-                                <?php endforeach; ?>
-                                <option value="other">Other (specify below)</option>
-                            </select>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="Enter instrument name">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="custom_name" class="form-label">Custom Name (if Other)</label>
-                            <input type="text" class="form-control" id="custom_name" name="custom_name" placeholder="Enter custom instrument name">
+                            <label for="availability_status" class="form-label">Availability Status *</label>
+                            <select class="form-control" id="availability_status" name="availability_status" required>
+                                <option value="available">Available</option>
+                                <option value="issued">Issued</option>
+                                <option value="maintenance">Under Maintenance</option>
+                                <option value="damaged">Damaged</option>
+                            </select>
                         </div>
                     </div>
 
@@ -74,6 +55,13 @@
                             <input type="text" class="form-control" id="model" name="model">
                         </div>
                         <div class="col-md-6 mb-3">
+                            <label for="brand" class="form-label">Brand</label>
+                            <input type="text" class="form-control" id="brand" name="brand">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label for="condition" class="form-label">Condition *</label>
                             <select class="form-control" id="condition" name="condition" required>
                                 <option value="excellent">Excellent</option>
@@ -83,21 +71,15 @@
                                 <option value="damaged">Damaged</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="issue_date" class="form-label">Issue Date</label>
-                            <input type="date" class="form-control" id="issue_date" name="issue_date">
-                        </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="instrument_price" class="form-label">Instrument Price</label>
                             <input type="number" class="form-control" id="instrument_price" name="instrument_price" step="0.01">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="due_date" class="form-label">Due Date</label>
-                            <input type="date" class="form-control" id="due_date" name="due_date">
-                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="condition_notes" class="form-label">Condition Notes</label>
+                        <textarea class="form-control" id="condition_notes" name="condition_notes" rows="2" placeholder="Additional notes about the instrument's condition"></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -120,7 +102,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editInstrumentModalLabel">Edit Musical Instrument</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <form action="<?= base_url($url . '/inventory/update') ?>" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="edit_instrument_id" name="id">
@@ -143,17 +127,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_name" class="form-label">Instrument Name *</label>
-                            <select class="form-control" id="edit_name" name="name" required>
-                                <option value="">Select Instrument</option>
-                                <?php foreach ($common_instruments as $key => $name): ?>
-                                    <option value="<?php echo $key; ?>"><?php echo $name; ?></option>
-                                <?php endforeach; ?>
-                                <option value="other">Other (specify below)</option>
-                            </select>
+                            <input type="text" class="form-control" id="edit_name" name="name" required placeholder="Enter instrument name">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_custom_name" class="form-label">Custom Name (if Other)</label>
-                            <input type="text" class="form-control" id="edit_custom_name" name="custom_name">
+                            <label for="edit_availability_status" class="form-label">Availability Status *</label>
+                            <select class="form-control" id="edit_availability_status" name="availability_status" required>
+                                <option value="available">Available</option>
+                                <option value="issued">Issued</option>
+                                <option value="maintenance">Under Maintenance</option>
+                                <option value="damaged">Damaged</option>
+                            </select>
                         </div>
                     </div>
 
@@ -181,6 +164,13 @@
                             <input type="text" class="form-control" id="edit_model" name="model">
                         </div>
                         <div class="col-md-6 mb-3">
+                            <label for="edit_brand" class="form-label">Brand</label>
+                            <input type="text" class="form-control" id="edit_brand" name="brand">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label for="edit_condition" class="form-label">Condition *</label>
                             <select class="form-control" id="edit_condition" name="condition" required>
                                 <option value="excellent">Excellent</option>
@@ -190,21 +180,15 @@
                                 <option value="damaged">Damaged</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_issue_date" class="form-label">Issue Date</label>
-                            <input type="date" class="form-control" id="edit_issue_date" name="issue_date">
-                        </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="edit_instrument_price" class="form-label">Instrument Price</label>
                             <input type="number" class="form-control" id="edit_instrument_price" name="instrument_price" step="0.01">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_due_date" class="form-label">Due Date</label>
-                            <input type="date" class="form-control" id="edit_due_date" name="due_date">
-                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_condition_notes" class="form-label">Condition Notes</label>
+                        <textarea class="form-control" id="edit_condition_notes" name="condition_notes" rows="2" placeholder="Additional notes about the instrument's condition"></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -213,7 +197,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Update Instrument</button>
                 </div>
             </form>
@@ -227,7 +211,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="issueInstrumentModalLabel">Issue Instrument</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <form action="<?= base_url($url . '/inventory/issue') ?>" method="POST">
                 <input type="hidden" id="issue_instrument_id" name="instrument_id">
@@ -239,15 +225,17 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="issued_to_type" class="form-label">Issue To Type *</label>
-                            <select class="form-control" id="issued_to_type" name="issued_to_type" required onchange="toggleIssueFields()">
+                            <select class="form-control" id="issued_to_type" name="issued_to_type" required>
+                                <option value="">Select Type</option>
                                 <option value="student">Student</option>
                                 <option value="staff">Staff</option>
-                                <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="issued_to_id" class="form-label">Issue To ID *</label>
-                            <input type="text" class="form-control" id="issued_to_id" name="issued_to_id" required placeholder="Student/Staff ID or Name">
+                            <label for="issued_to_id" class="form-label">Issue To *</label>
+                            <select class="form-control select2" id="issued_to_id" name="issued_to_id" required disabled>
+                                <option value="">Select Student/Staff</option>
+                            </select>
                         </div>
                     </div>
 
@@ -268,7 +256,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Issue Instrument</button>
                 </div>
             </form>
@@ -282,7 +270,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="returnInstrumentModalLabel">Return Instrument</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <form action="<?= base_url($url . '/inventory/return') ?>" method="POST">
                 <input type="hidden" id="return_instrument_id" name="instrument_id">
@@ -314,7 +304,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Return Instrument</button>
                 </div>
             </form>
@@ -322,92 +312,58 @@
     </div>
 </div>
 
-<!-- Maintenance Modal -->
-<div class="modal fade" id="maintenanceModal" tabindex="-1" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteInstrumentModal" tabindex="-1" role="dialog" aria-labelledby="deleteInstrumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="maintenanceModalLabel">Log Maintenance</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteInstrumentModalLabel">
+                    <i class="feather icon-alert-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <form action="<?= base_url($url . '/inventory/maintenance') ?>" method="POST">
-                <input type="hidden" id="maintenance_instrument_id" name="instrument_id">
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <strong>Instrument:</strong> <span id="maintenance_instrument_name"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="maintenance_type" class="form-label">Maintenance Type *</label>
-                            <select class="form-control" id="maintenance_type" name="maintenance_type" required>
-                                <option value="">Select Type</option>
-                                <option value="repair">Repair</option>
-                                <option value="cleaning">Cleaning</option>
-                                <option value="tuning">Tuning</option>
-                                <option value="replacement">Part Replacement</option>
-                                <option value="inspection">Inspection</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="priority" class="form-label">Priority *</label>
-                            <select class="form-control" id="priority" name="priority" required>
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="scheduled_date" class="form-label">Scheduled Date</label>
-                            <input type="date" class="form-control" id="scheduled_date" name="scheduled_date">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="estimated_cost" class="form-label">Estimated Cost</label>
-                            <input type="number" class="form-control" id="estimated_cost" name="estimated_cost" step="0.01">
-                        </div>
-                    </div>
-
+            <div class="modal-body">
+                <div class="text-center">
                     <div class="mb-3">
-                        <label for="maintenance_description" class="form-label">Description *</label>
-                        <textarea class="form-control" id="maintenance_description" name="description" rows="3" required placeholder="Describe the maintenance needed"></textarea>
+                        <i class="feather icon-trash-2 text-danger" style="font-size: 3rem;"></i>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="assigned_to" class="form-label">Assigned To</label>
-                        <input type="text" class="form-control" id="assigned_to" name="assigned_to" placeholder="Technician or maintenance person">
+                    <h5 class="mb-3">Are you sure you want to delete this instrument?</h5>
+                    <p class="text-muted mb-3" id="deleteInstrumentName"></p>
+                    <div class="alert alert-warning">
+                        <i class="feather icon-alert-circle"></i>
+                        <strong>Warning:</strong> This action cannot be undone. The instrument will be permanently removed from the system.
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Log Maintenance</button>
-                </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="feather icon-x"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="feather icon-trash"></i> Delete Instrument
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
 $(document).ready(function() {
-    // Initialize Select2 for all select dropdowns
-    $('.select2').select2({
-        placeholder: "Select an option",
+    // Initialize Select2 for category dropdowns (not issue modal)
+    $('#category, #edit_category').select2({
+        placeholder: "Select Category",
         allowClear: true
     });
 });
 
-function toggleIssueFields() {
-    // This function can be extended to dynamically load student/staff lists
-    // For now, it's a placeholder for future enhancement
-}
+// Modal reset functionality is now handled in index.php
+
 
 $(document).ready(function() {
     // Set minimum date for expected return date
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0'];
     document.getElementById('expected_return_date').setAttribute('min', today);
 });
 </script>

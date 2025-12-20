@@ -748,5 +748,38 @@ class Inventory extends CI_Controller
         return $this->json_response('success', $issue);
     }
 
+    public function return_instrument_api()
+    {
+        if ($this->input->method() !== 'post') {
+            return $this->json_response('error', 'Invalid method', 405);
+        }
+
+        $issue_id = $this->input->post('issue_id');
+        $return_date = $this->input->post('return_date');
+        $condition_on_return = $this->input->post('condition_on_return');
+        $notes = $this->input->post('notes');
+
+        if (!$issue_id) {
+            return $this->json_response('error', 'Issue ID is required', 400);
+        }
+
+        // Validate return date
+        if (!$return_date) {
+            $return_date = date('Y-m-d H:i:s');
+        }
+
+        $result = $this->inventory->return_instrument($issue_id, [
+            'actual_return_date' => $return_date,
+            'condition_on_return' => $condition_on_return,
+            'notes' => $notes
+        ]);
+
+        if ($result) {
+            return $this->json_response('success', 'Instrument returned successfully');
+        } else {
+            return $this->json_response('error', 'Failed to return instrument', 500);
+        }
+    }
+
 }
 

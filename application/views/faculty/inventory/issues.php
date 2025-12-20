@@ -208,25 +208,124 @@ function populateIssueDetailsModal(issue) {
     document.getElementById('issueDetailsContent').innerHTML = content;
 }
 
-function markAsReturned(issueId) {
-    if (confirm('Mark this instrument as returned?')) {
-        // Create a simple return action
-        const formData = new FormData();
-        formData.append('instrument_id', issueId); // This would need to be the instrument ID, not issue ID
-        formData.append('return_date', new Date().toISOString().split('T')[0]);
-        formData.append('condition_on_return', 'good');
-        formData.append('notes', 'Quick return');
+// Global variable to store current issue ID for return
+let currentReturnIssueId = null;
+let currentReturnButton = null;
 
-        // This would need to be implemented properly on the backend
-        alert('Quick return functionality would be implemented here.');
-    }
+function markAsReturned(issueId) {
+    // Find the row data to show instrument info
+    const row = event.target.closest('tr');
+    const instrumentName = row.cells[1].textContent.trim();
+    const serialNo = row.cells[2].textContent.trim() || 'N/A';
+    const issuedTo = row.cells[3].textContent.trim();
+
+    // Store the issue ID and button reference
+    currentReturnIssueId = issueId;
+    currentReturnButton = event.target.closest('button');
+
+    // Populate modal with instrument info
+    document.getElementById('returnInstrumentInfo').innerHTML = `
+        <strong>Instrument:</strong> ${instrumentName}<br>
+        <strong>Serial No:</strong> ${serialNo}<br>
+        <strong>Issued To:</strong> ${issuedTo}
+    `;
+
+    // Show the modal
+    $('#returnConfirmModal').modal('show');
 }
 
-// Initialize DataTable
+function confirmReturn() {
+    if (!currentReturnIssueId || !currentReturnButton) return;
+
+    // Hide the modal
+    $('#returnConfirmModal').modal('hide');
+
+    // Show loading state
+    const originalText = currentReturnButton.innerHTML;
+    currentReturnButton.innerHTML = '<i class="feather icon-loader"></i> Processing...';
+    currentReturnButton.disabled = true;
+
+    // Create return data
+    const formData = new FormData();
+    formData.append('issue_id', currentReturnIssueId);
+    formData.append('return_date', new Date().toISOString().split('T')[0]);
+    formData.append('condition_on_return', 'good');
+    formData.append('notes', 'Quick return via issues page');
+
+    // Make API call
+    fetch('<?php echo base_url($url.'/api/return_instrument'); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Show success message
+            showAlert('success', 'Instrument returned successfully!');
+
+            // Reload the page to show updated status after a short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showAlert('error', 'Error: ' + data.data);
+            // Restore button
+            currentReturnButton.innerHTML = originalText;
+            currentReturnButton.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error returning instrument:', error);
+        showAlert('error', 'An error occurred while processing the return. Please try again.');
+        // Restore button
+        currentReturnButton.innerHTML = originalText;
+        currentReturnButton.disabled = false;
+    });
+}
+
+// Helper function to show alerts
+function showAlert(type, message) {
+    // Remove any existing alerts
+    const existingAlerts = document.querySelectorAll('.alert');
+    existingAlerts.forEach(alert => alert.remove());
+
+    // Create new alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        ${message}
+    `;
+
+    // Insert at the top of the page content
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            $(alertDiv).alert('close');
+        }
+    }, 5000);
+}
+
+// Initialize DataTable and modal event listeners
 $(document).ready(function() {
+    // Initialize DataTable
     $('#issuesTable').DataTable({
         "pageLength": 25,
         "order": [[ 4, "desc" ]] // Order by issue date descending
+    });
+
+    // Initialize modal event listeners
+    $('#confirmReturnBtn').on('click', confirmReturn);
+
+    // Reset variables when modal is hidden
+    $('#returnConfirmModal').on('hidden.bs.modal', function() {
+        currentReturnIssueId = null;
+        currentReturnButton = null;
     });
 });
 </script>

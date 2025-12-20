@@ -179,6 +179,7 @@ $route['(:any)/api/inventory/return'] = 'Inventory/return_item_api';
 $route['(:any)/api/get_students'] = 'Inventory/get_students_api';
 $route['(:any)/api/get_staff'] = 'Inventory/get_staff_api';
 $route['(:any)/api/get_issue_details'] = 'Inventory/get_issue_details_api';
+$route['(:any)/api/return_instrument'] = 'Inventory/return_instrument_api';
 
 // Announcements Management routes
 $route['(:any)/announcements'] = 'Announcement/index';

@@ -56,6 +56,7 @@ class Inventory extends CI_Controller
         $class["classname"] = "inventory";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/inventory");
+        $class["college"] = $this->college;
 
         // Get filters from URL
         $filters = [

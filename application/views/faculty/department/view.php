@@ -62,6 +62,8 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Department Name</th>
+                                            <th>Total Students</th>
+                                            <th>Total Staff</th>
                                             <th>Status</th>
                                             <?php if (isset($can_manage) && $can_manage): ?>
                                                 <th>Actions</th>
@@ -73,6 +75,12 @@
                                             <tr>
                                                 <td><?php echo $dept['id']; ?></td>
                                                 <td><?php echo htmlspecialchars($dept['name']); ?></td>
+                                                <td>
+                                                    <span class="badge badge-primary"><?php echo $dept['total_students']; ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-info"><?php echo $dept['total_staff']; ?></span>
+                                                </td>
                                                 <td>
                                                     <span class="badge badge-<?php echo $dept['is_active'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $dept['is_active'] ? 'Active' : 'Inactive'; ?>

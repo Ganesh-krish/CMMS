@@ -53,6 +53,7 @@ class Dashboard extends CI_Controller
         $class["classname"] = "dashboard";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/dashboard");
+        $class["college"] = $this->college;
 
         // Role-specific dashboard data
         if ($role == ROLE_VICE_PRINCIPAL) {

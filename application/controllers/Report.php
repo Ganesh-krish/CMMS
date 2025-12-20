@@ -48,6 +48,7 @@ class Report extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "reports";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         // Determine the path based on user role/designation
         $user_designation = $this->session_data['designation'] ?? $this->session_data['role'] ?? null;

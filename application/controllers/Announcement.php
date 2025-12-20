@@ -50,6 +50,7 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $role = $this->session_data['role'] ?? $this->session_data['designation'];
         $department = $this->session_data['department'] ?? null;
@@ -146,6 +147,7 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
@@ -219,6 +221,7 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $data["announcement"] = $announcement;
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
@@ -286,6 +289,7 @@ class Announcement extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "announcements";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $data["announcement"] = $announcement;
         $data["current_user"] = $this->session_data;

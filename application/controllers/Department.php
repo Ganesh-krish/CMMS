@@ -40,13 +40,31 @@ class Department extends CI_Controller {
     }
 
     public function view() {
-        $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT,["is_active"=>1]);
+        $departments = $this->db_model->get_all(TABLE_DEPARTMENT,["is_active"=>1]);
+
+        // Add student and staff counts for each department
+        foreach ($departments as &$dept) {
+            // Count students in this department
+            $dept['total_students'] = $this->db_model->count(TABLE_STUDENT, [
+                'department' => $dept['id'],
+                'is_active' => 1
+            ]);
+
+            // Count staff/faculty in this department
+            $dept['total_staff'] = $this->db_model->count(TABLE_FACULTY, [
+                'department' => $dept['id'],
+                'is_active' => 1
+            ]);
+        }
+
+        $data["departments"] = $departments;
         $data["can_manage"] = true; // SuperAdmin can manage departments
 
         $data["url"] = $this->url;
         $class["classname"] = "departments";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/departments");
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/department/view', $data);

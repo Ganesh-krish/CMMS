@@ -53,6 +53,7 @@ class Groups extends CI_Controller
         $class["classname"] = "cources";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $data["college_id"] = $this->college['id'];
         $data["cource_id"] = $cource_id;
         $data["department"] = $this->session_data['department'];
@@ -70,6 +71,7 @@ class Groups extends CI_Controller
         $class["classname"] = "cources";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $data["college_id"] = $this->college['id'];
         $data["department"] = $this->session_data['department'];
         $data["cource_id"] = $cource_id;
@@ -200,6 +202,7 @@ class Groups extends CI_Controller
             $class["url"] =  $this->url;
             $data["title" ] = "Edit Group";
             $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
             $data["college_id"] = $this->college['id'];
             $data["department"] = $this->session_data['department'];
 

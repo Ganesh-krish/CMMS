@@ -330,6 +330,11 @@
             border-color: #6c757d;
             box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.5);
         } */
+
+        /* Remove dropdown arrow from user menu */
+        .demo-navbar-user .dropdown-toggle::after {
+            display: none !important;
+        }
     </style>
     <script>
         // Disable Ctrl+P and print functionality
@@ -368,7 +373,7 @@
                 <!-- Brand demo (see assets/css/demo/demo.css) -->
     <div class="app-brand demo">
                     <!-- <span class="app-brand-logo demo"> -->
-                    <img src="<?= base_url('assets/img/logo.svg') ?>" alt="Brand Logo" width="100px" height="100px">                    </span>
+                    <img src="<?php echo isset($college['logo']) && !empty($college['logo']) ? base_url('uploads/college/' . $college['logo']) : base_url('assets/img/logo.svg'); ?>" alt="College Logo" width="100px" height="100px">                    </span>
                     <!-- <a href="" class="app-brand-text demo sidenav-text font-weight-normal ml-2">Drillu</a> -->
                     <a href="javascript:" class="layout-sidenav-toggle sidenav-link text-large ml-auto">
                         <i class="ion ion-md-menu align-middle"></i>
@@ -581,9 +586,7 @@
                             </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right overflow-hidden">
-                            <a href="<?= base_url("$url/logout") ?>" class="dropdown-item">
-                                <i class="feather icon-power text-danger"></i> &nbsp; Log Out
-                            </a>
+                            <!-- Logout option removed -->
                         </div>
                     </div>
                 </nav>

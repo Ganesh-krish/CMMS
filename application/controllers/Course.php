@@ -36,6 +36,7 @@ class Course extends CI_Controller {
         $class["classname"] = "courses";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/courses");
+        $class["college"] = $this->college;
 
         // Role-based access control for courses
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
@@ -871,6 +872,7 @@ class Course extends CI_Controller {
         $class["classname"] = "courses";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/courses");
+        $class["college"] = $this->college;
 
         // Get all course enrollments with student and course details
         $this->db->select('

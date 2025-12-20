@@ -61,7 +61,13 @@
     }
 
     .sidenav-link:hover {
-        background-color: #673AB7; /* Change color on hover */
+        background-color: #ff4a00;
+        color: #fff !important;
+    }
+
+    .sidenav-link:hover .sidenav-icon,
+    .sidenav-link:hover div {
+        color: #fff !important;
     }
 
     /* Submenu Styling */
@@ -69,54 +75,50 @@
         display: none; /* Hide by default */
         list-style: none;
         padding-left: 20px;
-        background-color: #4A2FBD; /* Change submenu background */
+        background-color: #3da9fc; /* Change submenu background */
         border-left: 3px solid #fff;
+        margin: 0;
     }
 
     .submenu li {
         padding: 8px 10px;
+        margin: 0;
     }
 
     .submenu li a {
-        color: #ddd;
-        text-decoration: none;
-    }
-
-    .submenu li a:hover {
         color: #fff;
-        font-weight: bold;
-    }
-
-    /* Dropdown Styles */
-    .sidenav-item.active .dropdown-toggle {
-        background-color: #673AB7;
-        color: #fff;
-    }
-
-    .submenu {
-        display: none;
-        list-style: none;
-        padding-left: 20px;
-        background-color: rgba(103, 58, 183, 0.1);
-        border-left: 3px solid #673AB7;
-    }
-
-    .submenu li {
-        padding: 8px 10px;
-    }
-
-    .submenu li a {
-        color: #666;
         text-decoration: none;
-        padding: 5px 0;
         display: block;
+        padding: 5px 0;
         transition: color 0.3s ease;
     }
 
     .submenu li a:hover,
     .submenu li a.active {
-        color: #673AB7;
+        color: rgba(255,255,255,0.8);
         font-weight: 500;
+    }
+
+    /* Active menu overlay styles */
+    .sidenav-item.active .sidenav-link {
+        background-color: #3da9fc;
+        color: #000 !important;
+        position: relative;
+    }
+
+    .sidenav-item.active .sidenav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background-color: rgba(0,0,0,0.8);
+    }
+
+    .sidenav-item.active .sidenav-link .sidenav-icon,
+    .sidenav-item.active .sidenav-link div {
+        color: #000 !important;
     }
 
     /* Dashboard Chart Styles */

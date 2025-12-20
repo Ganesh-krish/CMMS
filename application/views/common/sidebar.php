@@ -637,3 +637,32 @@
 <script src="<?= base_url('') ?>assets/faculty/js/datatables-config.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- DataTables Export Filename Modal -->
+<div class="modal fade" id="exportFilenameModal" tabindex="-1" role="dialog" aria-labelledby="exportFilenameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportFilenameModalLabel">Export Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="exportFilename" class="form-label">Enter filename for export:</label>
+                    <input type="text" class="form-control" id="exportFilename" placeholder="Enter filename...">
+                    <small class="form-text text-muted">Leave blank to use default filename</small>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="exportTitle" class="form-label d-none" id="exportTitleLabel">Enter title for print view:</label>
+                    <input type="text" class="form-control d-none" id="exportTitle" placeholder="Enter title...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmExportBtn">Export</button>
+            </div>
+        </div>
+    </div>
+</div>

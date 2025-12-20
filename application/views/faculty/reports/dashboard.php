@@ -785,31 +785,27 @@ document.addEventListener('DOMContentLoaded', function() {
         dom: 'Bfrtip',
         buttons: [
             {
-                extend: 'copy',
-                filename: 'musiccollege-data',
-                exportOptions: {
-                    columns: ':not(:last-child)'
+                text: 'Copy',
+                action: function(e, dt, button, config) {
+                    showExportModal('copy', dt, 'musiccollege-report-' + new Date().toISOString().split('T')[0]);
                 }
             },
             {
-                extend: 'excel',
-                filename: 'musiccollege-data',
-                exportOptions: {
-                    columns: ':not(:last-child)'
+                text: 'Excel',
+                action: function(e, dt, button, config) {
+                    showExportModal('excel', dt, 'musiccollege-report-' + new Date().toISOString().split('T')[0]);
                 }
             },
             {
-                extend: 'pdf',
-                filename: 'musiccollege-data',
-                exportOptions: {
-                    columns: ':not(:last-child)'
+                text: 'PDF',
+                action: function(e, dt, button, config) {
+                    showExportModal('pdf', dt, 'musiccollege-report-' + new Date().toISOString().split('T')[0]);
                 }
             },
             {
-                extend: 'print',
-                title: 'Music College Data',
-                exportOptions: {
-                    columns: ':not(:last-child)'
+                text: 'Print',
+                action: function(e, dt, button, config) {
+                    showExportModal('print', dt, 'Music College Report Data');
                 }
             }
         ],

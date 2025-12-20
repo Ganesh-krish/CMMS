@@ -117,7 +117,7 @@
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         <!-- Edit Lesson -->
-                                                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="editLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['type'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['content'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['duration'] ?? '')); ?>', <?php echo $lesson['order']; ?>, <?php echo $lesson['is_active'] ? 1 : 0; ?>)" title="Edit Lesson">
+                                                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="editLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['type'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['content'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_text'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_url'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_file'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['duration'] ?? '')); ?>', <?php echo $lesson['order']; ?>, <?php echo $lesson['is_active'] ? 1 : 0; ?>)" title="Edit Lesson">
                                                             <i class="feather icon-edit"></i>
                                                         </button>
 
@@ -176,11 +176,11 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="lesson_type">Lesson Type <span class="text-danger">*</span></label>
-                                <select class="form-control" id="lesson_type" name="type" required>
+                                <select class="form-control select2" id="lesson_type" name="type" required>
                                     <option value="">Select Type</option>
-                                    <option value="video">Video</option>
-                                    <option value="text">Text</option>
-                                    <option value="file">File</option>
+                                    <option value="<?php echo LESSON_TYPE_TEXT; ?>"><?php echo ucfirst(LESSON_TYPE_TEXT); ?></option>
+                                    <option value="<?php echo LESSON_TYPE_VIDEO; ?>"><?php echo ucfirst(LESSON_TYPE_VIDEO); ?></option>
+                                    <option value="<?php echo LESSON_TYPE_FILE; ?>"><?php echo ucfirst(LESSON_TYPE_FILE); ?></option>
                                 </select>
                                 <?php echo form_error('type', '<small class="text-danger">', '</small>'); ?>
                             </div>
@@ -193,10 +193,30 @@
                         </div>
                     </div>
 
+                    <!-- Dynamic Content Fields -->
+                    <div id="lesson_text_field" class="form-group" style="display: none;">
+                        <label for="lesson_text">Lesson Text <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="lesson_text" name="lesson_text" rows="8" placeholder="Enter the lesson text content here..."></textarea>
+                        <small class="form-text text-muted">This text will be displayed to students when they view this lesson.</small>
+                    </div>
+
+                    <div id="lesson_video_field" class="form-group" style="display: none;">
+                        <label for="lesson_video">Video URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="lesson_video" name="lesson_video" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                        <small class="form-text text-muted">Enter the full URL of the video (YouTube, Vimeo, etc.).</small>
+                    </div>
+
+                    <div id="lesson_file_field" class="form-group" style="display: none;">
+                        <label for="lesson_file">File Upload <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control-file" id="lesson_file" name="lesson_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+                        <small class="form-text text-muted">Upload a file for this lesson (PDF, DOC, PPT, TXT, etc.).</small>
+                    </div>
+
                     <div class="form-group">
-                        <label for="lesson_content">Content <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="lesson_content" name="content" rows="6" placeholder="Enter lesson content, description, or instructions" required></textarea>
+                        <label for="lesson_content">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="lesson_content" name="content" rows="4" placeholder="Enter lesson description or instructions" required></textarea>
                         <?php echo form_error('content', '<small class="text-danger">', '</small>'); ?>
+                        <small class="form-text text-muted">Brief description of what students will learn in this lesson.</small>
                     </div>
 
                     <div class="form-group">
@@ -254,11 +274,11 @@
                                 <label for="edit_lesson_type">Lesson Type <span class="text-danger">*</span></label>
                                 <select class="form-control" id="edit_lesson_type" name="type" required>
                                     <option value="">Select Type</option>
-                                    <option value="video">Video</option>
-                                    <option value="text">Text</option>
-                                    <option value="file">File</option>
+                                    <option value="<?php echo LESSON_TYPE_TEXT; ?>"><?php echo ucfirst(LESSON_TYPE_TEXT); ?></option>
+                                    <option value="<?php echo LESSON_TYPE_VIDEO; ?>"><?php echo ucfirst(LESSON_TYPE_VIDEO); ?></option>
+                                    <option value="<?php echo LESSON_TYPE_FILE; ?>"><?php echo ucfirst(LESSON_TYPE_FILE); ?></option>
                                 </select>
-                                <?php echo form_error('type', '<small class="text-danger">', '</small>'); ?>
+                                <?php echo form_error('type', '<small class="text-danger">*</small>'); ?>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -269,10 +289,30 @@
                         </div>
                     </div>
 
+                    <!-- Dynamic Content Fields for Edit -->
+                    <div id="edit_lesson_text_field" class="form-group" style="display: none;">
+                        <label for="edit_lesson_text">Lesson Text <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="edit_lesson_text" name="lesson_text" rows="8" placeholder="Enter the lesson text content here..."></textarea>
+                        <small class="form-text text-muted">This text will be displayed to students when they view this lesson.</small>
+                    </div>
+
+                    <div id="edit_lesson_video_field" class="form-group" style="display: none;">
+                        <label for="edit_lesson_video">Video URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="edit_lesson_video" name="lesson_video" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                        <small class="form-text text-muted">Enter the full URL of the video (YouTube, Vimeo, etc.).</small>
+                    </div>
+
+                    <div id="edit_lesson_file_field" class="form-group" style="display: none;">
+                        <label for="edit_lesson_file">File Upload</label>
+                        <input type="file" class="form-control-file" id="edit_lesson_file" name="lesson_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+                        <small class="form-text text-muted">Upload a replacement file for this lesson (PDF, DOC, PPT, TXT, etc.).</small>
+                    </div>
+
                     <div class="form-group">
-                        <label for="edit_lesson_content">Content <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="edit_lesson_content" name="content" rows="6" required></textarea>
+                        <label for="edit_lesson_content">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="edit_lesson_content" name="content" rows="4" required></textarea>
                         <?php echo form_error('content', '<small class="text-danger">', '</small>'); ?>
+                        <small class="form-text text-muted">Brief description of what students will learn in this lesson.</small>
                     </div>
 
                     <div class="form-group">
@@ -314,16 +354,167 @@
     </div>
 </div>
 
+<!-- Load Bootstrap Select for this page -->
+<link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.css">
+
 <script>
-function editLesson(id, title, type, content, duration, order, isActive) {
+$(document).ready(function() {
+    // Initialize Bootstrap Select for lesson type dropdowns
+    $('#lesson_type').selectpicker({
+        noneSelectedText: 'Select lesson type',
+        liveSearch: true,
+        size: 5
+    });
+
+    $('#edit_lesson_type').selectpicker({
+        noneSelectedText: 'Select lesson type',
+        liveSearch: true,
+        size: 5
+    });
+
+    // Reset form when add modal opens
+    $('#addLessonModal').on('shown.bs.modal', function() {
+        resetAddLessonForm();
+        // Refresh Bootstrap Select
+        $('#lesson_type').selectpicker('refresh');
+    });
+
+    // Handle lesson type change for add modal
+    $(document).on('change changed.bs.select', '#lesson_type', function() {
+        toggleLessonFields($(this).val());
+    });
+
+    // Handle lesson type change for edit modal
+    $(document).on('change changed.bs.select', '#edit_lesson_type', function() {
+        toggleEditLessonFields($(this).val());
+    });
+
+    // Also handle Bootstrap Select specific events
+    $(document).on('changed.bs.select', '#lesson_type', function() {
+        console.log('Bootstrap Select changed to:', $(this).val());
+        toggleLessonFields($(this).val());
+    });
+
+    $(document).on('changed.bs.select', '#edit_lesson_type', function() {
+        console.log('Bootstrap Select edit changed to:', $(this).val());
+        toggleEditLessonFields($(this).val());
+    });
+});
+
+function resetAddLessonForm() {
+    // Reset the form
+    document.getElementById('lesson_title').value = '';
+    document.getElementById('lesson_order').value = '';
+    document.getElementById('lesson_duration').value = '';
+    document.getElementById('lesson_content').value = '';
+
+    // Reset additional dynamic fields
+    if (document.getElementById('lesson_text')) {
+        document.getElementById('lesson_text').value = '';
+    }
+    if (document.getElementById('lesson_video')) {
+        document.getElementById('lesson_video').value = '';
+    }
+    if (document.getElementById('lesson_file')) {
+        document.getElementById('lesson_file').value = '';
+    }
+
+    // Reset Bootstrap Select dropdown
+    $('#lesson_type').val('');
+    $('#lesson_type').selectpicker('refresh');
+
+    // Hide all dynamic fields
+    $('#lesson_text_field').hide();
+    $('#lesson_video_field').hide();
+    $('#lesson_file_field').hide();
+
+    // Remove required attributes
+    $('#lesson_text').removeAttr('required');
+    $('#lesson_video').removeAttr('required');
+    $('#lesson_file').removeAttr('required');
+
+    // Reset checkbox
+    document.getElementById('lesson_active').checked = true;
+}
+
+function toggleLessonFields(selectedType) {
+    // Hide all dynamic fields first
+    $('#lesson_text_field').hide();
+    $('#lesson_video_field').hide();
+    $('#lesson_file_field').hide();
+
+    // Remove required attributes
+    $('#lesson_text').removeAttr('required');
+    $('#lesson_video').removeAttr('required');
+    $('#lesson_file').removeAttr('required');
+
+    // Show the selected field and make it required
+    if (selectedType === '<?php echo LESSON_TYPE_TEXT; ?>') {
+        $('#lesson_text_field').show();
+        $('#lesson_text').attr('required', 'required');
+    } else if (selectedType === '<?php echo LESSON_TYPE_VIDEO; ?>') {
+        $('#lesson_video_field').show();
+        $('#lesson_video').attr('required', 'required');
+    } else if (selectedType === '<?php echo LESSON_TYPE_FILE; ?>') {
+        $('#lesson_file_field').show();
+        $('#lesson_file').attr('required', 'required');
+    }
+}
+
+function toggleEditLessonFields(selectedType) {
+    // Hide all dynamic fields first
+    $('#edit_lesson_text_field').hide();
+    $('#edit_lesson_video_field').hide();
+    $('#edit_lesson_file_field').hide();
+
+    // Remove required attributes
+    $('#edit_lesson_text').removeAttr('required');
+    $('#edit_lesson_video').removeAttr('required');
+    $('#edit_lesson_file').removeAttr('required');
+
+    // Show the selected field and make it required
+    if (selectedType === '<?php echo LESSON_TYPE_TEXT; ?>') {
+        $('#edit_lesson_text_field').show();
+        $('#edit_lesson_text').attr('required', 'required');
+    } else if (selectedType === '<?php echo LESSON_TYPE_VIDEO; ?>') {
+        $('#edit_lesson_video_field').show();
+        $('#edit_lesson_video').attr('required', 'required');
+    } else if (selectedType === '<?php echo LESSON_TYPE_FILE; ?>') {
+        $('#edit_lesson_file_field').show();
+        $('#edit_lesson_file').attr('required', 'required');
+    }
+}
+
+function editLesson(id, title, type, content, courseText, courseUrl, courseFile, duration, order, isActive) {
     document.getElementById('edit_lesson_id').value = id;
     document.getElementById('edit_lesson_title').value = title;
-    document.getElementById('edit_lesson_type').value = type;
+
+    // Set Bootstrap Select value and refresh
+    $('#edit_lesson_type').val(type);
+    $('#edit_lesson_type').selectpicker('refresh');
+
     document.getElementById('edit_lesson_content').value = content;
-    document.getElementById('edit_lesson_duration').value = duration;
+
+    // Set the new dynamic fields
+    if (document.getElementById('edit_lesson_text')) {
+        document.getElementById('edit_lesson_text').value = courseText || '';
+    }
+    if (document.getElementById('edit_lesson_video')) {
+        document.getElementById('edit_lesson_video').value = courseUrl || '';
+    }
+    if (document.getElementById('edit_lesson_file')) {
+        // File inputs can't be set programmatically for security reasons
+        // Just leave it empty - user can upload a replacement if needed
+    }
+
+    document.getElementById('edit_lesson_duration').value = duration || '';
     document.getElementById('edit_lesson_order').value = order;
     document.getElementById('edit_lesson_active').checked = isActive == 1;
     document.getElementById('editLessonForm').action = '<?php echo base_url($url.'/courses/edit_lesson/'.$course_id.'/'.$module_id.'/'); ?>' + id;
+
+    // Show/hide fields based on current type
+    toggleEditLessonFields(type);
+
     $('#editLessonModal').modal('show');
 }
 

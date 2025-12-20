@@ -163,3 +163,8 @@ defined('INSTRUMENT_STATUS_DAMAGED')      or define('INSTRUMENT_STATUS_DAMAGED',
 defined('INSTRUMENT_ISSUE_STATUS_ISSUED')    or define('INSTRUMENT_ISSUE_STATUS_ISSUED', 'issued');
 defined('INSTRUMENT_ISSUE_STATUS_RETURNED')  or define('INSTRUMENT_ISSUE_STATUS_RETURNED', 'returned');
 defined('INSTRUMENT_ISSUE_STATUS_OVERDUE')   or define('INSTRUMENT_ISSUE_STATUS_OVERDUE', 'overdue');
+
+// Lesson Type Constants (String Constants)
+defined('LESSON_TYPE_TEXT')  or define('LESSON_TYPE_TEXT', 'text');
+defined('LESSON_TYPE_VIDEO') or define('LESSON_TYPE_VIDEO', 'video');
+defined('LESSON_TYPE_FILE')  or define('LESSON_TYPE_FILE', 'file');

@@ -603,8 +603,18 @@ class Course extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('title', 'Lesson Title', 'trim|required|min_length[1]|max_length[255]');
             $this->form_validation->set_rules('type', 'Lesson Type', 'trim|required');
-            $this->form_validation->set_rules('content', 'Content', 'trim|required');
+            $this->form_validation->set_rules('content', 'Description', 'trim|required');
             $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            // Conditional validation based on lesson type
+            $lesson_type = $this->input->post('type');
+            if ($lesson_type === LESSON_TYPE_TEXT) {
+                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim|required');
+            } elseif ($lesson_type === LESSON_TYPE_VIDEO) {
+                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim|required|valid_url');
+            } elseif ($lesson_type === LESSON_TYPE_FILE) {
+                // File validation is handled separately in the upload logic
+            }
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
@@ -631,11 +641,35 @@ class Course extends CI_Controller {
                     }
                 }
 
+                // Handle file upload for course_file
+                $course_file_path = null;
+                if (!empty($_FILES['lesson_file']['name'])) {
+                    $config['upload_path'] = './uploads/course_files/';
+                    $config['allowed_types'] = 'pdf|doc|docx|ppt|pptx|txt|jpg|jpeg|png|gif';
+                    $config['max_size'] = 10240; // 10MB
+                    $config['file_name'] = 'lesson_' . time() . '_' . rand(1000, 9999);
+
+                    // Create directory if it doesn't exist
+                    if (!is_dir($config['upload_path'])) {
+                        mkdir($config['upload_path'], 0777, true);
+                    }
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('lesson_file')) {
+                        $upload_data = $this->upload->data();
+                        $course_file_path = 'uploads/course_files/' . $upload_data['file_name'];
+                    }
+                }
+
                 $data = array(
                     'module_id' => $module_id,
                     'title' => $this->input->post('title'),
                     'type' => $this->input->post('type'),
                     'content' => $this->input->post('content'),
+                    'course_text' => $this->input->post('lesson_text'),
+                    'course_url' => $this->input->post('lesson_video'),
+                    'course_file' => $course_file_path,
                     'duration' => $this->input->post('duration'),
                     'order' => $this->input->post('order'),
                     'is_active' => $this->input->post('is_active') ?? 1,
@@ -657,8 +691,18 @@ class Course extends CI_Controller {
         if($post){
             $this->form_validation->set_rules('title', 'Lesson Title', 'trim|required|min_length[1]|max_length[255]');
             $this->form_validation->set_rules('type', 'Lesson Type', 'trim|required');
-            $this->form_validation->set_rules('content', 'Content', 'trim|required');
+            $this->form_validation->set_rules('content', 'Description', 'trim|required');
             $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
+
+            // Conditional validation based on lesson type
+            $lesson_type = $this->input->post('type');
+            if ($lesson_type === LESSON_TYPE_TEXT) {
+                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim|required');
+            } elseif ($lesson_type === LESSON_TYPE_VIDEO) {
+                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim|required|valid_url');
+            } elseif ($lesson_type === LESSON_TYPE_FILE) {
+                // File validation is handled separately in the upload logic
+            }
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
@@ -682,15 +726,43 @@ class Course extends CI_Controller {
                     }
                 }
 
+                // Handle file upload for course_file (only if a new file is uploaded)
+                $course_file_path = null;
+                if (!empty($_FILES['lesson_file']['name'])) {
+                    $config['upload_path'] = './uploads/course_files/';
+                    $config['allowed_types'] = 'pdf|doc|docx|ppt|pptx|txt|jpg|jpeg|png|gif';
+                    $config['max_size'] = 10240; // 10MB
+                    $config['file_name'] = 'lesson_' . time() . '_' . rand(1000, 9999);
+
+                    // Create directory if it doesn't exist
+                    if (!is_dir($config['upload_path'])) {
+                        mkdir($config['upload_path'], 0777, true);
+                    }
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('lesson_file')) {
+                        $upload_data = $this->upload->data();
+                        $course_file_path = 'uploads/course_files/' . $upload_data['file_name'];
+                    }
+                }
+
                 $data = array(
                     'title' => $this->input->post('title'),
                     'type' => $this->input->post('type'),
                     'content' => $this->input->post('content'),
+                    'course_text' => $this->input->post('lesson_text'),
+                    'course_url' => $this->input->post('lesson_video'),
                     'duration' => $this->input->post('duration'),
                     'order' => $this->input->post('order'),
                     'is_active' => $this->input->post('is_active') ?? 1,
                     'updated_by' => $this->session_data['id']
                 );
+
+                // Only update course_file if a new file was uploaded
+                if ($course_file_path) {
+                    $data['course_file'] = $course_file_path;
+                }
 
                 if ($this->db_model->update('course_module_lessons', $data, ["id" => $post['lesson_id']])) {
                     $this->session->set_flashdata('message', array('success', "Lesson Updated successfully!"));

@@ -64,7 +64,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-bordered">
+                    <table class="datatable table table-hover table-striped table-bordered">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-center" style="width: 60px;">#</th>
@@ -226,7 +226,6 @@
 </style>
 
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>

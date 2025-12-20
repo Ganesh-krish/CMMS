@@ -118,7 +118,7 @@
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="datatable table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>Course Code</th>

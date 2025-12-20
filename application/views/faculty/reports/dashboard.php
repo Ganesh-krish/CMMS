@@ -215,7 +215,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover card-table">
+                            <table class="datatable table table-hover card-table">
                                 <thead>
                                     <tr>
                                         <th>Rank</th>
@@ -280,7 +280,7 @@
                         <div class="mt-3">
                             <h6 class="mt-4 mb-3">Most Challenging Questions</h6>
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table class="datatable table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Question</th>
@@ -362,7 +362,7 @@
                     <div class="col-12">
                         <h6 class="mb-3">Time Spent Distribution by Question Difficulty</h6>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="datatable table">
                                 <thead>
                                     <tr>
                                         <th>Difficulty</th>
@@ -442,7 +442,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover card-table" id="testAnalysisTable">
+                            <table class="datatable table table-hover card-table" id="testAnalysisTable">
                                 <thead>
                                     <tr>
                                         <th>Test Title</th>
@@ -783,7 +783,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize datatables
     $('#testAnalysisTable, #courseAnalysisTable, #tabSwitchCorrelationTable').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'pdf', 'print'],
+        buttons: [
+            {
+                extend: 'copy',
+                filename: 'musiccollege-data',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'excel',
+                filename: 'musiccollege-data',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'pdf',
+                filename: 'musiccollege-data',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'print',
+                title: 'Music College Data',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            }
+        ],
         pageLength: 10,
         responsive: true
     });

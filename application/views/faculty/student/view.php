@@ -99,7 +99,7 @@
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="datatable table table-hover">
                                     <thead>
                                         <tr>
                                             <th>ID</th>

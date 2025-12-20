@@ -136,7 +136,7 @@ $courseModeClass = ($course['course_mode'] == 2) ? 'gamification-mode' : 'normal
                                         
                                         <?php if (isset($module_tests[$module['id']]) && !empty($module_tests[$module['id']])): ?>
                                             <h6 class="mt-3">Tests in this module:</h6>
-                                            <table class="table table-bordered table-sm">
+                                            <table class="datatable table table-bordered table-sm">
                                                 <thead>
                                                     <tr>
                                                         <th>Test Name</th>

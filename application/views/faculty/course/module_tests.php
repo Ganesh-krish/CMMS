@@ -67,7 +67,7 @@ $courseModeClass = ($course['course_mode'] == 2) ? 'gamification-mode' : 'normal
                         No tests added to this module yet.
                     </div>
                 <?php else: ?>
-                    <table class="datatables-demo table table-striped table-bordered" id="moduleTestsTable">
+                    <table class="datatable datatables-demo table table-striped table-bordered" id="moduleTestsTable">
                         <thead>
                             <tr>
                                 <th>S.No</th>
@@ -157,7 +157,7 @@ $courseModeClass = ($course['course_mode'] == 2) ? 'gamification-mode' : 'normal
                             No available tests found. Please create tests first.
                         </div>
                     <?php else: ?>
-                        <table class="datatables-demo table table-striped table-bordered" id="availableTestsTable">
+                        <table class="datatable datatables-demo table table-striped table-bordered" id="availableTestsTable">
                             <thead>
                                 <tr>
                                     <?php if ($course['course_mode'] != 2): ?>
@@ -344,7 +344,6 @@ $courseModeClass = ($course['course_mode'] == 2) ? 'gamification-mode' : 'normal
 </div>
 
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>

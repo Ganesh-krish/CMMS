@@ -25,7 +25,7 @@
                 <h6 class="card-header" style="border:none">Tests in <?= $course['name'] ?></h6>
             </div>
             <div class="card-datatable container table-responsive">
-                <table id="courseTestsTable" class="datatables-demo table table-striped table-bordered">
+                <table id="courseTestsTable" class="datatable datatables-demo table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -81,7 +81,7 @@
                 <form action="<?= base_url($url.'/course/add_test_to_course') ?>" method="POST">
                     <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
                     <div class="card-datatable container table-responsive">
-                        <table id="availableTestsTable" class="datatables-demo table table-striped table-bordered">
+                        <table id="availableTestsTable" class="datatable datatables-demo table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th width="5%"><input type="checkbox" id="selectAll"></th>
@@ -129,7 +129,6 @@
 </div>
 
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <script>
 $(document).ready(function() {
     // Destroy existing DataTable instance if it exists, then reinitialize

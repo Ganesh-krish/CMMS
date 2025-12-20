@@ -45,6 +45,10 @@
     <link rel="stylesheet" href="<?= base_url("/") ?>assets/packages/fontawesome-6.3.css">
     <link href="<?= base_url("/") ?>assets/packages/select2.min.css" rel="stylesheet" />
 
+    <!-- DataTables CSS & Buttons -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
     <style>
         /* Sidebar Menu Styling */
     .sidenav-item {
@@ -621,5 +625,15 @@
                         </form>
                     </div>
                 </div>
+
+<!-- DataTables JS & Buttons -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="<?= base_url('') ?>assets/faculty/js/datatables-config.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

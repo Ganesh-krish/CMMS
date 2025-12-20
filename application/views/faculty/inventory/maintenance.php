@@ -59,7 +59,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="maintenanceTable" class="table table-striped table-bordered">
+                    <table id="maintenanceTable" class="datatable table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>S.No</th>

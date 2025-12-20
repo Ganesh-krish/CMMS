@@ -155,7 +155,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover card-table">
+                            <table class="datatable table table-hover card-table">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -225,7 +225,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover card-table">
+                            <table class="datatable table table-hover card-table">
                                 <thead>
                                     <tr>
                                         <th>#</th>

@@ -127,7 +127,7 @@
                                 <h6 class="text-primary">Captured Images</h6>
                                 <?php if (!empty($images)): ?>
                                     <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                        <table class="table table-bordered table-sm">
+                                        <table class="datatable table table-bordered table-sm">
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th>Image</th>

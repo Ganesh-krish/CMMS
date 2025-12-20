@@ -95,7 +95,7 @@
                         </div>
                         
                         <div class="table-responsive">
-                            <table id="students_table" class="table table-bordered table-hover">
+                            <table id="students_table" class="datatable table table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th width="5%">
@@ -229,7 +229,6 @@
 
 <!-- Include necessary JS files -->
 <script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/tables_datatables.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>

@@ -53,7 +53,6 @@ class Install extends CI_Controller
     {
         $tables = [
             'announcements',
-            'instrument_maintenance',
             'instrument_issues',
             'instruments',
             'instrument_categories',
@@ -338,14 +337,11 @@ class Install extends CI_Controller
                 `model` varchar(100) DEFAULT NULL,
                 `brand` varchar(100) DEFAULT NULL,
                 `condition_notes` text,
-                `issue_date` date DEFAULT NULL,
-                `due_date` date DEFAULT NULL,
                 `instrument_price` decimal(10,2) DEFAULT NULL,
                 `instrument_image` varchar(255) DEFAULT NULL,
-                `location` varchar(255) DEFAULT NULL,
-                `availability_status` tinyint(1) NOT NULL DEFAULT 1,
-                `condition` enum('excellent','good','fair','poor','damaged') NOT NULL DEFAULT 'good',
-                `description` text,
+                `description` text DEFAULT NULL,
+                `availability_status` varchar(20) NOT NULL DEFAULT 'available',
+                `condition` varchar(20) NOT NULL DEFAULT 'good',
                 `college_id` int(11) NOT NULL,
                 `created_by` int(11) NOT NULL,
                 `updated_by` int(11) DEFAULT NULL,
@@ -372,7 +368,7 @@ class Install extends CI_Controller
                 `issue_date` datetime NOT NULL,
                 `expected_return_date` datetime DEFAULT NULL,
                 `actual_return_date` datetime DEFAULT NULL,
-                `status` enum('issued','returned','overdue') NOT NULL DEFAULT 'issued',
+                `status` varchar(20) NOT NULL DEFAULT 'issued',
                 `condition_on_issue` text,
                 `condition_on_return` text,
                 `notes` text,
@@ -391,33 +387,6 @@ class Install extends CI_Controller
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
         echo "Created table: instrument_issues <br>";
-
-        // Instrument Maintenance table
-        $this->db->query("
-            CREATE TABLE `instrument_maintenance` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `instrument_id` int(11) NOT NULL,
-                `maintenance_type` enum('cleaning','tuning','repair','calibration','other') NOT NULL,
-                `description` text,
-                `performed_by` int(11) DEFAULT NULL,
-                `scheduled_date` datetime DEFAULT NULL,
-                `completed_date` datetime DEFAULT NULL,
-                `status` enum('scheduled','in_progress','completed','cancelled') NOT NULL DEFAULT 'scheduled',
-                `cost` decimal(10,2) DEFAULT NULL,
-                `parts_used` text,
-                `notes` text,
-                `created_by` int(11) DEFAULT NULL,
-                `updated_by` int(11) DEFAULT NULL,
-                `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                KEY `instrument_id` (`instrument_id`),
-                KEY `status` (`status`),
-                CONSTRAINT `fk_instrument_maintenance_instrument_id` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `fk_instrument_maintenance_performed_by` FOREIGN KEY (`performed_by`) REFERENCES `faculty` (`id`) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        ");
-        echo "Created table: instrument_maintenance <br>";
 
         // Announcements table
         $this->db->query("

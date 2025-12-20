@@ -108,7 +108,6 @@ defined('TABLE_LESSONS')               or define('TABLE_LESSONS', "course_module
 // Musical Instrument Inventory Tables
 defined('TABLE_INSTRUMENTS')               or define('TABLE_INSTRUMENTS', "instruments");
 defined('TABLE_INSTRUMENT_ISSUES')         or define('TABLE_INSTRUMENT_ISSUES', "instrument_issues");
-defined('TABLE_INSTRUMENT_MAINTENANCE')    or define('TABLE_INSTRUMENT_MAINTENANCE', "instrument_maintenance");
 defined('TABLE_INSTRUMENT_CATEGORIES')     or define('TABLE_INSTRUMENT_CATEGORIES', "instrument_categories");
 
 // Groups Tables
@@ -147,8 +146,20 @@ defined('DESIGNATION_STAFF')         or define('DESIGNATION_STAFF', ROLE_STAFF);
 defined('DESIGNATION_CUSTODIAN')     or define('DESIGNATION_CUSTODIAN', ROLE_CUSTODIAN);
 
 
-// Musical Instrument Availability Status
-defined('INSTRUMENT_STATUS_AVAILABLE')   or define('INSTRUMENT_STATUS_AVAILABLE', 1);
-defined('INSTRUMENT_STATUS_ISSUED')      or define('INSTRUMENT_STATUS_ISSUED', 2);
-defined('INSTRUMENT_STATUS_MAINTENANCE') or define('INSTRUMENT_STATUS_MAINTENANCE', 3);
-defined('INSTRUMENT_STATUS_DAMAGED')     or define('INSTRUMENT_STATUS_DAMAGED', 4);
+// Musical Instrument Condition Status (String Constants)
+defined('INSTRUMENT_CONDITION_EXCELLENT') or define('INSTRUMENT_CONDITION_EXCELLENT', 'excellent');
+defined('INSTRUMENT_CONDITION_GOOD')      or define('INSTRUMENT_CONDITION_GOOD', 'good');
+defined('INSTRUMENT_CONDITION_FAIR')      or define('INSTRUMENT_CONDITION_FAIR', 'fair');
+defined('INSTRUMENT_CONDITION_POOR')      or define('INSTRUMENT_CONDITION_POOR', 'poor');
+defined('INSTRUMENT_CONDITION_DAMAGED')   or define('INSTRUMENT_CONDITION_DAMAGED', 'damaged');
+
+// Musical Instrument Availability Status (String Constants)
+defined('INSTRUMENT_STATUS_AVAILABLE')    or define('INSTRUMENT_STATUS_AVAILABLE', 'available');
+defined('INSTRUMENT_STATUS_ISSUED')       or define('INSTRUMENT_STATUS_ISSUED', 'issued');
+defined('INSTRUMENT_STATUS_MAINTENANCE')  or define('INSTRUMENT_STATUS_MAINTENANCE', 'maintenance');
+defined('INSTRUMENT_STATUS_DAMAGED')      or define('INSTRUMENT_STATUS_DAMAGED', 'damaged');
+
+// Instrument Issue Status (String Constants)
+defined('INSTRUMENT_ISSUE_STATUS_ISSUED')    or define('INSTRUMENT_ISSUE_STATUS_ISSUED', 'issued');
+defined('INSTRUMENT_ISSUE_STATUS_RETURNED')  or define('INSTRUMENT_ISSUE_STATUS_RETURNED', 'returned');
+defined('INSTRUMENT_ISSUE_STATUS_OVERDUE')   or define('INSTRUMENT_ISSUE_STATUS_OVERDUE', 'overdue');

@@ -78,12 +78,14 @@ class Inventory_model extends CI_Model
         // Insert issue record
         $issue_data = [
             'instrument_id' => $data['instrument_id'],
-            'issued_to' => $data['issued_to'],
+            'student_id' => $data['student_id'] ?? null,
+            'faculty_id' => $data['faculty_id'] ?? null,
             'issued_by' => $data['issued_by'],
             'issue_date' => $data['issue_date'] ?? date('Y-m-d H:i:s'),
             'expected_return_date' => $data['expected_return_date'],
-            'purpose' => $data['purpose'] ?? null,
-            'status' => 'issued',
+            'condition_on_issue' => $data['condition_on_issue'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'status' => INSTRUMENT_ISSUE_STATUS_ISSUED,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -94,7 +96,6 @@ class Inventory_model extends CI_Model
         $this->db->where('id', $data['instrument_id'])
             ->update(TABLE_INSTRUMENTS, [
                 'availability_status' => INSTRUMENT_STATUS_ISSUED,
-                'current_issue_id' => $issue_id,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -116,11 +117,10 @@ class Inventory_model extends CI_Model
 
         // Update issue record with return details
         $update_data = [
-            'return_date' => $return_data['return_date'] ?? date('Y-m-d H:i:s'),
-            'received_by' => $return_data['received_by'] ?? null,
+            'actual_return_date' => $return_data['actual_return_date'] ?? date('Y-m-d H:i:s'),
             'condition_on_return' => $return_data['condition_on_return'] ?? null,
             'notes' => $return_data['notes'] ?? null,
-            'status' => 'returned',
+            'status' => INSTRUMENT_ISSUE_STATUS_RETURNED,
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -130,7 +130,6 @@ class Inventory_model extends CI_Model
         $this->db->where('id', $issue['instrument_id'])
             ->update(TABLE_INSTRUMENTS, [
                 'availability_status' => INSTRUMENT_STATUS_AVAILABLE,
-                'current_issue_id' => null,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -150,60 +149,17 @@ class Inventory_model extends CI_Model
             $this->db->where('status', $filters['status']);
         }
 
-        if (!empty($filters['issued_to'])) {
-            $this->db->where('issued_to', $filters['issued_to']);
+        if (!empty($filters['student_id'])) {
+            $this->db->where('student_id', $filters['student_id']);
+        }
+        if (!empty($filters['faculty_id'])) {
+            $this->db->where('faculty_id', $filters['faculty_id']);
         }
 
         $this->db->order_by('issue_date', 'DESC');
         return $this->db->get()->result_array();
     }
 
-    // ============================
-    // MAINTENANCE LOG
-    // ============================
-
-    public function log_maintenance($data)
-    {
-        $data['created_at'] = date('Y-m-d H:i:s');
-        $this->db->insert(TABLE_INSTRUMENT_MAINTENANCE, $data);
-        return $this->db->insert_id();
-    }
-
-    public function get_maintenance_logs($instrument_id = null, $filters = [])
-    {
-        $this->db->from(TABLE_INSTRUMENT_MAINTENANCE);
-
-        if ($instrument_id) {
-            $this->db->where('instrument_id', $instrument_id);
-        }
-
-        if (!empty($filters['type'])) {
-            $this->db->where('maintenance_type', $filters['type']);
-        }
-
-        if (!empty($filters['status'])) {
-            $this->db->where('status', $filters['status']);
-        }
-
-        $this->db->order_by('created_at', 'DESC');
-        return $this->db->get()->result_array();
-    }
-
-    public function update_maintenance_status($maintenance_id, $status, $notes = null)
-    {
-        $data = [
-            'status' => $status,
-            'completion_notes' => $notes,
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
-
-        if ($status === 'completed') {
-            $data['completed_at'] = date('Y-m-d H:i:s');
-        }
-
-        $this->db->where('id', $maintenance_id);
-        return $this->db->update(TABLE_INSTRUMENT_MAINTENANCE, $data);
-    }
 
     // ============================
     // DASHBOARD & REPORTS
@@ -221,32 +177,26 @@ class Inventory_model extends CI_Model
         // Available instruments
         $stats['available_instruments'] = $this->db->where('college_id', $college_id)
                                                   ->where('is_active', 1)
-                                                  ->where('availability_status', 'available')
+                                                  ->where('availability_status', INSTRUMENT_STATUS_AVAILABLE)
                                                   ->count_all_results(TABLE_INSTRUMENTS);
 
         // Issued instruments
         $stats['issued_instruments'] = $this->db->where('college_id', $college_id)
                                                ->where('is_active', 1)
-                                               ->where('availability_status', 'issued')
+                                               ->where('availability_status', INSTRUMENT_STATUS_ISSUED)
                                                ->count_all_results(TABLE_INSTRUMENTS);
 
         // Under maintenance
         $stats['maintenance_instruments'] = $this->db->where('college_id', $college_id)
                                                     ->where('is_active', 1)
-                                                    ->where('availability_status', 'maintenance')
+                                                    ->where('availability_status', INSTRUMENT_STATUS_MAINTENANCE)
                                                     ->count_all_results(TABLE_INSTRUMENTS);
 
         // Current issues
-        $stats['active_issues'] = $this->db->where('status', 'issued')
+        $stats['active_issues'] = $this->db->where('status', INSTRUMENT_ISSUE_STATUS_ISSUED)
                                           ->join(TABLE_INSTRUMENTS . ' i', 'i.id = ' . TABLE_INSTRUMENT_ISSUES . '.instrument_id')
                                           ->where('i.college_id', $college_id)
                                           ->count_all_results(TABLE_INSTRUMENT_ISSUES);
-
-        // Pending maintenance
-        $stats['pending_maintenance'] = $this->db->where('status !=', 'completed')
-                                                ->join(TABLE_INSTRUMENTS . ' i', 'i.id = ' . TABLE_INSTRUMENT_MAINTENANCE . '.instrument_id')
-                                                ->where('i.college_id', $college_id)
-                                                ->count_all_results(TABLE_INSTRUMENT_MAINTENANCE);
 
         return $stats;
     }
@@ -256,13 +206,13 @@ class Inventory_model extends CI_Model
         $this->db->select('
             i.*,
             CASE
-                WHEN i.availability_status = "issued" THEN CONCAT("Issued to: ", ii.issued_to)
-                WHEN i.availability_status = "maintenance" THEN "Under Maintenance"
+                WHEN i.availability_status = "' . INSTRUMENT_STATUS_ISSUED . '" THEN CONCAT("Issued to student/faculty")
+                WHEN i.availability_status = "' . INSTRUMENT_STATUS_MAINTENANCE . '" THEN "Under Maintenance"
                 ELSE "Available"
             END as status_details
         ')
         ->from(TABLE_INSTRUMENTS . ' i')
-        ->join(TABLE_INSTRUMENT_ISSUES . ' ii', 'ii.id = i.current_issue_id AND ii.status = "issued"', 'left')
+        ->join(TABLE_INSTRUMENT_ISSUES . ' ii', 'ii.instrument_id = i.id AND ii.status = "' . INSTRUMENT_ISSUE_STATUS_ISSUED . '"', 'left')
         ->where('i.college_id', $college_id)
         ->where('i.is_active', 1);
 
@@ -285,7 +235,7 @@ class Inventory_model extends CI_Model
         return $this->db->select('ii.*, i.name as instrument_name, i.serial_no')
                        ->from(TABLE_INSTRUMENT_ISSUES . ' ii')
                        ->join(TABLE_INSTRUMENTS . ' i', 'i.id = ii.instrument_id')
-                       ->where('ii.status', 'issued')
+                       ->where('ii.status', INSTRUMENT_ISSUE_STATUS_ISSUED)
                        ->where('i.college_id', $college_id)
                        ->where('ii.expected_return_date <', date('Y-m-d'))
                        ->order_by('ii.expected_return_date', 'ASC')

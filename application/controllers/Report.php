@@ -1548,7 +1548,6 @@ class Report extends CI_Controller
             'lessons' => $this->db->table_exists('lessons') ? $this->db->count_all('lessons') : 0,
             'instruments_available' => $this->db->table_exists(TABLE_INSTRUMENTS) ? $this->db->where(['availability_status' => INSTRUMENT_STATUS_AVAILABLE, 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENTS) : 0,
             'instruments_issued' => $this->db->table_exists(TABLE_INSTRUMENT_TRANSACTIONS) ? $this->db->where(['status' => 'issued', 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENT_TRANSACTIONS) : 0,
-            'maintenance_open' => $this->db->table_exists(TABLE_INSTRUMENT_MAINTENANCE) ? $this->db->where(['status' => 'open', 'college_id' => $college_id])->count_all_results(TABLE_INSTRUMENT_MAINTENANCE) : 0,
         ];
 
         return $this->respond('success', $totals);

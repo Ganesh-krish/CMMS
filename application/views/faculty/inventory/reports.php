@@ -234,28 +234,9 @@
         </div>
         <?php endif; ?>
 
-        <!-- Maintenance Summary -->
+        <!-- Issue Summary -->
         <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="mb-0">Maintenance Summary</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6">
-                                <h4 class="text-warning"><?php echo $stats['pending_maintenance']; ?></h4>
-                                <p class="mb-0 small">Pending</p>
-                            </div>
-                            <div class="col-6">
-                                <h4 class="text-success"><?php echo $this->db_model->count(TABLE_INSTRUMENT_MAINTENANCE, ["status" => "completed"]); ?></h4>
-                                <p class="mb-0 small">Completed</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h6 class="mb-0">Issue Summary</h6>

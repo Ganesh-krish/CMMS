@@ -105,23 +105,23 @@ class Welcome extends CI_Controller {
         $role = $user['role'];
         switch ($role) {
             case ROLE_PRINCIPAL: // Principal
-                redirect('panel/principal/dashboard');
+                redirect('superadmin/dashboard');
                 break;
 
             case ROLE_VICE_PRINCIPAL:
-                redirect('panel/vice_principal/dashboard'); // Unified dashboard for vice-principal too
+                redirect('admin/dashboard'); // Unified dashboard for vice-principal too
                 break;
 
             case ROLE_HOD:
-                redirect('panel/hod/dashboard'); // Unified dashboard adapts to role
+                redirect('deptadmin/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_STAFF:
-                redirect('panel/staff/dashboard'); // Unified dashboard adapts to role
+                redirect('staff/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_CUSTODIAN:
-                redirect('panel/custodian/dashboard'); // Unified dashboard adapts to role
+                redirect('custodian/dashboard'); // Unified dashboard adapts to role
                 break;
 
             case ROLE_STUDENT:

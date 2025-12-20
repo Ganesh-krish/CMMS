@@ -1,60 +1,3 @@
-<style>
-/* Custom styles for instrument popover */
-.popover {
-    max-width: 420px !important;
-    z-index: 1060;
-}
-
-.popover-header {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-}
-
-.instrument-popover {
-    font-size: 0.875rem;
-}
-
-.instrument-popover .no-gutters {
-    margin-right: 0;
-    margin-left: 0;
-}
-
-.instrument-popover .condition-notes {
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.instrument-popover .description {
-    min-height: 60px;
-    line-height: 1.4;
-}
-
-/* Table row hover effect */
-#instrumentsTable tbody tr:hover {
-    background-color: #e3f2fd !important;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    transform: scale(1.01);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Prevent text selection on hover */
-#instrumentsTable tbody tr:hover * {
-    user-select: none;
-}
-
-/* Custom popover arrow */
-.popover.right .arrow {
-    left: -11px;
-}
-
-.popover.right .arrow::after {
-    border-right-color: #fff;
-}
-</style>
 
 <div class="layout-content">
     <div class="container-fluid flex-grow-1 container-p-y">
@@ -200,7 +143,7 @@
                             <?php if (!empty($instruments)) {
                                 $i = 1;
                                 foreach ($instruments as $instrument) { ?>
-                                    <tr class="instrument-row" data-instrument-id="<?php echo $instrument['id']; ?>">
+                                    <tr>
                                         <td><?php echo $i++; ?></td>
                                         <td>
                                             <?php if (!empty($instrument['instrument_image'])): ?>
@@ -208,15 +151,6 @@
                                             <?php else: ?>
                                                 <span class="text-muted">No Image</span>
                                             <?php endif; ?>
-                                            <span class="instrument-image-src d-none"><?php echo !empty($instrument['instrument_image']) ? base_url($instrument['instrument_image']) : ''; ?></span>
-                                            <span class="instrument-condition-notes d-none"><?php
-                                                $notes = $instrument['condition_notes'] ?? '';
-                                                echo htmlspecialchars(strlen($notes) > 100 ? substr($notes, 0, 100) . '...' : $notes);
-                                            ?></span>
-                                            <span class="instrument-description d-none"><?php
-                                                $desc = $instrument['description'] ?? '';
-                                                echo htmlspecialchars(strlen($desc) > 150 ? substr($desc, 0, 150) . '...' : $desc);
-                                            ?></span>
                                         </td>
                                         <td><?php echo $instrument['name']; ?></td>
                                         <td><?php echo $categories[$instrument['category']] ?? $instrument['category']; ?></td>
@@ -330,12 +264,14 @@ function editInstrument(id) {
                     imageContainer.innerHTML = '<small class="text-muted">No image uploaded</small>';
                 }
 
-                $('#editInstrumentModal').modal('show');
+                const editModal = new bootstrap.Modal(document.getElementById('editInstrumentModal'));
+    editModal.show();
             }
         });
 }
 
 function issueInstrument(id, name) {
+    // Reset form fields first
     document.getElementById('issue_instrument_id').value = id;
     document.getElementById('issue_instrument_name').textContent = name;
 
@@ -347,42 +283,47 @@ function issueInstrument(id, name) {
     document.getElementById('purpose').value = '';
 
     // Set default issue date
-    document.getElementById('issue_date').value = '<?php echo date('Y-m-d'); ?>';
+    document.getElementById('issue_date').value = new Date().toISOString().split('T')[0];
 
-    // Reset select2 elements
+    // Initialize select2 immediately before showing modal
+    if (typeof $.fn.select2 !== 'undefined') {
+        // Destroy existing select2 instances if they exist
+        if ($('#issued_to_type').hasClass('select2-hidden-accessible')) {
+            $('#issued_to_type').select2('destroy');
+        }
+        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
+            $('#issued_to_id').select2('destroy');
+        }
+
+        // Initialize select2 for both dropdowns
+        $('#issued_to_type').select2({
+            placeholder: "Select Type",
+            allowClear: true,
+            minimumResultsForSearch: Infinity,
+            width: '100%'
+        });
+
+        $('#issued_to_id').select2({
+            placeholder: "Select Student/Staff",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Bind change event for issue type selection
+        $('#issued_to_type').on('change', function() {
+            toggleIssueFields();
+        });
+    }
+
+    // Reset select2 values after initialization
     $('#issued_to_type').val('').trigger('change');
     $('#issued_to_id').val('').trigger('change');
 
-    // Initialize select2 for issue modal when shown
-    $('#issueInstrumentModal').on('shown.bs.modal', function() {
-        // Small delay to ensure modal is fully rendered
-        setTimeout(function() {
-            if (typeof $.fn.select2 !== 'undefined') {
-                $('#issued_to_type').select2({
-                    placeholder: "Select Type",
-                    allowClear: true,
-                    minimumResultsForSearch: Infinity,
-                    width: '100%'
-                });
-
-                $('#issued_to_id').select2({
-                    placeholder: "Select Student/Staff",
-                    allowClear: true,
-                    width: '100%'
-                });
-
-                // Bind change event for issue type selection
-                $('#issued_to_type').on('change', function() {
-                    toggleIssueFields();
-                });
-            }
-        }, 100);
-    });
-
-    $('#issueInstrumentModal').modal('show');
+    const issueModal = new bootstrap.Modal(document.getElementById('issueInstrumentModal'));
+    issueModal.show();
 
     // Clean up select2 when modal is hidden
-    $('#issueInstrumentModal').on('hidden.bs.modal', function() {
+    document.getElementById('issueInstrumentModal').addEventListener('hidden.bs.modal', function() {
         if ($('#issued_to_type').hasClass('select2-hidden-accessible')) {
             $('#issued_to_type').select2('destroy');
         }
@@ -395,7 +336,8 @@ function issueInstrument(id, name) {
 function returnInstrument(id, name) {
     document.getElementById('return_instrument_id').value = id;
     document.getElementById('return_instrument_name').textContent = name;
-    $('#returnInstrumentModal').modal('show');
+    const returnModal = new bootstrap.Modal(document.getElementById('returnInstrumentModal'));
+    returnModal.show();
 }
 
 // Global variable to store instrument ID for deletion
@@ -409,7 +351,8 @@ function deleteInstrument(id, name) {
     document.getElementById('deleteInstrumentName').textContent = name;
 
     // Show the modal
-    $('#deleteInstrumentModal').modal('show');
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteInstrumentModal'));
+    deleteModal.show();
 }
 
 function toggleIssueFields() {
@@ -448,8 +391,15 @@ function loadStudents() {
         .then(data => {
             if (data.status === 'success') {
                 let options = '<option value="">Select Student</option>';
-                data.data.forEach(student => {
-                    options += `<option value="${student.id}">${student.student_id} - ${student.name}</option>`;
+                data.data.forEach(function(student) {
+                    var studentId = student.id || '';
+                    var studentStudentId = student.student_id || '';
+                    var studentName = student.name || '';
+                    // Escape quotes in the values
+                    studentId = studentId.toString().replace(/"/g, '&quot;');
+                    studentStudentId = studentStudentId.toString().replace(/"/g, '&quot;');
+                    studentName = studentName.toString().replace(/"/g, '&quot;');
+                    options += '<option value="' + studentId + '">' + studentStudentId + ' - ' + studentName + '</option>';
                 });
                 selectField.innerHTML = options;
                 selectField.disabled = false;
@@ -483,8 +433,15 @@ function loadStaff() {
         .then(data => {
             if (data.status === 'success') {
                 let options = '<option value="">Select Staff</option>';
-                data.data.forEach(staff => {
-                    options += `<option value="${staff.id}">${staff.designation} - ${staff.name}</option>`;
+                data.data.forEach(function(staff) {
+                    var staffId = staff.id || '';
+                    var staffDesignation = staff.designation || '';
+                    var staffName = staff.name || '';
+                    // Escape quotes in the values
+                    staffId = staffId.toString().replace(/"/g, '&quot;');
+                    staffDesignation = staffDesignation.toString().replace(/"/g, '&quot;');
+                    staffName = staffName.toString().replace(/"/g, '&quot;');
+                    options += '<option value="' + staffId + '">' + staffDesignation + ' - ' + staffName + '</option>';
                 });
                 selectField.innerHTML = options;
                 selectField.disabled = false;
@@ -509,97 +466,12 @@ function loadStaff() {
 }
 
 $(document).ready(function() {
-    // Initialize popovers for instrument table rows
-    $('.instrument-row').popover({
-        container: 'body',
-        boundary: 'viewport',
-        delay: { show: 500, hide: 200 },
-        html: true,
-        trigger: 'hover focus',
-        placement: 'right auto',
-        title: function() {
-            var instrumentId = $(this).data('instrument-id');
-            // Find the instrument name from the table row
-            var instrumentName = $(this).find('td:nth-child(3)').text();
-            return '<strong>' + instrumentName + '</strong>';
-        },
-        content: function() {
-            var row = $(this);
-            var imageSrc = row.find('.instrument-image-src').text();
-            var conditionNotes = row.find('.instrument-condition-notes').text() || 'No condition notes available.';
-            var description = row.find('.instrument-description').text() || 'No description available.';
-
-            // Create content using DOM manipulation instead of string concatenation
-            var $content = $('<div class="instrument-popover"></div>');
-            var $row = $('<div class="row no-gutters"></div>');
-            var $imageCol = $('<div class="col-5 pr-2"></div>');
-            var $textCol = $('<div class="col-7 pl-2"></div>');
-
-            // Add image
-            if (imageSrc) {
-                $('<img>', {
-                    src: imageSrc,
-                    class: 'img-fluid rounded',
-                    style: 'width: 100%; max-height: 120px; object-fit: cover;',
-                    alt: 'Instrument Image'
-                }).appendTo($imageCol);
-            } else {
-                var $noImageDiv = $('<div>', {
-                    class: 'text-center text-muted p-2 border rounded',
-                    style: 'height: 120px; display: flex; align-items: center; justify-content: center;'
-                }).appendTo($imageCol);
-
-                $('<div>').append(
-                    $('<i>', { class: 'feather icon-image', style: 'font-size: 2rem;' }),
-                    $('<br>'),
-                    $('<small>').text('No Image')
-                ).appendTo($noImageDiv);
-            }
-
-            // Add condition notes
-            $('<div>', {
-                class: 'condition-notes mb-2 p-2 bg-light rounded',
-                style: 'font-size: 0.85rem;'
-            }).append(
-                $('<strong>', { class: 'text-warning' }).text('📝 Condition:'),
-                $('<br>'),
-                conditionNotes
-            ).appendTo($textCol);
-
-            $row.append($imageCol).append($textCol);
-            $content.append($row);
-
-            // Add description
-            $('<div>', {
-                class: 'description mt-2 p-2 bg-light rounded',
-                style: 'font-size: 0.85rem;'
-            }).append(
-                $('<strong>', { class: 'text-info' }).text('📄 Description:'),
-                $('<br>'),
-                description
-            ).appendTo($content);
-
-            return $content[0].outerHTML;
-        }
-    });
-
-    // Hide popover when clicking elsewhere
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('.instrument-row, .popover').length) {
-            $('.instrument-row').popover('hide');
-        }
-    });
-
-    // Clean up popovers when page unloads
-    $(window).on('beforeunload', function() {
-        $('.instrument-row').popover('dispose');
-    });
-
     // Handle confirm delete button click
     $('#confirmDeleteBtn').on('click', function() {
         if (instrumentToDelete) {
             // Hide the modal
-            $('#deleteInstrumentModal').modal('hide');
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteInstrumentModal'));
+            if (deleteModal) deleteModal.hide();
 
             // Redirect to delete URL
             window.location.href = '<?php echo base_url($url.'/inventory/delete/'); ?>' + instrumentToDelete.id;
@@ -607,7 +479,7 @@ $(document).ready(function() {
     });
 
     // Reset the global variable and modal content when modal is hidden
-    $('#deleteInstrumentModal').on('hidden.bs.modal', function() {
+    document.getElementById('deleteInstrumentModal').addEventListener('hidden.bs.modal', function() {
         instrumentToDelete = null;
         document.getElementById('deleteInstrumentName').textContent = '';
     });

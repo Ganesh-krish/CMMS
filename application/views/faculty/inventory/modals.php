@@ -102,9 +102,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editInstrumentModalLabel">Edit Musical Instrument</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url($url . '/inventory/update') ?>" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="edit_instrument_id" name="id">
@@ -197,7 +195,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Update Instrument</button>
                 </div>
             </form>
@@ -211,9 +209,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="issueInstrumentModalLabel">Issue Instrument</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url($url . '/inventory/issue') ?>" method="POST">
                 <input type="hidden" id="issue_instrument_id" name="instrument_id">
@@ -225,7 +221,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="issued_to_type" class="form-label">Issue To Type *</label>
-                            <select class="form-control" id="issued_to_type" name="issued_to_type" required>
+                            <select class="form-control select2" id="issued_to_type" name="issued_to_type" required>
                                 <option value="">Select Type</option>
                                 <option value="student">Student</option>
                                 <option value="staff">Staff</option>
@@ -256,7 +252,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Issue Instrument</button>
                 </div>
             </form>
@@ -270,9 +266,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="returnInstrumentModalLabel">Return Instrument</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url($url . '/inventory/return') ?>" method="POST">
                 <input type="hidden" id="return_instrument_id" name="instrument_id">
@@ -304,7 +298,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Return Instrument</button>
                 </div>
             </form>
@@ -320,9 +314,7 @@
                 <h5 class="modal-title" id="deleteInstrumentModalLabel">
                     <i class="feather icon-alert-triangle"></i> Confirm Delete
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="text-center">
@@ -351,19 +343,16 @@
 
 <script>
 $(document).ready(function() {
-    // Initialize Select2 for category dropdowns (not issue modal)
+    // Initialize Select2 for category dropdowns only
     $('#category, #edit_category').select2({
         placeholder: "Select Category",
         allowClear: true
     });
-});
 
-// Modal reset functionality is now handled in index.php
-
-
-$(document).ready(function() {
     // Set minimum date for expected return date
-    const today = new Date().toISOString().split('T')[0'];
-    document.getElementById('expected_return_date').setAttribute('min', today);
+    const today = new Date().toISOString().split('T')[0];
+    if (document.getElementById('expected_return_date')) {
+        document.getElementById('expected_return_date').setAttribute('min', today);
+    }
 });
 </script>

@@ -75,12 +75,12 @@
                                     ?>
                                     <tr class="<?php echo $is_overdue ? 'table-warning' : ''; ?>">
                                         <td><?php echo $i++; ?></td>
-                                        <td><?php echo $instrument ? $instrument['name'] : 'Unknown'; ?></td>
-                                        <td><?php echo $instrument ? $instrument['serial_no'] : '-'; ?></td>
-                                        <td><?php echo $issue['issued_to']; ?></td>
+                                        <td><?php echo $issue['instrument_name'] ?: 'Unknown'; ?></td>
+                                        <td><?php echo $issue['serial_no'] ?: '-'; ?></td>
+                                        <td><?php echo $issue['issued_to_name'] ?: 'Unknown'; ?> (<?php echo $issue['issued_to_identifier'] ?: '-'; ?>)</td>
                                         <td><?php echo date('d M Y', strtotime($issue['issue_date'])); ?></td>
-                                        <td><?php echo date('d M Y', strtotime($issue['expected_return_date'])); ?></td>
-                                        <td><?php echo $issue['return_date'] ? date('d M Y', strtotime($issue['return_date'])) : '-'; ?></td>
+                                        <td><?php echo $issue['expected_return_date'] ? date('d M Y', strtotime($issue['expected_return_date'])) : '-'; ?></td>
+                                        <td><?php echo $issue['actual_return_date'] ? date('d M Y', strtotime($issue['actual_return_date'])) : '-'; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
                                                 echo $issue['status'] == 'issued' ? 'warning' :
@@ -147,8 +147,65 @@ function applyFilters() {
 }
 
 function viewIssueDetails(issueId) {
-    // For now, show a simple alert. In a real implementation, this would load detailed information
-    alert('Detailed issue information would be displayed here for Issue ID: ' + issueId);
+    // Load issue details via AJAX
+    fetch('<?php echo base_url($url.'/api/get_issue_details'); ?>?issue_id=' + issueId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                populateIssueDetailsModal(data.data);
+                $('#issueDetailsModal').modal('show');
+            } else {
+                alert('Error loading issue details: ' + data.data);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading issue details:', error);
+            alert('Error loading issue details. Please try again.');
+        });
+}
+
+function populateIssueDetailsModal(issue) {
+    const content = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary">Instrument Information</h6>
+                <table class="table table-sm">
+                    <tr><th>Name:</th><td>${issue.instrument_name || 'N/A'}</td></tr>
+                    <tr><th>Serial No:</th><td>${issue.serial_no || 'N/A'}</td></tr>
+                    <tr><th>Model:</th><td>${issue.model || 'N/A'}</td></tr>
+                    <tr><th>Brand:</th><td>${issue.brand || 'N/A'}</td></tr>
+                    <tr><th>Condition:</th><td>${issue.condition || 'N/A'}</td></tr>
+                    <tr><th>Price:</th><td>${issue.instrument_price ? '₹' + parseFloat(issue.instrument_price).toFixed(2) : 'N/A'}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-primary">Issue Information</h6>
+                <table class="table table-sm">
+                    <tr><th>Issue ID:</th><td>${issue.id}</td></tr>
+                    <tr><th>Status:</th><td><span class="badge badge-${issue.status === 'issued' ? 'warning' : issue.status === 'returned' ? 'success' : 'secondary'}">${issue.status}</span></td></tr>
+                    <tr><th>Issued To:</th><td>${issue.issued_to_name || 'N/A'} (${issue.issued_to_type})</td></tr>
+                    <tr><th>Identifier:</th><td>${issue.issued_to_identifier || 'N/A'}</td></tr>
+                    <tr><th>Email:</th><td>${issue.issued_to_email || 'N/A'}</td></tr>
+                    <tr><th>Issued By:</th><td>${issue.issued_by_name || 'N/A'}</td></tr>
+                    <tr><th>Issue Date:</th><td>${issue.issue_date ? new Date(issue.issue_date).toLocaleDateString() : 'N/A'}</td></tr>
+                    <tr><th>Expected Return:</th><td>${issue.expected_return_date ? new Date(issue.expected_return_date).toLocaleDateString() : 'N/A'}</td></tr>
+                    <tr><th>Actual Return:</th><td>${issue.actual_return_date ? new Date(issue.actual_return_date).toLocaleDateString() : 'N/A'}</td></tr>
+                </table>
+            </div>
+        </div>
+        ${issue.condition_on_issue || issue.condition_on_return || issue.notes ? `
+        <div class="row mt-3">
+            <div class="col-12">
+                <h6 class="text-primary">Additional Information</h6>
+                ${issue.condition_on_issue ? `<p><strong>Condition on Issue:</strong> ${issue.condition_on_issue}</p>` : ''}
+                ${issue.condition_on_return ? `<p><strong>Condition on Return:</strong> ${issue.condition_on_return}</p>` : ''}
+                ${issue.notes ? `<p><strong>Notes:</strong> ${issue.notes}</p>` : ''}
+            </div>
+        </div>
+        ` : ''}
+    `;
+
+    document.getElementById('issueDetailsContent').innerHTML = content;
 }
 
 function markAsReturned(issueId) {

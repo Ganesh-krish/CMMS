@@ -139,27 +139,73 @@ class Inventory_model extends CI_Model
 
     public function get_instrument_issues($instrument_id = null, $filters = [])
     {
-        $this->db->from(TABLE_INSTRUMENT_ISSUES);
+        $this->db->select('ii.*, i.name as instrument_name, i.serial_no,
+                          COALESCE(s.name, f.name) as issued_to_name,
+                          COALESCE(s.roll_no, f.email) as issued_to_identifier')
+                 ->from(TABLE_INSTRUMENT_ISSUES . ' ii')
+                 ->join(TABLE_INSTRUMENTS . ' i', 'i.id = ii.instrument_id', 'left')
+                 ->join(TABLE_STUDENT . ' s', 's.id = ii.student_id', 'left')
+                 ->join(TABLE_FACULTY . ' f', 'f.id = ii.faculty_id', 'left');
 
         if ($instrument_id) {
-            $this->db->where('instrument_id', $instrument_id);
+            $this->db->where('ii.instrument_id', $instrument_id);
         }
 
         if (!empty($filters['status'])) {
-            $this->db->where('status', $filters['status']);
+            $this->db->where('ii.status', $filters['status']);
         }
 
         if (!empty($filters['student_id'])) {
-            $this->db->where('student_id', $filters['student_id']);
+            $this->db->where('ii.student_id', $filters['student_id']);
         }
         if (!empty($filters['faculty_id'])) {
-            $this->db->where('faculty_id', $filters['faculty_id']);
+            $this->db->where('ii.faculty_id', $filters['faculty_id']);
         }
 
-        $this->db->order_by('issue_date', 'DESC');
+        // Handle issued_to text search (search in both student and faculty names)
+        if (!empty($filters['issued_to'])) {
+            $search_term = $filters['issued_to'];
+            $this->db->group_start()
+                     ->like('s.name', $search_term)
+                     ->or_like('f.name', $search_term)
+                     ->or_like('s.roll_no', $search_term)
+                     ->or_like('f.email', $search_term)
+                     ->group_end();
+        }
+
+        $this->db->order_by('ii.issue_date', 'DESC');
         return $this->db->get()->result_array();
     }
 
+    public function get_issue_details($issue_id)
+    {
+        $result = $this->db->select('ii.*, i.name as instrument_name, i.serial_no, i.model, i.brand, i.condition, i.instrument_price,
+                                   COALESCE(s.name, f.name) as issued_to_name,
+                                   COALESCE(s.roll_no, f.email) as issued_to_identifier,
+                                   COALESCE(s.email, f.email) as issued_to_email,
+                                   issuer.name as issued_by_name')
+                          ->from(TABLE_INSTRUMENT_ISSUES . ' ii')
+                          ->join(TABLE_INSTRUMENTS . ' i', 'i.id = ii.instrument_id', 'left')
+                          ->join(TABLE_STUDENT . ' s', 's.id = ii.student_id', 'left')
+                          ->join(TABLE_FACULTY . ' f', 'f.id = ii.faculty_id', 'left')
+                          ->join(TABLE_FACULTY . ' issuer', 'issuer.id = ii.issued_by', 'left')
+                          ->where('ii.id', $issue_id)
+                          ->get()
+                          ->row_array();
+
+        if ($result) {
+            // Determine issued_to_type based on which ID is not null
+            if (!empty($result['student_id'])) {
+                $result['issued_to_type'] = 'Student';
+            } elseif (!empty($result['faculty_id'])) {
+                $result['issued_to_type'] = 'Staff';
+            } else {
+                $result['issued_to_type'] = 'Unknown';
+            }
+        }
+
+        return $result;
+    }
 
     // ============================
     // DASHBOARD & REPORTS
@@ -174,22 +220,34 @@ class Inventory_model extends CI_Model
                                               ->where('is_active', 1)
                                               ->count_all_results(TABLE_INSTRUMENTS);
 
-        // Available instruments
+        // Available instruments (handle both old numeric and new string values)
         $stats['available_instruments'] = $this->db->where('college_id', $college_id)
                                                   ->where('is_active', 1)
-                                                  ->where('availability_status', INSTRUMENT_STATUS_AVAILABLE)
+                                                  ->group_start()
+                                                      ->where('availability_status', INSTRUMENT_STATUS_AVAILABLE)
+                                                      ->or_where('availability_status', '1')
+                                                      ->or_where('availability_status', 1)
+                                                  ->group_end()
                                                   ->count_all_results(TABLE_INSTRUMENTS);
 
-        // Issued instruments
+        // Issued instruments (handle both old numeric and new string values)
         $stats['issued_instruments'] = $this->db->where('college_id', $college_id)
                                                ->where('is_active', 1)
-                                               ->where('availability_status', INSTRUMENT_STATUS_ISSUED)
+                                               ->group_start()
+                                                   ->where('availability_status', INSTRUMENT_STATUS_ISSUED)
+                                                   ->or_where('availability_status', '2')
+                                                   ->or_where('availability_status', 2)
+                                               ->group_end()
                                                ->count_all_results(TABLE_INSTRUMENTS);
 
-        // Under maintenance
+        // Under maintenance (handle both old numeric and new string values)
         $stats['maintenance_instruments'] = $this->db->where('college_id', $college_id)
                                                     ->where('is_active', 1)
-                                                    ->where('availability_status', INSTRUMENT_STATUS_MAINTENANCE)
+                                                    ->group_start()
+                                                        ->where('availability_status', INSTRUMENT_STATUS_MAINTENANCE)
+                                                        ->or_where('availability_status', '3')
+                                                        ->or_where('availability_status', 3)
+                                                    ->group_end()
                                                     ->count_all_results(TABLE_INSTRUMENTS);
 
         // Current issues

@@ -201,13 +201,13 @@ function loadStudents() {
                 let options = '<option value="">Select Student</option>';
                 data.data.forEach(function(student) {
                     var studentId = student.id || '';
-                    var studentStudentId = student.student_id || '';
+                    var studentRollNo = student.roll_no || '';
                     var studentName = student.name || '';
                     // Escape quotes in the values
                     studentId = studentId.toString().replace(/"/g, '&quot;');
-                    studentStudentId = studentStudentId.toString().replace(/"/g, '&quot;');
+                    studentRollNo = studentRollNo.toString().replace(/"/g, '&quot;');
                     studentName = studentName.toString().replace(/"/g, '&quot;');
-                    options += '<option value="' + studentId + '">' + studentStudentId + ' - ' + studentName + '</option>';
+                    options += '<option value="' + studentId + '">' + studentRollNo + ' - ' + studentName + '</option>';
                 });
                 selectField.innerHTML = options;
                 selectField.disabled = false;
@@ -242,13 +242,13 @@ function loadStaff() {
                 let options = '<option value="">Select Staff</option>';
                 data.data.forEach(function(staff) {
                     var staffId = staff.id || '';
-                    var staffDesignation = staff.designation || '';
                     var staffName = staff.name || '';
+                    var staffDesignation = staff.designation || 'Staff';
                     // Escape quotes in the values
                     staffId = staffId.toString().replace(/"/g, '&quot;');
-                    staffDesignation = staffDesignation.toString().replace(/"/g, '&quot;');
                     staffName = staffName.toString().replace(/"/g, '&quot;');
-                    options += '<option value="' + staffId + '">' + staffDesignation + ' - ' + staffName + '</option>';
+                    staffDesignation = staffDesignation.toString().replace(/"/g, '&quot;');
+                    options += '<option value="' + staffId + '">' + staffName + ' (' + staffDesignation + ')' + '</option>';
                 });
                 selectField.innerHTML = options;
                 selectField.disabled = false;

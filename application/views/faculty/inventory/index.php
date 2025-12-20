@@ -170,27 +170,41 @@
                                         <td><?php echo $instrument['instrument_price'] ? '₹' . number_format($instrument['instrument_price'], 2) : 'N/A'; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
-                                                echo $instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE ? 'success' :
-                                                     ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED ? 'warning' :
-                                                     ($instrument['availability_status'] == INSTRUMENT_STATUS_MAINTENANCE ? 'info' : 'danger'));
+                                                $status = $instrument['availability_status'];
+                                                $badge_class = 'secondary'; // default
+                                                if ($status == INSTRUMENT_STATUS_AVAILABLE || $status == '1' || $status == 1) {
+                                                    $badge_class = 'success';
+                                                } elseif ($status == INSTRUMENT_STATUS_ISSUED || $status == '2' || $status == 2) {
+                                                    $badge_class = 'warning';
+                                                } elseif ($status == INSTRUMENT_STATUS_MAINTENANCE || $status == '3' || $status == 3) {
+                                                    $badge_class = 'info';
+                                                } elseif ($status == INSTRUMENT_STATUS_DAMAGED || $status == '4' || $status == 4) {
+                                                    $badge_class = 'danger';
+                                                }
+                                                echo $badge_class;
                                             ?>">
                                                 <?php
-                                                switch($instrument['availability_status']) {
-                                                    case INSTRUMENT_STATUS_AVAILABLE: echo 'Available'; break;
-                                                    case INSTRUMENT_STATUS_ISSUED: echo 'Issued'; break;
-                                                    case INSTRUMENT_STATUS_MAINTENANCE: echo 'Under Maintenance'; break;
-                                                    case INSTRUMENT_STATUS_DAMAGED: echo 'Damaged'; break;
-                                                    default: echo 'Unknown';
+                                                $status = $instrument['availability_status'];
+                                                if ($status == INSTRUMENT_STATUS_AVAILABLE || $status == '1' || $status == 1) {
+                                                    echo 'Available';
+                                                } elseif ($status == INSTRUMENT_STATUS_ISSUED || $status == '2' || $status == 2) {
+                                                    echo 'Issued';
+                                                } elseif ($status == INSTRUMENT_STATUS_MAINTENANCE || $status == '3' || $status == 3) {
+                                                    echo 'Under Maintenance';
+                                                } elseif ($status == INSTRUMENT_STATUS_DAMAGED || $status == '4' || $status == 4) {
+                                                    echo 'Damaged';
+                                                } else {
+                                                    echo 'Unknown';
                                                 }
                                                 ?>
                                             </span>
                                         </td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                            <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE): ?>
-                                                <a href="/CMMS/<?php echo $url; ?>/inventory/issue/<?php echo $instrument['id']; ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>" onclick="console.log('Clicking issue button for ID: <?php echo $instrument['id']; ?>, URL: /CMMS/<?php echo $url; ?>/inventory/issue/<?php echo $instrument['id']; ?>')">
+                                            <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE || $instrument['availability_status'] == '1' || $instrument['availability_status'] == 1): ?>
+                                                <a href="<?php echo site_url($url.'/inventory/issue/'.$instrument['id']); ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>">
                                                     <i class="feather icon-send"></i> Issue
                                                 </a>
-                                            <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED): ?>
+                                            <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED || $instrument['availability_status'] == '2' || $instrument['availability_status'] == 2): ?>
                                                 <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-rotate-ccw"></i> Return
                                                 </button>

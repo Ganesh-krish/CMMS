@@ -162,7 +162,7 @@ $route['(:any)/inventory/create'] = 'Inventory/create';
 $route['(:any)/inventory/update/(:num)'] = 'Inventory/update/$2';
 $route['(:any)/inventory/view/(:num)'] = 'Inventory/get_instrument/$2';
 $route['(:any)/inventory/delete/(:num)'] = 'Inventory/delete/$2';
-$route['(:any)/inventory/issue/(:num)'] = 'Inventory/issue/$1';
+$route['(:any)/inventory/issue/(:num)'] = 'Inventory/issue/$2';
 $route['(:any)/inventory/issue'] = 'Inventory/issue';
 $route['(:any)/inventory/return/(:num)'] = 'Inventory/return_item/$2';
 $route['(:any)/inventory/issues'] = 'Inventory/issues';
@@ -178,6 +178,7 @@ $route['(:any)/api/inventory/issue'] = 'Inventory/issue_api';
 $route['(:any)/api/inventory/return'] = 'Inventory/return_item_api';
 $route['(:any)/api/get_students'] = 'Inventory/get_students_api';
 $route['(:any)/api/get_staff'] = 'Inventory/get_staff_api';
+$route['(:any)/api/get_issue_details'] = 'Inventory/get_issue_details_api';
 
 // Announcements Management routes
 $route['(:any)/announcements'] = 'Announcement/index';

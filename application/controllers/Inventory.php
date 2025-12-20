@@ -260,12 +260,11 @@ class Inventory extends CI_Controller
 
     public function issue($instrument_id = null)
     {
-        // Debug: log the request
-        log_message('debug', 'Issue method called with instrument_id: ' . $instrument_id);
-        log_message('debug', 'Full URI: ' . $this->uri->uri_string());
-        log_message('debug', 'URI segments: ' . json_encode($this->uri->segment_array()));
-        log_message('debug', 'URL variable: ' . $this->url);
-        log_message('debug', 'College ID: ' . ($this->college['id'] ?? 'not set'));
+
+        // If instrument_id is not provided via parameter, try to get it from URI
+        if (!$instrument_id) {
+            $instrument_id = $this->uri->segment(4); // superadmin/inventory/issue/ID
+        }
 
         // If instrument_id is provided, show the form
         if ($instrument_id) {
@@ -275,17 +274,13 @@ class Inventory extends CI_Controller
             $class["sidebar_href"] = base_url($this->url."/inventory");
 
             // Ensure instrument_id is numeric
+            $original_id = $instrument_id;
             $instrument_id = (int) $instrument_id;
+            log_message('debug', 'Original instrument_id: ' . var_export($original_id, true));
             log_message('debug', 'Converted instrument_id to int: ' . $instrument_id);
 
             // Get instrument details
             $data["instrument"] = $this->inventory->get_instrument($instrument_id);
-
-            // Debug logging
-            log_message('debug', 'Issue instrument - ID: ' . $instrument_id . ', Found: ' . ($data["instrument"] ? 'YES' : 'NO'));
-            if ($data["instrument"]) {
-                log_message('debug', 'Instrument data: ' . json_encode($data["instrument"]));
-            }
 
             if (!$data["instrument"]) {
                 $this->session->set_flashdata('message', array('danger', 'Instrument not found. ID: ' . $instrument_id));
@@ -293,19 +288,25 @@ class Inventory extends CI_Controller
                 return;
             }
 
-            // Check if instrument is available
+            // Check if instrument is available (handle both old numeric and new string values)
             $current_status = $data["instrument"]["availability_status"];
-            log_message('debug', 'Instrument status: ' . $current_status . ', AVAILABLE constant: ' . INSTRUMENT_STATUS_AVAILABLE);
 
-            if ($current_status != INSTRUMENT_STATUS_AVAILABLE) {
+            // Check for both old numeric (1) and new string ('available') values
+            $is_available = ($current_status == INSTRUMENT_STATUS_AVAILABLE || $current_status == '1' || $current_status == 1);
+
+            if (!$is_available) {
                 $status_text = 'Unknown';
-                switch($current_status) {
-                    case INSTRUMENT_STATUS_AVAILABLE: $status_text = 'Available'; break;
-                    case INSTRUMENT_STATUS_ISSUED: $status_text = 'Issued'; break;
-                    case INSTRUMENT_STATUS_MAINTENANCE: $status_text = 'Under Maintenance'; break;
-                    case INSTRUMENT_STATUS_DAMAGED: $status_text = 'Damaged'; break;
+                // Handle both old and new status values
+                if ($current_status == INSTRUMENT_STATUS_AVAILABLE || $current_status == '1') {
+                    $status_text = 'Available';
+                } elseif ($current_status == INSTRUMENT_STATUS_ISSUED || $current_status == '2') {
+                    $status_text = 'Issued';
+                } elseif ($current_status == INSTRUMENT_STATUS_MAINTENANCE || $current_status == '3') {
+                    $status_text = 'Under Maintenance';
+                } elseif ($current_status == INSTRUMENT_STATUS_DAMAGED || $current_status == '4') {
+                    $status_text = 'Damaged';
                 }
-                $this->session->set_flashdata('message', array('danger', 'Instrument is not available for issuing. Current status: ' . $status_text));
+                $this->session->set_flashdata('message', array('danger', 'Instrument is not available for issuing. Current status: ' . $status_text . ' (raw: ' . $current_status . ')'));
                 redirect($this->url.'/inventory');
                 return;
             }
@@ -699,7 +700,7 @@ class Inventory extends CI_Controller
             return $this->json_response('error', 'Invalid method', 405);
         }
 
-        $students = $this->db->select('id, student_id, name')
+        $students = $this->db->select('id, roll_no, name')
                             ->from(TABLE_STUDENT)
                             ->where('college_id', $this->college['id'])
                             ->where('is_active', 1)
@@ -716,16 +717,35 @@ class Inventory extends CI_Controller
             return $this->json_response('error', 'Invalid method', 405);
         }
 
-        $staff = $this->db->select('f.id, f.name, d.designation_name as designation')
-                         ->from(TABLE_FACULTY . ' f')
-                         ->join('designations d', 'd.id = f.designation', 'left')
-                         ->where('f.college_id', $this->college['id'])
-                         ->where('f.is_active', 1)
-                         ->order_by('f.name', 'ASC')
+        $staff = $this->db->select('id, name, designation')
+                         ->from(TABLE_FACULTY)
+                         ->where('college_id', $this->college['id'])
+                         ->where('is_active', 1)
+                         ->where_in('role', [ROLE_HOD, ROLE_STAFF]) // Only HOD and Staff, exclude Principal and Vice-Principal
+                         ->order_by('name', 'ASC')
                          ->get()
                          ->result_array();
 
         return $this->json_response('success', $staff);
+    }
+
+    public function get_issue_details_api()
+    {
+        if ($this->input->method() !== 'get') {
+            return $this->json_response('error', 'Invalid method', 405);
+        }
+
+        $issue_id = $this->input->get('issue_id');
+        if (!$issue_id) {
+            return $this->json_response('error', 'Issue ID is required', 400);
+        }
+
+        $issue = $this->inventory->get_issue_details($issue_id);
+        if (!$issue) {
+            return $this->json_response('error', 'Issue not found', 404);
+        }
+
+        return $this->json_response('success', $issue);
     }
 
 }

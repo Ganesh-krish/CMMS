@@ -774,6 +774,45 @@ class Course extends CI_Controller {
         }
     }
 
+    public function view_lesson($course_id = null, $module_id = null, $lesson_id = null) {
+        $data["url"] = $this->url;
+        $data["course_id"] = $course_id;
+        $data["module_id"] = $module_id;
+        $data["lesson_id"] = $lesson_id;
+
+        $class["classname"] = "course_lesson_view";
+        $class["url"] = $this->url;
+        $class["sidebar_href"] = base_url($this->url."/courses");
+
+        // Check access permissions
+        $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);
+        $module = $this->db_model->get_row(TABLE_COURSE_MODULES, ["id" => $module_id, "is_active" => 1]);
+        $lesson = $this->db_model->get_row(TABLE_COURSE_MODULE_LESSONS, ["id" => $lesson_id, "is_active" => 1]);
+
+        if (!$course || !$module || !$lesson) {
+            $this->session->set_flashdata('message', array('danger', "Course, module, or lesson not found."));
+            redirect(base_url($this->url . "/courses"));
+            return;
+        }
+
+        $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+        if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
+            if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {
+                $this->session->set_flashdata('message', array('danger', "You can only view lessons for courses in your department."));
+                redirect(base_url($this->url . "/courses"));
+                return;
+            }
+        }
+
+        $data["course"] = $course;
+        $data["module"] = $module;
+        $data["lesson"] = $lesson;
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/courses/view_lesson', $data);
+        $this->load->view('common/footer');
+    }
+
     public function delete_lesson($course_id = null, $module_id = null, $lesson_id = null) {
         // Check course and module access permission
         $course = $this->db_model->get_row(TABLE_COURCES, ["id" => $course_id, "is_active" => 1]);

@@ -158,6 +158,11 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
+                                                        <!-- View Details -->
+                                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="viewCourseDetails(<?php echo $course['id']; ?>, '<?php echo htmlspecialchars(addslashes($course['name'])); ?>', '<?php echo htmlspecialchars(addslashes($course['description'])); ?>', '<?php echo htmlspecialchars(addslashes($course['course_code'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($department_name)); ?>', '<?php echo htmlspecialchars(addslashes($course['created_at'] ? date('M d, Y', strtotime($course['created_at'])) : 'N/A')); ?>')" title="View Course Details">
+                                                            <i class="feather icon-eye"></i>
+                                                        </button>
+
                                                         <!-- Modules -->
                                                         <a href="<?php echo base_url($url.'/courses/modules/'.$course['id']); ?>" class="btn btn-outline-info btn-sm" title="View Modules">
                                                             <i class="feather icon-layers"></i>
@@ -194,6 +199,58 @@
     </div>
 </div>
 
+<!-- Course Details Modal -->
+<div class="modal fade" id="courseDetailsModal" tabindex="-1" role="dialog" aria-labelledby="courseDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseDetailsModalLabel">Course Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="text-primary">Course Information</h6>
+                        <table class="table table-sm">
+                            <tr><th>Course Code:</th><td id="courseCode">N/A</td></tr>
+                            <tr><th>Course Name:</th><td id="courseNameDetail">N/A</td></tr>
+                            <tr><th>Department:</th><td id="courseDepartment">N/A</td></tr>
+                            <tr><th>Created:</th><td id="courseCreated">N/A</td></tr>
+                            <tr><th>Status:</th><td><span class="badge badge-success">Active</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h6 class="text-primary">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <a id="viewModulesBtn" href="#" class="btn btn-outline-info btn-sm">
+                                <i class="feather icon-layers"></i> View Modules
+                            </a>
+                            <a id="viewEnrollmentsBtn" href="#" class="btn btn-outline-success btn-sm">
+                                <i class="feather icon-users"></i> View Enrollments
+                            </a>
+                            <a id="editCourseBtn" href="#" class="btn btn-outline-warning btn-sm">
+                                <i class="feather icon-edit"></i> Edit Course
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="text-primary">Course Description</h6>
+                    <div id="courseDescription" class="border p-3 rounded bg-light">
+                        No description available.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -216,6 +273,28 @@
 </div>
 
 <script>
+function viewCourseDetails(courseId, courseName, courseDescription, courseCode, departmentName, createdDate) {
+    // Set modal title
+    document.getElementById('courseDetailsModalLabel').textContent = 'Course Details - ' + courseName;
+
+    // Populate course information
+    document.getElementById('courseCode').textContent = courseCode || 'N/A';
+    document.getElementById('courseNameDetail').textContent = courseName;
+    document.getElementById('courseDepartment').textContent = departmentName || 'N/A';
+    document.getElementById('courseCreated').textContent = createdDate || 'N/A';
+
+    // Set description
+    document.getElementById('courseDescription').innerHTML = courseDescription || 'No description available.';
+
+    // Update quick action buttons
+    document.getElementById('viewModulesBtn').href = '<?php echo base_url($url.'/courses/modules/'); ?>' + courseId;
+    document.getElementById('viewEnrollmentsBtn').href = '<?php echo base_url($url.'/courses/enrollments/'); ?>' + courseId;
+    document.getElementById('editCourseBtn').href = '<?php echo base_url($url.'/courses/edit/'); ?>' + courseId;
+
+    // Show modal
+    $('#courseDetailsModal').modal('show');
+}
+
 function confirmDelete(courseId, courseName) {
     document.getElementById('courseName').textContent = courseName;
     document.getElementById('deleteBtn').href = '<?php echo base_url($url.'/courses/delete/'); ?>' + courseId;

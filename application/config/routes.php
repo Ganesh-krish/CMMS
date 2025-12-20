@@ -140,6 +140,7 @@ $route['(:any)/courses/delete_lesson/(:num)/(:num)/(:num)'] = 'Course/delete_les
 
 // Course Enrollments routes
 $route['(:any)/courses/enrollments/(:num)'] = 'Course/enrollments/$2';
+$route['(:any)/courses/view_lesson/(:num)/(:num)/(:num)'] = 'Course/view_lesson/$2/$3/$4';
 $route['(:any)/courses/enroll_student'] = 'Course/enroll_student';
 $route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'Course/update_enrollment_status/$2/$3';
 $route['(:any)/courses/unenroll_student/(:num)'] = 'Course/unenroll_student/$2';

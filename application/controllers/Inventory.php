@@ -778,7 +778,7 @@ class Inventory extends CI_Controller
             return $this->json_response('success', 'Instrument returned successfully');
         } else {
             return $this->json_response('error', 'Failed to return instrument', 500);
-        }
+    }
     }
 
 }

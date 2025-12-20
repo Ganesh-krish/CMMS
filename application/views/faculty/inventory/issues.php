@@ -246,10 +246,10 @@ function confirmReturn() {
     currentReturnButton.disabled = true;
 
     // Create return data
-    const formData = new FormData();
+        const formData = new FormData();
     formData.append('issue_id', currentReturnIssueId);
-    formData.append('return_date', new Date().toISOString().split('T')[0]);
-    formData.append('condition_on_return', 'good');
+        formData.append('return_date', new Date().toISOString().split('T')[0]);
+        formData.append('condition_on_return', 'good');
     formData.append('notes', 'Quick return via issues page');
 
     // Make API call
@@ -307,7 +307,7 @@ function showAlert(type, message) {
     setTimeout(() => {
         if (alertDiv.parentNode) {
             $(alertDiv).alert('close');
-        }
+    }
     }, 5000);
 }
 

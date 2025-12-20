@@ -116,13 +116,18 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
+                                                        <!-- View Lesson Content -->
+                                                        <a href="<?php echo base_url($url.'/courses/view_lesson/'.$course_id.'/'.$module_id.'/'.$lesson['id']); ?>" class="btn btn-primary btn-sm" title="View Lesson Content">
+                                                            <i class="feather icon-eye"></i>
+                                                        </a>
+
                                                         <!-- Edit Lesson -->
-                                                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="editLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['type'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['content'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_text'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_url'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_file'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['duration'] ?? '')); ?>', <?php echo $lesson['order']; ?>, <?php echo $lesson['is_active'] ? 1 : 0; ?>)" title="Edit Lesson">
+                                                        <button type="button" class="btn btn-warning btn-sm" onclick="editLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['type'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['content'])); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_text'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_url'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['course_file'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($lesson['duration'] ?? '')); ?>', <?php echo $lesson['order']; ?>, <?php echo $lesson['is_active'] ? 1 : 0; ?>)" title="Edit Lesson">
                                                             <i class="feather icon-edit"></i>
                                                         </button>
 
                                                         <!-- Delete Lesson -->
-                                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDeleteLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>')" title="Delete Lesson">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLesson(<?php echo $lesson['id']; ?>, '<?php echo htmlspecialchars(addslashes($lesson['title'])); ?>')" title="Delete Lesson">
                                                             <i class="feather icon-trash"></i>
                                                         </button>
                                                     </div>
@@ -333,6 +338,7 @@
     </div>
 </div>
 
+
 <!-- Delete Lesson Confirmation Modal -->
 <div class="modal fade" id="deleteLessonModal" tabindex="-1" role="dialog" aria-labelledby="deleteLessonModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -484,6 +490,7 @@ function toggleEditLessonFields(selectedType) {
         $('#edit_lesson_file').attr('required', 'required');
     }
 }
+
 
 function editLesson(id, title, type, content, courseText, courseUrl, courseFile, duration, order, isActive) {
     document.getElementById('edit_lesson_id').value = id;

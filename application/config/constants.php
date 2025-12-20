@@ -103,6 +103,7 @@ defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
 defined('TABLE_COURSE_ENROLLMENTS')      or define('TABLE_COURSE_ENROLLMENTS', "course_enrollments");
 defined('TABLE_COURSE_STUDENTS')      or define('TABLE_COURSE_STUDENTS', "course_enrollments"); // Alias for enrollments
 defined('TABLE_COURSE_MODULES')      or define('TABLE_COURSE_MODULES', "course_modules");
+defined('TABLE_COURSE_MODULE_LESSONS') or define('TABLE_COURSE_MODULE_LESSONS', "course_module_lessons");
 defined('TABLE_LESSONS')               or define('TABLE_LESSONS', "course_module_lessons");
 
 // Musical Instrument Inventory Tables

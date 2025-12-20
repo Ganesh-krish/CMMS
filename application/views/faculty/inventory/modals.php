@@ -75,7 +75,7 @@
                             <label for="instrument_price" class="form-label">Instrument Price</label>
                             <input type="number" class="form-control" id="instrument_price" name="instrument_price" step="0.01">
                         </div>
-                    </div>
+                        </div>
 
                     <div class="mb-3">
                         <label for="condition_notes" class="form-label">Condition Notes</label>
@@ -182,7 +182,7 @@
                             <label for="edit_instrument_price" class="form-label">Instrument Price</label>
                             <input type="number" class="form-control" id="edit_instrument_price" name="instrument_price" step="0.01">
                         </div>
-                    </div>
+                        </div>
 
                     <div class="mb-3">
                         <label for="edit_condition_notes" class="form-label">Condition Notes</label>
@@ -259,7 +259,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+                <div class="modal-body">
                 <div class="text-center">
                     <div class="mb-3">
                         <i class="feather icon-trash-2 text-danger" style="font-size: 3rem;"></i>
@@ -270,16 +270,16 @@
                         <i class="feather icon-alert-circle"></i>
                         <strong>Warning:</strong> This action cannot be undone. The instrument will be permanently removed from the system.
                     </div>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
+                <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <i class="feather icon-x"></i> Cancel
                 </button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                     <i class="feather icon-trash"></i> Delete Instrument
                 </button>
-            </div>
+                </div>
         </div>
     </div>
 </div>
@@ -295,7 +295,7 @@ $(document).ready(function() {
     // Set minimum date for expected return date
     const today = new Date().toISOString().split('T')[0];
     if (document.getElementById('expected_return_date')) {
-        document.getElementById('expected_return_date').setAttribute('min', today);
+    document.getElementById('expected_return_date').setAttribute('min', today);
     }
 });
 </script>

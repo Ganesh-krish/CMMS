@@ -203,63 +203,6 @@
     </div>
 </div>
 
-<!-- Issue Instrument Modal -->
-<div class="modal fade" id="issueInstrumentModal" tabindex="-1" aria-labelledby="issueInstrumentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="issueInstrumentModalLabel">Issue Instrument</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= base_url($url . '/inventory/issue') ?>" method="POST">
-                <input type="hidden" id="issue_instrument_id" name="instrument_id">
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <strong>Instrument:</strong> <span id="issue_instrument_name"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="issued_to_type" class="form-label">Issue To Type *</label>
-                            <select class="form-control select2" id="issued_to_type" name="issued_to_type" required>
-                                <option value="">Select Type</option>
-                                <option value="student">Student</option>
-                                <option value="staff">Staff</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="issued_to_id" class="form-label">Issue To *</label>
-                            <select class="form-control select2" id="issued_to_id" name="issued_to_id" required disabled>
-                                <option value="">Select Student/Staff</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="expected_return_date" class="form-label">Expected Return Date *</label>
-                            <input type="date" class="form-control" id="expected_return_date" name="expected_return_date" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="issue_date" class="form-label">Issue Date</label>
-                            <input type="date" class="form-control" id="issue_date" name="issue_date" value="<?php echo date('Y-m-d'); ?>">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="purpose" class="form-label">Purpose/Reason</label>
-                        <textarea class="form-control" id="purpose" name="purpose" rows="2" placeholder="e.g., Practice session, Performance, etc."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Issue Instrument</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Return Instrument Modal -->
 <div class="modal fade" id="returnInstrumentModal" tabindex="-1" aria-labelledby="returnInstrumentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

@@ -162,6 +162,7 @@ $route['(:any)/inventory/create'] = 'Inventory/create';
 $route['(:any)/inventory/update/(:num)'] = 'Inventory/update/$2';
 $route['(:any)/inventory/view/(:num)'] = 'Inventory/get_instrument/$2';
 $route['(:any)/inventory/delete/(:num)'] = 'Inventory/delete/$2';
+$route['(:any)/inventory/issue/(:num)'] = 'Inventory/issue/$1';
 $route['(:any)/inventory/issue'] = 'Inventory/issue';
 $route['(:any)/inventory/return/(:num)'] = 'Inventory/return_item/$2';
 $route['(:any)/inventory/issues'] = 'Inventory/issues';

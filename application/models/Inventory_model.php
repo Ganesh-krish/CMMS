@@ -55,7 +55,7 @@ class Inventory_model extends CI_Model
 
     public function get_instrument($id)
     {
-        return $this->db->get_where(TABLE_INSTRUMENTS, ['id' => $id])->row_array();
+        return $this->db->get_where(TABLE_INSTRUMENTS, ['id' => $id, 'is_active' => 1])->row_array();
     }
 
     public function delete_instrument($id)

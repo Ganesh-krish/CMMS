@@ -187,9 +187,9 @@
                                         </td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
                                             <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE): ?>
-                                                <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); issueInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                <a href="/CMMS/<?php echo $url; ?>/inventory/issue/<?php echo $instrument['id']; ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>" onclick="console.log('Clicking issue button for ID: <?php echo $instrument['id']; ?>, URL: /CMMS/<?php echo $url; ?>/inventory/issue/<?php echo $instrument['id']; ?>')">
                                                     <i class="feather icon-send"></i> Issue
-                                                </button>
+                                                </a>
                                             <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED): ?>
                                                 <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
                                                     <i class="feather icon-rotate-ccw"></i> Return
@@ -270,69 +270,6 @@ function editInstrument(id) {
         });
 }
 
-function issueInstrument(id, name) {
-    // Reset form fields first
-    document.getElementById('issue_instrument_id').value = id;
-    document.getElementById('issue_instrument_name').textContent = name;
-
-    // Reset form fields
-    document.getElementById('issued_to_type').value = '';
-    document.getElementById('issued_to_id').innerHTML = '<option value="">Select Student/Staff</option>';
-    document.getElementById('issued_to_id').disabled = true;
-    document.getElementById('expected_return_date').value = '';
-    document.getElementById('purpose').value = '';
-
-    // Set default issue date
-    document.getElementById('issue_date').value = new Date().toISOString().split('T')[0];
-
-    // Initialize select2 immediately before showing modal
-    if (typeof $.fn.select2 !== 'undefined') {
-        // Destroy existing select2 instances if they exist
-        if ($('#issued_to_type').hasClass('select2-hidden-accessible')) {
-            $('#issued_to_type').select2('destroy');
-        }
-        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
-            $('#issued_to_id').select2('destroy');
-        }
-
-        // Initialize select2 for both dropdowns
-        $('#issued_to_type').select2({
-            placeholder: "Select Type",
-            allowClear: true,
-            minimumResultsForSearch: Infinity,
-            width: '100%'
-        });
-
-        $('#issued_to_id').select2({
-            placeholder: "Select Student/Staff",
-            allowClear: true,
-            width: '100%'
-        });
-
-        // Bind change event for issue type selection
-        $('#issued_to_type').on('change', function() {
-            toggleIssueFields();
-        });
-    }
-
-    // Reset select2 values after initialization
-    $('#issued_to_type').val('').trigger('change');
-    $('#issued_to_id').val('').trigger('change');
-
-    const issueModal = new bootstrap.Modal(document.getElementById('issueInstrumentModal'));
-    issueModal.show();
-
-    // Clean up select2 when modal is hidden
-    document.getElementById('issueInstrumentModal').addEventListener('hidden.bs.modal', function() {
-        if ($('#issued_to_type').hasClass('select2-hidden-accessible')) {
-            $('#issued_to_type').select2('destroy');
-        }
-        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
-            $('#issued_to_id').select2('destroy');
-        }
-    });
-}
-
 function returnInstrument(id, name) {
     document.getElementById('return_instrument_id').value = id;
     document.getElementById('return_instrument_name').textContent = name;
@@ -340,7 +277,7 @@ function returnInstrument(id, name) {
     returnModal.show();
 }
 
-// Global variable to store instrument ID for deletion
+// Global variable for modal management
 let instrumentToDelete = null;
 
 function deleteInstrument(id, name) {
@@ -355,115 +292,6 @@ function deleteInstrument(id, name) {
     deleteModal.show();
 }
 
-function toggleIssueFields() {
-    const type = document.getElementById('issued_to_type').value;
-    const idField = document.getElementById('issued_to_id');
-    const idLabel = document.querySelector('label[for="issued_to_id"]');
-
-    if (type === 'student') {
-        idLabel.textContent = 'Issue To Student *';
-        loadStudents();
-    } else if (type === 'staff') {
-        idLabel.textContent = 'Issue To Staff *';
-        loadStaff();
-    } else {
-        idField.innerHTML = '<option value="">Select Student/Staff</option>';
-        idField.disabled = true;
-        // Reset select2
-        if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
-            $('#issued_to_id').select2('destroy');
-            $('#issued_to_id').select2({
-                placeholder: "Select Student/Staff",
-                allowClear: true,
-                width: '100%'
-            });
-        }
-    }
-}
-
-function loadStudents() {
-    const selectField = document.getElementById('issued_to_id');
-    selectField.disabled = true;
-    selectField.innerHTML = '<option value="">Loading...</option>';
-
-    fetch('<?php echo base_url($url.'/api/get_students'); ?>')
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                let options = '<option value="">Select Student</option>';
-                data.data.forEach(function(student) {
-                    var studentId = student.id || '';
-                    var studentStudentId = student.student_id || '';
-                    var studentName = student.name || '';
-                    // Escape quotes in the values
-                    studentId = studentId.toString().replace(/"/g, '&quot;');
-                    studentStudentId = studentStudentId.toString().replace(/"/g, '&quot;');
-                    studentName = studentName.toString().replace(/"/g, '&quot;');
-                    options += '<option value="' + studentId + '">' + studentStudentId + ' - ' + studentName + '</option>';
-                });
-                selectField.innerHTML = options;
-                selectField.disabled = false;
-
-                // Reinitialize select2
-                if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
-                    $('#issued_to_id').select2('destroy');
-                }
-                $('#issued_to_id').select2({
-                    placeholder: "Select Student",
-                    allowClear: true,
-                    width: '100%'
-                });
-            } else {
-                selectField.innerHTML = '<option value="">Error loading students</option>';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading students:', error);
-            selectField.innerHTML = '<option value="">Error loading students</option>';
-        });
-}
-
-function loadStaff() {
-    const selectField = document.getElementById('issued_to_id');
-    selectField.disabled = true;
-    selectField.innerHTML = '<option value="">Loading...</option>';
-
-    fetch('<?php echo base_url($url.'/api/get_staff'); ?>')
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                let options = '<option value="">Select Staff</option>';
-                data.data.forEach(function(staff) {
-                    var staffId = staff.id || '';
-                    var staffDesignation = staff.designation || '';
-                    var staffName = staff.name || '';
-                    // Escape quotes in the values
-                    staffId = staffId.toString().replace(/"/g, '&quot;');
-                    staffDesignation = staffDesignation.toString().replace(/"/g, '&quot;');
-                    staffName = staffName.toString().replace(/"/g, '&quot;');
-                    options += '<option value="' + staffId + '">' + staffDesignation + ' - ' + staffName + '</option>';
-                });
-                selectField.innerHTML = options;
-                selectField.disabled = false;
-
-                // Reinitialize select2
-                if ($('#issued_to_id').hasClass('select2-hidden-accessible')) {
-                    $('#issued_to_id').select2('destroy');
-                }
-                $('#issued_to_id').select2({
-                    placeholder: "Select Staff",
-                    allowClear: true,
-                    width: '100%'
-                });
-            } else {
-                selectField.innerHTML = '<option value="">Error loading staff</option>';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading staff:', error);
-            selectField.innerHTML = '<option value="">Error loading staff</option>';
-        });
-}
 
 $(document).ready(function() {
     // Handle confirm delete button click

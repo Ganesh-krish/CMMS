@@ -258,8 +258,65 @@ class Inventory extends CI_Controller
         }
     }
 
-    public function issue()
+    public function issue($instrument_id = null)
     {
+        // Debug: log the request
+        log_message('debug', 'Issue method called with instrument_id: ' . $instrument_id);
+        log_message('debug', 'Full URI: ' . $this->uri->uri_string());
+        log_message('debug', 'URI segments: ' . json_encode($this->uri->segment_array()));
+        log_message('debug', 'URL variable: ' . $this->url);
+        log_message('debug', 'College ID: ' . ($this->college['id'] ?? 'not set'));
+
+        // If instrument_id is provided, show the form
+        if ($instrument_id) {
+            $data["url"] = $this->url;
+            $class["classname"] = "inventory_issue";
+            $class["url"] = $this->url;
+            $class["sidebar_href"] = base_url($this->url."/inventory");
+
+            // Ensure instrument_id is numeric
+            $instrument_id = (int) $instrument_id;
+            log_message('debug', 'Converted instrument_id to int: ' . $instrument_id);
+
+            // Get instrument details
+            $data["instrument"] = $this->inventory->get_instrument($instrument_id);
+
+            // Debug logging
+            log_message('debug', 'Issue instrument - ID: ' . $instrument_id . ', Found: ' . ($data["instrument"] ? 'YES' : 'NO'));
+            if ($data["instrument"]) {
+                log_message('debug', 'Instrument data: ' . json_encode($data["instrument"]));
+            }
+
+            if (!$data["instrument"]) {
+                $this->session->set_flashdata('message', array('danger', 'Instrument not found. ID: ' . $instrument_id));
+                redirect($this->url.'/inventory');
+                return;
+            }
+
+            // Check if instrument is available
+            $current_status = $data["instrument"]["availability_status"];
+            log_message('debug', 'Instrument status: ' . $current_status . ', AVAILABLE constant: ' . INSTRUMENT_STATUS_AVAILABLE);
+
+            if ($current_status != INSTRUMENT_STATUS_AVAILABLE) {
+                $status_text = 'Unknown';
+                switch($current_status) {
+                    case INSTRUMENT_STATUS_AVAILABLE: $status_text = 'Available'; break;
+                    case INSTRUMENT_STATUS_ISSUED: $status_text = 'Issued'; break;
+                    case INSTRUMENT_STATUS_MAINTENANCE: $status_text = 'Under Maintenance'; break;
+                    case INSTRUMENT_STATUS_DAMAGED: $status_text = 'Damaged'; break;
+                }
+                $this->session->set_flashdata('message', array('danger', 'Instrument is not available for issuing. Current status: ' . $status_text));
+                redirect($this->url.'/inventory');
+                return;
+            }
+
+            $this->load->view('common/sidebar', $class);
+            $this->load->view('faculty/inventory/issue', $data);
+            $this->load->view('common/footer');
+            return;
+        }
+
+        // Handle form submission
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('instrument_id', 'Instrument', 'trim|required');

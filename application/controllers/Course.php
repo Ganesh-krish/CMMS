@@ -795,6 +795,7 @@ class Course extends CI_Controller {
             return;
         }
 
+
         $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
         if (in_array($user_role, [ROLE_HOD, ROLE_STAFF])) {
             if ($this->db->field_exists('department', TABLE_COURCES) && isset($course['department']) && $course['department'] != $this->session_data['department']) {

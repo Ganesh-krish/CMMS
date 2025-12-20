@@ -138,6 +138,11 @@
                                         <div class="col-md-8">
                                             <div class="card border-primary">
                                                 <div class="card-body text-center">
+                                                    <?php if (!in_array($file_extension, ['txt', 'pdf', 'doc', 'docx'])): ?>
+                                                        <div class="alert alert-info mb-3">
+                                                            <small><i class="feather icon-info"></i> This file type supports download only. Content preview is available for TXT, PDF, and DOC files.</small>
+                                                        </div>
+                                                    <?php endif; ?>
                                                     <?php
                                                     // Display appropriate icon based on file type
                                                     $icon_class = 'icon-file';
@@ -177,11 +182,14 @@
                                                     <p class="text-muted mb-3">
                                                         File Type: <?php echo strtoupper($file_extension); ?> |
                                                         Size: <?php echo number_format(filesize($full_file_path) / 1024, 1); ?> KB
+                                                        <?php if (in_array($file_extension, ['txt', 'pdf', 'doc', 'docx'])): ?>
+                                                            <br><small class="text-success"><i class="feather icon-eye"></i> Content preview available</small>
+                                                        <?php endif; ?>
                                                     </p>
 
                                                     <div class="btn-group" role="group">
                                                         <a href="<?php echo base_url($file_path); ?>" target="_blank" class="btn btn-primary">
-                                                            <i class="feather icon-external-link"></i> View/Download
+                                                            <i class="feather icon-external-link"></i> ACCESS LESSON MATERIAL
                                                         </a>
                                                     </div>
                                                 </div>
@@ -189,29 +197,98 @@
                                         </div>
 
                                         <div class="col-md-4">
-                                            <?php if (in_array($file_extension, ['txt', 'pdf'])): ?>
+                                            <?php if (in_array($file_extension, ['txt', 'pdf', 'doc', 'docx'])): ?>
                                                 <!-- Display text content for readable files -->
                                                 <div class="card">
                                                     <div class="card-header">
-                                                        <h6 class="mb-0">File Preview</h6>
+                                                        <h6 class="mb-0">File Content Preview</h6>
                                                     </div>
                                                     <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                                                         <?php
                                                         try {
-                                                            if ($file_extension === 'txt') {
-                                                                $content = file_get_contents($full_file_path);
-                                                                echo '<pre style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">' . htmlspecialchars($content) . '</pre>';
-                                                            } elseif ($file_extension === 'pdf') {
-                                                                // For PDF, we'll show a message since we can't easily extract text
-                                                                echo '<div class="alert alert-info">';
-                                                                echo '<i class="feather icon-file-text"></i> ';
-                                                                echo 'PDF files cannot be previewed directly. Click "View/Download" to open the file.';
+                                                            // Check file readability and size
+                                                            if (!is_readable($full_file_path)) {
+                                                                echo '<div class="alert alert-danger">';
+                                                                echo '<i class="feather icon-alert-triangle"></i> ';
+                                                                echo 'File is not readable or accessible.';
                                                                 echo '</div>';
+                                                            } elseif (filesize($full_file_path) > 5242880) { // 5MB limit
+                                                                echo '<div class="alert alert-warning">';
+                                                                echo '<i class="feather icon-file-text"></i> ';
+                                                                echo 'File is too large to preview (max 5MB). Click "View/Download" to open the file.';
+                                                                echo '</div>';
+                                                            } else {
+                                                                if ($file_extension === 'txt') {
+                                                                    // Handle TXT files - direct reading
+                                                                    $content = file_get_contents($full_file_path);
+                                                                    if ($content !== false) {
+                                                                        echo '<div class="text-preview" style="font-family: monospace; font-size: 12px; line-height: 1.4; white-space: pre-wrap; background: #f8f9fa; padding: 10px; border-radius: 4px;">';
+                                                                        echo htmlspecialchars($content);
+                                                                        echo '</div>';
+                                                                    } else {
+                                                                        echo '<div class="alert alert-warning">Unable to read text file content.</div>';
+                                                                    }
+                                                                } elseif ($file_extension === 'pdf') {
+                                                                    // Handle PDF files - try to extract text
+                                                                    require_once APPPATH . '../vendor/autoload.php';
+                                                                    try {
+                                                                        $parser = new \Smalot\PdfParser\Parser();
+                                                                        $pdf = $parser->parseFile($full_file_path);
+                                                                        $text = $pdf->getText();
+
+                                                                        if (!empty(trim($text))) {
+                                                                            echo '<div class="pdf-preview" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; max-height: 400px; overflow-y: auto;">';
+                                                                            echo nl2br(htmlspecialchars(substr($text, 0, 2000))); // Limit preview to 2000 chars
+                                                                            if (strlen($text) > 2000) {
+                                                                                echo '<br><em>... (content truncated - download to read full document)</em>';
+                                                                            }
+                                                                            echo '</div>';
+                                                                        } else {
+                                                                            echo '<div class="alert alert-info">PDF appears to be image-based or empty. Click "View/Download" to open the file.</div>';
+                                                                        }
+                                                                    } catch (Exception $pdfError) {
+                                                                        echo '<div class="alert alert-warning">Unable to extract PDF text: ' . htmlspecialchars($pdfError->getMessage()) . ' - Click "View/Download" to open the file.</div>';
+                                                                    }
+                                                                } elseif (in_array($file_extension, ['doc', 'docx'])) {
+                                                                    // Handle DOC/DOCX files - try to extract text
+                                                                    require_once APPPATH . '../vendor/autoload.php';
+                                                                    try {
+                                                                        $phpWord = \PhpOffice\PhpWord\IOFactory::load($full_file_path);
+                                                                        $text = '';
+
+                                                                        foreach ($phpWord->getSections() as $section) {
+                                                                            foreach ($section->getElements() as $element) {
+                                                                                if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                                                                                    foreach ($element->getElements() as $textElement) {
+                                                                                        if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
+                                                                                            $text .= $textElement->getText() . ' ';
+                                                                                        }
+                                                                                    }
+                                                                                } elseif ($element instanceof \PhpOffice\PhpWord\Element\Text) {
+                                                                                    $text .= $element->getText() . ' ';
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                        if (!empty(trim($text))) {
+                                                                            echo '<div class="doc-preview" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; max-height: 400px; overflow-y: auto;">';
+                                                                            echo nl2br(htmlspecialchars(substr($text, 0, 2000))); // Limit preview to 2000 chars
+                                                                            if (strlen($text) > 2000) {
+                                                                                echo '<br><em>... (content truncated - download to read full document)</em>';
+                                                                            }
+                                                                            echo '</div>';
+                                                                        } else {
+                                                                            echo '<div class="alert alert-info">Document appears to be image-based or empty. Click "View/Download" to open the file.</div>';
+                                                                        }
+                                                                    } catch (Exception $docError) {
+                                                                        echo '<div class="alert alert-warning">Unable to extract DOC text: ' . htmlspecialchars($docError->getMessage()) . ' - Click "View/Download" to open the file.</div>';
+                                                                    }
+                                                                }
                                                             }
                                                         } catch (Exception $e) {
-                                                            echo '<div class="alert alert-warning">';
+                                                            echo '<div class="alert alert-danger">';
                                                             echo '<i class="feather icon-alert-triangle"></i> ';
-                                                            echo 'Unable to read file content.';
+                                                            echo 'Error reading file: ' . htmlspecialchars($e->getMessage());
                                                             echo '</div>';
                                                         }
                                                         ?>

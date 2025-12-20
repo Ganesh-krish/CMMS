@@ -155,7 +155,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="<?php echo base_url($url.'/courses/add_lesson'); ?>" method="post">
+            <form action="<?php echo base_url($url.'/courses/add_lesson'); ?>" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
                     <input type="hidden" name="module_id" value="<?php echo $module_id; ?>">
@@ -252,7 +252,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="" method="post" id="editLessonForm">
+            <form action="" method="post" id="editLessonForm" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="lesson_id" id="edit_lesson_id">
 

@@ -138,13 +138,10 @@ class StudentPortal extends CI_Controller {
         }
 
         // Get modules for this course
-       // To this:
-    $data['modules'] = $this->db_model->get_all('course_modules', [
-        'course_id' => $course_id,
-        'is_active' => 1
-    ], '*', 'order', 'ASC');
-
-      
+        $data['modules'] = $this->db_model->get_all('course_modules', [
+            'course_id' => $course_id,
+            'is_active' => 1
+        ], '*', 'order', 'ASC');
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/courses/modules', $data);
@@ -243,6 +240,42 @@ class StudentPortal extends CI_Controller {
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/announcements/index', $data);
+        $this->load->view('student/common/footer');
+    }
+
+    // View lesson for students
+    public function view_lesson($course_id, $module_id, $lesson_id) {
+        if (!$this->student_session) {
+            redirect('student-portal/login');
+        }
+
+        // Verify student is enrolled in this course
+        $enrollment = $this->db_model->get_row('course_enrollments', [
+            'course_id' => $course_id,
+            'student_id' => $this->student_session['id'],
+            'status !=' => 'dropped'
+        ]);
+
+        if (!$enrollment) {
+            $this->session->set_flashdata('error', 'You are not enrolled in this course');
+            redirect('student-portal/courses');
+        }
+
+        // Get course, module, and lesson data
+        $data['course'] = $this->db_model->get_row('courses', ['id' => $course_id, 'is_active' => 1]);
+        $data['module'] = $this->db_model->get_row('course_modules', ['id' => $module_id, 'is_active' => 1]);
+        $data['lesson'] = $this->db_model->get_row('course_module_lessons', ['id' => $lesson_id, 'is_active' => 1]);
+
+        if (!$data['course'] || !$data['module'] || !$data['lesson']) {
+            $this->session->set_flashdata('error', 'Course, module, or lesson not found');
+            redirect('student-portal/courses');
+        }
+
+        $data['student'] = $this->student_session;
+        $data['college'] = $this->college;
+
+        $this->load->view('student/common/sidebar', $data);
+        $this->load->view('student/courses/view_lesson', $data);
         $this->load->view('student/common/footer');
     }
 

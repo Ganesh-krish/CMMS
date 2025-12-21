@@ -54,18 +54,6 @@ $route['logout'] = 'Welcome/logout';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-// Student Portal Routes
-$route['student-portal/login'] = 'StudentPortal/login';
-$route['student-portal/authenticate'] = 'StudentPortal/authenticate';
-$route['student-portal/logout'] = 'StudentPortal/logout';
-$route['student-portal/dashboard'] = 'StudentPortal/dashboard';
-$route['student-portal/courses'] = 'StudentPortal/courses';
-$route['student-portal/course-modules/(:num)'] = 'StudentPortal/course_modules/$1';
-$route['student-portal/module-lessons/(:num)/(:num)'] = 'StudentPortal/module_lessons/$1/$2';
-$route['student-portal/view-lesson/(:num)/(:num)/(:num)'] = 'StudentPortal/view_lesson/$1/$2/$3';
-$route['student-portal/inventory'] = 'StudentPortal/inventory';
-$route['student-portal/announcements'] = 'StudentPortal/announcements';
-
 //Dashboard routes
 $route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
 
@@ -130,6 +118,18 @@ $route['(:any)/groups/delete/(:num)'] = 'Groups/delete_group/$2';
 $route['(:any)/groups/group_students/(:num)'] = 'Groups/group_students/$2';
 $route['(:any)/groups/add_students_to_group/(:num)'] = 'Groups/add_students_to_group/$2';
 $route['(:any)/groups/remove_student/(:num)/(:num)'] = 'Groups/remove_student_from_group/$2/$3';
+
+// Student Portal Routes
+$route['student-portal/login'] = 'StudentPortal/login';
+$route['student-portal/authenticate'] = 'StudentPortal/authenticate';
+$route['student-portal/logout'] = 'StudentPortal/logout';
+$route['student-portal/dashboard'] = 'StudentPortal/dashboard';
+$route['student-portal/courses'] = 'StudentPortal/courses';
+$route['student-portal/course-modules/(:num)'] = 'StudentPortal/course_modules/$1';
+$route['student-portal/module-lessons/(:num)/(:num)'] = 'StudentPortal/module_lessons/$1/$2';
+$route['student-portal/view-lesson/(:num)/(:num)/(:num)'] = 'StudentPortal/view_lesson/$1/$2/$3';
+$route['student-portal/inventory'] = 'StudentPortal/inventory';
+$route['student-portal/announcements'] = 'StudentPortal/announcements';
 
 // Course Management routes
 $route['(:any)/courses'] = 'Course/index';

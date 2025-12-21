@@ -159,28 +159,28 @@
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         <!-- View Details -->
-                                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="viewCourseDetails(<?php echo $course['id']; ?>, '<?php echo htmlspecialchars(addslashes($course['name'])); ?>', '<?php echo htmlspecialchars(addslashes($course['description'])); ?>', '<?php echo htmlspecialchars(addslashes($course['course_code'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($department_name)); ?>', '<?php echo htmlspecialchars(addslashes($course['created_at'] ? date('M d, Y', strtotime($course['created_at'])) : 'N/A')); ?>')" title="View Course Details">
+                                                        <button type="button" class="btn btn-primary btn-sm" onclick="viewCourseDetails(<?php echo $course['id']; ?>, '<?php echo htmlspecialchars(addslashes($course['name'])); ?>', '<?php echo htmlspecialchars(addslashes($course['description'])); ?>', '<?php echo htmlspecialchars(addslashes($course['course_code'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($department_name)); ?>', '<?php echo htmlspecialchars(addslashes($course['created_at'] ? date('M d, Y', strtotime($course['created_at'])) : 'N/A')); ?>')" title="View Course Details">
                                                             <i class="feather icon-eye"></i>
                                                         </button>
 
                                                         <!-- Modules -->
-                                                        <a href="<?php echo base_url($url.'/courses/modules/'.$course['id']); ?>" class="btn btn-outline-info btn-sm" title="View Modules">
+                                                        <a href="<?php echo base_url($url.'/courses/modules/'.$course['id']); ?>" class="btn btn-info btn-sm" title="View Modules">
                                                             <i class="feather icon-layers"></i>
                                                         </a>
 
                                                         <!-- Enrollments -->
-                                                        <a href="<?php echo base_url($url.'/courses/enrollments/'.$course['id']); ?>" class="btn btn-outline-success btn-sm" title="View Enrollments">
+                                                        <a href="<?php echo base_url($url.'/courses/enrollments/'.$course['id']); ?>" class="btn btn-success btn-sm" title="View Enrollments">
                                                             <i class="feather icon-users"></i>
                                                         </a>
 
                                                         <?php if (isset($can_edit_all_courses) && $can_edit_all_courses): ?>
                                                             <!-- Edit -->
-                                                            <a href="<?php echo base_url($url.'/courses/edit/'.$course['id']); ?>" class="btn btn-outline-warning btn-sm" title="Edit Course">
+                                                            <a href="<?php echo base_url($url.'/courses/edit/'.$course['id']); ?>" class="btn btn-warning btn-sm" title="Edit Course">
                                                                 <i class="feather icon-edit"></i>
                                                             </a>
 
                                                             <!-- Delete -->
-                                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(<?php echo $course['id']; ?>, '<?php echo htmlspecialchars($course['name']); ?>')" title="Delete Course">
+                                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $course['id']; ?>, '<?php echo htmlspecialchars($course['name']); ?>')" title="Delete Course">
                                                                 <i class="feather icon-trash"></i>
                                                             </button>
                                                         <?php endif; ?>
@@ -200,14 +200,12 @@
 </div>
 
 <!-- Course Details Modal -->
-<div class="modal fade" id="courseDetailsModal" tabindex="-1" role="dialog" aria-labelledby="courseDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="courseDetailsModal" tabindex="-1" aria-labelledby="courseDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="courseDetailsModalLabel">Course Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -224,13 +222,13 @@
                     <div class="col-md-4 text-center">
                         <h6 class="text-primary">Quick Actions</h6>
                         <div class="d-grid gap-2">
-                            <a id="viewModulesBtn" href="#" class="btn btn-outline-info btn-sm">
+                            <a id="viewModulesBtn" href="#" class="btn btn-info btn-sm">
                                 <i class="feather icon-layers"></i> View Modules
                             </a>
-                            <a id="viewEnrollmentsBtn" href="#" class="btn btn-outline-success btn-sm">
+                            <a id="viewEnrollmentsBtn" href="#" class="btn btn-success btn-sm">
                                 <i class="feather icon-users"></i> View Enrollments
                             </a>
-                            <a id="editCourseBtn" href="#" class="btn btn-outline-warning btn-sm">
+                            <a id="editCourseBtn" href="#" class="btn btn-warning btn-sm">
                                 <i class="feather icon-edit"></i> Edit Course
                             </a>
                         </div>
@@ -245,27 +243,25 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Are you sure you want to delete the course "<span id="courseName"></span>"? This action cannot be undone.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <a id="deleteBtn" href="#" class="btn btn-danger">Delete</a>
             </div>
         </div>

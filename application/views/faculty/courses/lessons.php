@@ -32,7 +32,7 @@
                                 </small>
                             </div>
                             <div class="col-md-6 text-right">
-                                <a href="<?php echo base_url($url.'/courses/modules/'.$course_id); ?>" class="btn btn-outline-secondary btn-sm">
+                                <a href="<?php echo base_url($url.'/courses/modules/'.$course_id); ?>" class="btn btn-secondary btn-sm">
                                     <i class="feather icon-arrow-left"></i> Back to Modules
                                 </a>
                             </div>
@@ -151,9 +151,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addLessonModalLabel">Add Lesson</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?php echo base_url($url.'/courses/add_lesson'); ?>" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -234,7 +232,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Lesson</button>
                 </div>
             </form>
@@ -248,9 +246,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editLessonModalLabel">Edit Lesson</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="" method="post" id="editLessonForm" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -330,7 +326,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Lesson</button>
                 </div>
             </form>
@@ -345,15 +341,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteLessonModalLabel">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Are you sure you want to delete the lesson "<span id="lessonName"></span>"? This action cannot be undone.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <a id="deleteLessonBtn" href="#" class="btn btn-danger">Delete</a>
             </div>
         </div>

@@ -31,7 +31,7 @@
                                 </small>
                             </div>
                             <div class="col-md-4 text-right">
-                                <a href="<?php echo base_url($url.'/courses'); ?>" class="btn btn-outline-secondary btn-sm">
+                                <a href="<?php echo base_url($url.'/courses'); ?>" class="btn btn-secondary btn-sm">
                                     <i class="feather icon-arrow-left"></i> Back to Courses
                                 </a>
                             </div>
@@ -106,17 +106,17 @@
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         <!-- Lessons -->
-                                                        <a href="<?php echo base_url($url.'/courses/lessons/'.$course_id.'/'.$module['id']); ?>" class="btn btn-outline-primary btn-sm" title="View Lessons">
+                                                        <a href="<?php echo base_url($url.'/courses/lessons/'.$course_id.'/'.$module['id']); ?>" class="btn btn-primary btn-sm" title="View Lessons">
                                                             <i class="feather icon-file-text"></i>
                                                         </a>
 
                                                         <!-- Edit Module -->
-                                                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="editModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>', '<?php echo htmlspecialchars(addslashes($module['description'])); ?>', <?php echo $module['order']; ?>)" title="Edit Module">
+                                                        <button type="button" class="btn btn-warning btn-sm" onclick="editModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>', '<?php echo htmlspecialchars(addslashes($module['description'])); ?>', <?php echo $module['order']; ?>)" title="Edit Module">
                                                             <i class="feather icon-edit"></i>
                                                         </button>
 
                                                         <!-- Delete Module -->
-                                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDeleteModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>')" title="Delete Module">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>')" title="Delete Module">
                                                             <i class="feather icon-trash"></i>
                                                         </button>
                                                     </div>
@@ -140,9 +140,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModuleModalLabel">Add Module</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?php echo base_url($url.'/courses/add_module'); ?>" method="post">
                 <div class="modal-body">
@@ -167,7 +165,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Module</button>
                 </div>
             </form>
@@ -181,9 +179,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editModuleModalLabel">Edit Module</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="" method="post" id="editModuleForm">
                 <div class="modal-body">
@@ -208,7 +204,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Module</button>
                 </div>
             </form>
@@ -222,15 +218,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModuleModalLabel">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Are you sure you want to delete the module "<span id="moduleName"></span>"? This action cannot be undone.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <a id="deleteModuleBtn" href="#" class="btn btn-danger">Delete</a>
             </div>
         </div>

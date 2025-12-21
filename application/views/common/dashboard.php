@@ -118,26 +118,65 @@
                         <h5 class="card-header-title mb-0">Quick Actions</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mb-4">
-                                <a href="<?= base_url($url . '/course/new') ?>" class="btn btn-outline-info btn-block p-3">
-                                    <i class="feather icon-book mb-2" style="font-size: 24px;"></i>
-                                    <div>Add New Course</div>
-                                </a>
-                            </div>
-                            <div class="col-6 mb-4">
-                                <a href="<?= $manage_student_url ?>" class="btn btn-outline-warning btn-block p-3">
-                                    <i class="feather icon-user-plus mb-2" style="font-size: 24px;"></i>
-                                    <div>Manage Students</div>
-                                </a>
-                            </div>
+                        <div class="d-grid gap-3">
+                            <!-- Course Management -->
+                            <a href="<?= base_url($url . '/courses') ?>" class="btn btn-outline-primary btn-lg p-4">
+                                <i class="feather icon-book mr-3" style="font-size: 24px;"></i>
+                                Manage Courses
+                            </a>
+
+                            <a href="<?= base_url($url . '/course/new') ?>" class="btn btn-outline-info btn-lg p-4">
+                                <i class="feather icon-plus-circle mr-3" style="font-size: 24px;"></i>
+                                Add New Course
+                            </a>
+
+                            <a href="<?= $manage_student_url ?>" class="btn btn-outline-warning btn-lg p-4">
+                                <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
+                                Manage Students
+                            </a>
+
+                            <!-- Communication & Organization -->
+                            <a href="<?= base_url($url . '/announcements') ?>" class="btn btn-outline-success btn-lg p-4">
+                                <i class="feather icon-bell mr-3" style="font-size: 24px;"></i>
+                                Announcements
+                            </a>
+
+                            <a href="<?= base_url($url . '/groups') ?>" class="btn btn-outline-secondary btn-lg p-4">
+                                <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
+                                Student Groups
+                            </a>
+
+                            <a href="<?= base_url($url . '/departments') ?>" class="btn btn-outline-dark btn-lg p-4">
+                                <i class="feather icon-briefcase mr-3" style="font-size: 24px;"></i>
+                                Departments
+                            </a>
+
+                            <!-- Reports & Resources -->
+                            <a href="<?= base_url($url . '/report') ?>" class="btn btn-outline-danger btn-lg p-4">
+                                <i class="feather icon-bar-chart mr-3" style="font-size: 24px;"></i>
+                                View Reports
+                            </a>
+
+                            <a href="<?= base_url($url . '/inventory') ?>" class="btn btn-outline-info btn-lg p-4">
+                                <i class="feather icon-package mr-3" style="font-size: 24px;"></i>
+                                Inventory
+                            </a>
+
+                            <a href="<?= base_url($url . '/college/view') ?>" class="btn btn-outline-primary btn-lg p-4">
+                                <i class="feather icon-home mr-3" style="font-size: 24px;"></i>
+                                College Info
+                            </a>
+                        </div>
+
+                        <!-- Help Section -->
+                        <div class="row mt-3">
                             <div class="col-12">
                                 <div class="alert alert-info mb-0">
-                                    <div class="d-flex">
-                                        <i class="feather icon-info mr-2" style="font-size: 20px;"></i>
+                                    <div class="d-flex align-items-center">
+                                        <i class="feather icon-info mr-3" style="font-size: 20px;"></i>
                                         <div>
                                             <h6 class="alert-heading mb-1">Need help?</h6>
-                                            <p class="mb-0">Check out the documentation or DrillU Team for assistance with any features.</p>
+                                            <p class="mb-0">Access all your teaching tools and resources from the quick actions above, or contact support for assistance.</p>
                                         </div>
                                     </div>
                                 </div>

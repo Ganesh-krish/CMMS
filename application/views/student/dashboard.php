@@ -95,6 +95,98 @@
             </div>
         </div>
 
+        <!-- Student Analytics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Student Analytics</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <?php
+                        // Get course enrollment data for pie chart
+                        $enrolled_count = $this->db->where('student_id', $student['id'])
+                                                  ->where('status', 'enrolled')
+                                                  ->count_all_results('course_enrollments');
+
+                        $completed_count = $this->db->where('student_id', $student['id'])
+                                                   ->where('status', 'completed')
+                                                   ->count_all_results('course_enrollments');
+
+                        $in_progress_count = $this->db->where('student_id', $student['id'])
+                                                     ->where('status', 'in_progress')
+                                                     ->count_all_results('course_enrollments');
+
+                        $dropped_count = $this->db->where('student_id', $student['id'])
+                                                 ->where('status', 'dropped')
+                                                 ->count_all_results('course_enrollments');
+
+                        // Get instrument data for bar chart
+                        $total_instruments = $this->db->where('college_id', $college['id'])
+                                                    ->where('is_active', 1)
+                                                    ->count_all_results('instruments');
+
+                        $available_instruments = $this->db->where('college_id', $college['id'])
+                                                        ->where('is_active', 1)
+                                                        ->where('availability_status', 'available')
+                                                        ->count_all_results('instruments');
+
+                        $issued_instruments = $this->db->where('college_id', $college['id'])
+                                                     ->where('is_active', 1)
+                                                     ->where('availability_status', 'issued')
+                                                     ->count_all_results('instruments');
+                        ?>
+
+                        <div class="row">
+                            <!-- Course Enrollment Status Pie Chart -->
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                <h6 class="text-muted mb-4">Course Enrollment Status</h6>
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="enrollmentStatusChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Instrument Availability Bar Chart -->
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                <h6 class="text-muted mb-4">Instrument Availability</h6>
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="instrumentAvailabilityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Summary -->
+                        <div class="row mt-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 bg-success text-white rounded">
+                                    <h4 class="mb-1"><?php echo $enrolled_count; ?></h4>
+                                    <small>Enrolled</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 bg-info text-white rounded">
+                                    <h4 class="mb-1"><?php echo $completed_count; ?></h4>
+                                    <small>Completed</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 bg-warning text-white rounded">
+                                    <h4 class="mb-1"><?php echo $in_progress_count; ?></h4>
+                                    <small>In Progress</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 bg-primary text-white rounded">
+                                    <h4 class="mb-1"><?php echo $available_instruments; ?></h4>
+                                    <small>Available Instruments</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="row mb-4">
             <div class="col-md-12">
@@ -171,3 +263,125 @@
         </div>
     </div>
 </div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Course Enrollment Status Pie Chart
+    const enrollmentCtx = document.getElementById('enrollmentStatusChart');
+    if (enrollmentCtx) {
+        const enrollmentData = {
+            labels: ['Enrolled', 'Completed', 'In Progress', 'Dropped'],
+            datasets: [{
+                data: [
+                    <?php echo $enrolled_count; ?>,
+                    <?php echo $completed_count; ?>,
+                    <?php echo $in_progress_count; ?>,
+                    <?php echo $dropped_count; ?>
+                ],
+                backgroundColor: [
+                    '#28a745', // success
+                    '#17a2b8', // info
+                    '#ffc107', // warning
+                    '#dc3545'  // danger
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        };
+
+        new Chart(enrollmentCtx, {
+            type: 'pie',
+            data: enrollmentData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? Math.round((context.parsed / total) * 100) : 0;
+                                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 12
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                            return percentage > 0 ? percentage + '%' : '';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
+
+    // Instrument Availability Bar Chart
+    const instrumentCtx = document.getElementById('instrumentAvailabilityChart');
+    if (instrumentCtx) {
+        const instrumentData = {
+            labels: ['Available', 'Issued', 'Total'],
+            datasets: [{
+                label: 'Instruments',
+                data: [
+                    <?php echo $available_instruments; ?>,
+                    <?php echo $issued_instruments; ?>,
+                    <?php echo $total_instruments; ?>
+                ],
+                backgroundColor: [
+                    '#28a745', // success
+                    '#ffc107', // warning
+                    '#17a2b8'  // info
+                ],
+                borderColor: [
+                    '#218838', // success border
+                    '#e0a800', // warning border
+                    '#138496'  // info border
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(instrumentCtx, {
+            type: 'bar',
+            data: instrumentData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

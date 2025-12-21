@@ -162,136 +162,79 @@
                     <div class="card-header">
                         <h5 class="mb-0">System Analysis</h5>
                     </div>
-                    <div class="card-body">
-                        <!-- User Distribution Chart -->
-                        <div class="mb-4">
-                            <h6 class="text-muted mb-3">User Distribution</h6>
-                            <div class="chart-container">
-                                <?php
-                                $admin_count = isset($total_administrators) ? $total_administrators : 0;
-                                $asst_admin_count = isset($total_asst_administrators) ? $total_asst_administrators : 0;
-                                $dept_admin_count = isset($total_dept_administrators) ? $total_dept_administrators : 0;
-                                $faculty_count = isset($total_faculty) ? $total_faculty : 0;
-                                $custodian_count = isset($total_custodians) ? $total_custodians : 0;
-                                $student_count = isset($total_students) ? $total_students : 0;
+                    <div class="card-body p-4">
+                        <?php
+                        // Prepare chart data
+                        $admin_count = isset($total_administrators) ? $total_administrators : 0;
+                        $asst_admin_count = isset($total_asst_administrators) ? $total_asst_administrators : 0;
+                        $dept_admin_count = isset($total_dept_administrators) ? $total_dept_administrators : 0;
+                        $faculty_count = isset($total_faculty) ? $total_faculty : 0;
+                        $custodian_count = isset($total_custodians) ? $total_custodians : 0;
+                        $student_count = isset($total_students) ? $total_students : 0;
+                        $department_count = isset($total_departments) ? $total_departments : 0;
+                        $course_count = isset($total_courses) ? $total_courses : 0;
+                        ?>
 
-                                $total_users = $admin_count + $asst_admin_count + $dept_admin_count + $faculty_count + $custodian_count + $student_count;
-                                if ($total_users > 0) {
-                                    $admin_percent = round(($admin_count / $total_users) * 100);
-                                    $asst_admin_percent = round(($asst_admin_count / $total_users) * 100);
-                                    $dept_admin_percent = round(($dept_admin_count / $total_users) * 100);
-                                    $faculty_percent = round(($faculty_count / $total_users) * 100);
-                                    $custodian_percent = round(($custodian_count / $total_users) * 100);
-                                    $student_percent = round(($student_count / $total_users) * 100);
-                                } else {
-                                    $admin_percent = $asst_admin_percent = $dept_admin_percent = $faculty_percent = $custodian_percent = $student_percent = 0;
-                                }
-                                ?>
-                                <div class="user-distribution">
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-danger small">Administrators</span>
-                                            <span class="text-danger small"><?php echo $admin_count; ?> (<?php echo $admin_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-danger" style="width: <?php echo $admin_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-warning small">Asst Administrators</span>
-                                            <span class="text-warning small"><?php echo $asst_admin_count; ?> (<?php echo $asst_admin_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-warning" style="width: <?php echo $asst_admin_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-info small">Dept Administrators</span>
-                                            <span class="text-info small"><?php echo $dept_admin_count; ?> (<?php echo $dept_admin_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-info" style="width: <?php echo $dept_admin_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-success small">Faculty</span>
-                                            <span class="text-success small"><?php echo $faculty_count; ?> (<?php echo $faculty_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-success" style="width: <?php echo $faculty_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-primary small">Custodians</span>
-                                            <span class="text-primary small"><?php echo $custodian_count; ?> (<?php echo $custodian_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-primary" style="width: <?php echo $custodian_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="distribution-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-secondary small">Students</span>
-                                            <span class="text-secondary small"><?php echo $student_count; ?> (<?php echo $student_percent; ?>%)</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar bg-secondary" style="width: <?php echo $student_percent; ?>%"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- User Distribution Pie Chart -->
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-4">User Distribution</h6>
+                            <div class="chart-container" style="height: 350px; max-width: 600px; margin: 0 auto;">
+                                <canvas id="userDistributionChart"></canvas>
                             </div>
                         </div>
 
-                        <!-- Key Metrics -->
-                        <div class="row">
+                        <!-- System Statistics Bar Chart -->
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-4">System Statistics</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="systemStatsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Summary Cards -->
+
+                        <!-- Key Metrics Row -->
+                        <!-- <div class="row mt-4">
                             <div class="col-md-6">
-                                <div class="metric-card">
-                                    <h6 class="text-muted">Student-to-Faculty Ratio</h6>
+                                <div class="bg-light p-4 rounded">
+                                    <h6 class="text-muted mb-3">Student-to-Faculty Ratio</h6>
                                     <div class="d-flex align-items-center">
-                                        <div class="ratio-display mr-3">
-                                            <span class="ratio-number">
+                                        <div class="mr-4">
+                                            <span class="h3 text-primary">
                                                 <?php
-                                                $faculty_ratio_count = isset($total_faculty) ? $total_faculty : 1;
-                                                $student_ratio_count = isset($total_students) ? $total_students : 0;
-                                                $ratio = $faculty_ratio_count > 0 ? round($student_ratio_count / $faculty_ratio_count, 1) : 0;
+                                                $faculty_ratio_count = $faculty_count > 0 ? $faculty_count : 1;
+                                                $ratio = round($student_count / $faculty_ratio_count, 1);
                                                 echo $ratio;
                                                 ?>
                                             </span>
-                                            <span class="ratio-label">:1</span>
+                                            <span class="text-muted">:1</span>
                                         </div>
-                                        <div class="ratio-bar">
-                                            <div class="ratio-fill" style="height: <?php echo min($ratio * 10, 100); ?>%"></div>
+                                        <div class="flex-grow-1">
+                                            <small class="text-muted">Students per faculty member</small>
                                         </div>
                                     </div>
-                                    <p class="text-muted small mt-1">Students per faculty member</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="metric-card">
-                                    <h6 class="text-muted">Courses per Department</h6>
+                                <div class="bg-light p-4 rounded">
+                                    <h6 class="text-muted mb-3">Courses per Department</h6>
                                     <div class="d-flex align-items-center">
-                                        <div class="ratio-display mr-3">
-                                            <span class="ratio-number">
+                                        <div class="mr-4">
+                                            <span class="h3 text-success">
                                                 <?php
-                                                $dept_ratio_count = isset($total_departments) ? $total_departments : 1;
-                                                $course_ratio_count = isset($total_courses) ? $total_courses : 0;
-                                                $avg_courses = $dept_ratio_count > 0 ? round($course_ratio_count / $dept_ratio_count, 1) : 0;
+                                                $dept_ratio_count = $department_count > 0 ? $department_count : 1;
+                                                $avg_courses = round($course_count / $dept_ratio_count, 1);
                                                 echo $avg_courses;
                                                 ?>
                                             </span>
                                         </div>
-                                        <div class="ratio-bar">
-                                            <div class="ratio-fill bg-success" style="height: <?php echo min($avg_courses * 20, 100); ?>%"></div>
+                                        <div class="flex-grow-1">
+                                            <small class="text-muted">Average courses per department</small>
                                         </div>
                                     </div>
-                                    <p class="text-muted small mt-1">Average courses per department</p>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -302,18 +245,55 @@
                         <h5 class="mb-0">Quick Actions</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="<?php echo base_url($url.'/departments'); ?>" class="btn btn-outline-primary btn-sm">
-                                <i class="feather icon-layers"></i> Manage Departments
+                        <div class="d-grid gap-3">
+                            <!-- Course Management -->
+                            <a href="<?php echo base_url($url.'/courses'); ?>" class="btn btn-outline-primary btn-lg p-4">
+                                <i class="feather icon-book mr-3" style="font-size: 24px;"></i>
+                                Manage Courses
                             </a>
-                            <a href="<?php echo base_url($url.'/report'); ?>" class="btn btn-outline-success btn-sm">
-                                <i class="feather icon-bar-chart"></i> View Reports
+
+                            <a href="<?php echo base_url($url.'/course/new'); ?>" class="btn btn-outline-info btn-lg p-4">
+                                <i class="feather icon-plus-circle mr-3" style="font-size: 24px;"></i>
+                                Add New Course
                             </a>
-                            <a href="<?php echo base_url($url.'/students'); ?>" class="btn btn-outline-info btn-sm">
-                                <i class="feather icon-users"></i> Student Management
+
+                            <!-- User Management -->
+                            <a href="<?php echo base_url($url.'/students'); ?>" class="btn btn-outline-info btn-lg p-4">
+                                <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
+                                Student Management
                             </a>
-                            <a href="<?php echo base_url($url.'/college/edit/1'); ?>" class="btn btn-outline-warning btn-sm">
-                                <i class="feather icon-settings"></i> College Settings
+
+                            <a href="<?php echo base_url($url.'/faculty/instructor'); ?>" class="btn btn-outline-secondary btn-lg p-4">
+                                <i class="feather icon-user-check mr-3" style="font-size: 24px;"></i>
+                                Faculty Management
+                            </a>
+
+                            <!-- Communication & Organization -->
+                            <a href="<?php echo base_url($url.'/announcements'); ?>" class="btn btn-outline-success btn-lg p-4">
+                                <i class="feather icon-bell mr-3" style="font-size: 24px;"></i>
+                                Announcements
+                            </a>
+
+                            <a href="<?php echo base_url($url.'/groups'); ?>" class="btn btn-outline-warning btn-lg p-4">
+                                <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
+                                Student Groups
+                            </a>
+
+                            <!-- Resources & Administration -->
+                            <a href="<?php echo base_url($url.'/departments'); ?>" class="btn btn-outline-dark btn-lg p-4">
+                                <i class="feather icon-layers mr-3" style="font-size: 24px;"></i>
+                                Manage Departments
+                            </a>
+
+                            <a href="<?php echo base_url($url.'/inventory'); ?>" class="btn btn-outline-danger btn-lg p-4">
+                                <i class="feather icon-package mr-3" style="font-size: 24px;"></i>
+                                Inventory
+                            </a>
+
+                            <!-- Settings -->
+                            <a href="<?php echo base_url($url.'/college/edit/1'); ?>" class="btn btn-outline-warning btn-lg p-4">
+                                <i class="feather icon-settings mr-3" style="font-size: 24px;"></i>
+                                College Settings
                             </a>
                         </div>
                     </div>
@@ -323,3 +303,138 @@
 
     </div>
 </div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // User Distribution Pie Chart
+    const userDistributionCtx = document.getElementById('userDistributionChart');
+    if (userDistributionCtx) {
+        const userData = {
+            labels: ['Administrators', 'Asst Administrators', 'Dept Administrators', 'Faculty', 'Custodians', 'Students'],
+            datasets: [{
+                data: [
+                    <?php echo $admin_count; ?>,
+                    <?php echo $asst_admin_count; ?>,
+                    <?php echo $dept_admin_count; ?>,
+                    <?php echo $faculty_count; ?>,
+                    <?php echo $custodian_count; ?>,
+                    <?php echo $student_count; ?>
+                ],
+                backgroundColor: [
+                    '#dc3545', // danger
+                    '#ffc107', // warning
+                    '#17a2b8', // info
+                    '#28a745', // success
+                    '#007bff', // primary
+                    '#6c757d'  // secondary
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        };
+
+        new Chart(userDistributionCtx, {
+            type: 'pie',
+            data: userData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? Math.round((context.parsed / total) * 100) : 0;
+                                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                            return percentage > 5 ? percentage + '%' : '';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
+
+    // System Statistics Bar Chart
+    const systemStatsCtx = document.getElementById('systemStatsChart');
+    if (systemStatsCtx) {
+        const systemData = {
+            labels: ['Administrators', 'Faculty', 'Custodians', 'Students', 'Departments', 'Courses'],
+            datasets: [{
+                label: 'Count',
+                data: [
+                    <?php echo $admin_count + $asst_admin_count + $dept_admin_count; ?>,
+                    <?php echo $faculty_count; ?>,
+                    <?php echo $custodian_count; ?>,
+                    <?php echo $student_count; ?>,
+                    <?php echo $department_count; ?>,
+                    <?php echo $course_count; ?>
+                ],
+                backgroundColor: [
+                    '#dc3545',
+                    '#28a745',
+                    '#007bff',
+                    '#6c757d',
+                    '#17a2b8',
+                    '#ffc107'
+                ],
+                borderColor: [
+                    '#c82333',
+                    '#218838',
+                    '#0056b3',
+                    '#545b62',
+                    '#138496',
+                    '#e0a800'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(systemStatsCtx, {
+            type: 'bar',
+            data: systemData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

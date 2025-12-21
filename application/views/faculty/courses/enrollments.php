@@ -175,9 +175,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="enrollStudentModalLabel">Enroll Student</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?php echo base_url($url.'/courses/enroll_student'); ?>" method="post">
                 <div class="modal-body">
@@ -204,7 +202,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Enroll Student</button>
                 </div>
             </form>
@@ -218,15 +216,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="unenrollModalLabel">Confirm Unenroll</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Are you sure you want to unenroll "<span id="studentName"></span>" from this course? This action cannot be undone.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <a id="unenrollBtn" href="#" class="btn btn-danger">Unenroll</a>
             </div>
         </div>

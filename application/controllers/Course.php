@@ -95,7 +95,7 @@ class Course extends CI_Controller {
                 "course_id IN (" . implode(',', $course_ids) . ")" => null
             ]);
 
-            $total_lessons = $this->db_model->count(TABLE_LESSONS, [
+            $total_lessons = $this->db_model->count(TABLE_COURSE_MODULE_LESSONS, [
                 "is_active" => 1,
                 "module_id IN (SELECT id FROM " . TABLE_COURSE_MODULES . " WHERE course_id IN (" . implode(',', $course_ids) . ") AND is_active = 1)" => null
             ]);

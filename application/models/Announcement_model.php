@@ -36,7 +36,19 @@ class Announcement_model extends CI_Model
 
     public function get_announcements($filters = [])
     {
-        $this->db->select('a.*, f.name as sender_name, f.role as sender_role, d.name as department_name');
+        // Build the select with proper CONCAT and CASE syntax
+        $select = "a.*, CONCAT(COALESCE(f.name, 'System'), ' (', ";
+        $select .= "CASE COALESCE(f.role, 0) ";
+        $select .= "WHEN 1 THEN 'Principal' ";
+        $select .= "WHEN 2 THEN 'Vice Principal' ";
+        $select .= "WHEN 3 THEN 'HOD' ";
+        $select .= "WHEN 4 THEN 'Staff' ";
+        $select .= "WHEN 5 THEN 'Custodian' ";
+        $select .= "ELSE 'Unknown' ";
+        $select .= "END, ')') as sender_name, ";
+        $select .= "f.role as sender_role, d.name as department_name";
+
+        $this->db->select($select, FALSE); // FALSE prevents CI from escaping
         $this->db->from(TABLE_ANNOUNCEMENTS . ' a');
         $this->db->join(TABLE_FACULTY . ' f', 'f.id = a.sender_id', 'left');
         $this->db->join(TABLE_DEPARTMENT . ' d', 'd.id = a.department_id', 'left');
@@ -89,7 +101,19 @@ class Announcement_model extends CI_Model
 
     public function get_announcement($id)
     {
-        $this->db->select('a.*, f.name as sender_name, f.role as sender_role, d.name as department_name');
+        // Build the select with proper CONCAT and CASE syntax
+        $select = "a.*, CONCAT(COALESCE(f.name, 'System'), ' (', ";
+        $select .= "CASE COALESCE(f.role, 0) ";
+        $select .= "WHEN 1 THEN 'Principal' ";
+        $select .= "WHEN 2 THEN 'Vice Principal' ";
+        $select .= "WHEN 3 THEN 'HOD' ";
+        $select .= "WHEN 4 THEN 'Staff' ";
+        $select .= "WHEN 5 THEN 'Custodian' ";
+        $select .= "ELSE 'Unknown' ";
+        $select .= "END, ')') as sender_name, ";
+        $select .= "f.role as sender_role, d.name as department_name";
+
+        $this->db->select($select, FALSE); // FALSE prevents CI from escaping
         $this->db->from(TABLE_ANNOUNCEMENTS . ' a');
         $this->db->join(TABLE_FACULTY . ' f', 'f.id = a.sender_id', 'left');
         $this->db->join(TABLE_DEPARTMENT . ' d', 'd.id = a.department_id', 'left');
@@ -155,6 +179,7 @@ class Announcement_model extends CI_Model
         return 0;
     }
 }
+
 
 
 

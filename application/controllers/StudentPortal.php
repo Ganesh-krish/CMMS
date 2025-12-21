@@ -8,6 +8,7 @@ class StudentPortal extends CI_Controller {
 
         $this->load->model('common', 'faculty_common');
         $this->load->model('Db_model', 'db_model');
+        $this->load->model('Announcement_model', 'announcement');
 
         // Get college information
         $this->college = $this->faculty_common->get_default_college();
@@ -218,25 +219,15 @@ class StudentPortal extends CI_Controller {
         $data['student'] = $this->student_session;
         $data['college'] = $this->college;
 
-        // Get announcements - public announcements and department-specific announcements
-        $this->db->select('a.*, d.name as department_name, CONCAT(f.name, " (", r.name, ")") as sender_name');
-        $this->db->from('announcements a');
-        $this->db->join('faculty f', 'f.id = a.sender_id', 'left');
-        $this->db->join('roles r', 'r.id = f.role', 'left');
-        $this->db->join('departments d', 'd.id = a.department_id', 'left');
-        $this->db->where('a.college_id', $this->college['id']);
-        $this->db->where('a.is_active', 1);
-        // Show public announcements OR department-specific announcements for student's department
-        $this->db->group_start();
-        $this->db->where('a.visibility', 'all');
-        $this->db->or_group_start();
-        $this->db->where('a.visibility', 'department');
-        $this->db->where('a.department_id', $this->student_session['department']);
-        $this->db->group_end();
-        $this->db->group_end();
-        $this->db->order_by('a.created_at', 'DESC');
+        // Get announcements using the model (same logic as faculty portal)
+        $filters = [
+            'college_id' => $this->college['id'],
+            'is_active' => 1,
+            'user_role' => ROLE_STUDENT,
+            'user_department' => $this->student_session['department']
+        ];
 
-        $data['announcements'] = $this->db->get()->result_array();
+        $data['announcements'] = $this->announcement->get_announcements($filters);
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/announcements/index', $data);

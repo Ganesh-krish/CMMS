@@ -496,4 +496,133 @@ class Install extends CI_Controller
 
         echo "Default data insertion completed! <br>";
     }
+
+    // Create sample course modules for testing
+    public function create_sample_modules() {
+        echo "<h2>Creating Sample Course Modules</h2>";
+
+        // Check if courses exist
+        $courses = $this->db->get('courses')->result_array();
+        if (empty($courses)) {
+            echo "No courses found. Please create courses first.<br>";
+            return;
+        }
+
+        $sample_modules = [];
+        foreach ($courses as $course) {
+            $sample_modules[] = [
+                'course_id' => $course['id'],
+                'name' => 'Introduction to ' . $course['name'],
+                'description' => 'This module provides an introduction to the basic concepts of ' . $course['name'] . '. You will learn the fundamental principles and get started with practical exercises.',
+                'order' => 1,
+                'is_active' => 1,
+                'created_by' => 1
+            ];
+
+            $sample_modules[] = [
+                'course_id' => $course['id'],
+                'name' => 'Advanced Topics in ' . $course['name'],
+                'description' => 'This advanced module covers complex topics and advanced techniques in ' . $course['name'] . '. Prerequisites: Basic knowledge of the subject.',
+                'order' => 2,
+                'is_active' => 1,
+                'created_by' => 1
+            ];
+
+            $sample_modules[] = [
+                'course_id' => $course['id'],
+                'name' => 'Practical Applications',
+                'description' => 'In this module, you will apply what you\'ve learned through hands-on projects and real-world scenarios. This module includes assignments and case studies.',
+                'order' => 3,
+                'is_active' => 1,
+                'created_by' => 1
+            ];
+        }
+
+        foreach ($sample_modules as $module) {
+            $this->db->insert('course_modules', $module);
+            echo "Created module: {$module['name']} for course ID {$module['course_id']}<br>";
+        }
+
+        echo "Sample modules creation completed! <br>";
+        echo "Total modules created: " . count($sample_modules) . "<br>";
+    }
+
+    // Create sample announcements for testing
+    public function create_sample_announcements() {
+        echo "<h2>Creating Sample Announcements</h2>";
+
+        // Check if college and departments exist
+        $college = $this->db->get('college')->row_array();
+        $departments = $this->db->get('departments')->result_array();
+
+        if (!$college) {
+            echo "No college found. Please create college first.<br>";
+            return;
+        }
+
+        if (empty($departments)) {
+            echo "No departments found. Please create departments first.<br>";
+            return;
+        }
+
+        // Get a faculty member to use as sender
+        $faculty = $this->db->get('faculty')->row_array();
+        if (!$faculty) {
+            echo "No faculty members found. Please create faculty first.<br>";
+            return;
+        }
+
+        $sample_announcements = [
+            [
+                'title' => 'Welcome to the New Academic Year',
+                'message' => 'Dear students, welcome to the new academic year! We are excited to have you back and look forward to an enriching learning experience. Please check your course schedules and ensure you have all required materials.',
+                'visibility' => 'all',
+                'department_id' => null,
+                'sender_id' => $faculty['id'],
+                'college_id' => $college['id'],
+                'priority' => 'normal',
+                'is_active' => 1,
+                'created_by' => $faculty['id'],
+                'updated_by' => $faculty['id'],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'title' => 'Important: Course Registration Deadline',
+                'message' => 'This is a reminder that course registration for the upcoming semester closes in 3 days. Students who have not yet registered should do so immediately through the student portal. Late registrations will not be accepted.',
+                'visibility' => 'all',
+                'department_id' => null,
+                'sender_id' => $faculty['id'],
+                'college_id' => $college['id'],
+                'priority' => 'high',
+                'is_active' => 1,
+                'created_by' => $faculty['id'],
+                'updated_by' => $faculty['id'],
+                'created_at' => date('Y-m-d H:i:s', strtotime('-1 day')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-1 day'))
+            ],
+            [
+                'title' => 'Computer Science Department Meeting',
+                'message' => 'All Computer Science students are required to attend the department orientation meeting on Friday at 2 PM in Room 101. Topics will include curriculum updates, internship opportunities, and important department policies.',
+                'visibility' => 'department',
+                'department_id' => $departments[0]['id'],
+                'sender_id' => $faculty['id'],
+                'college_id' => $college['id'],
+                'priority' => 'normal',
+                'is_active' => 1,
+                'created_by' => $faculty['id'],
+                'updated_by' => $faculty['id'],
+                'created_at' => date('Y-m-d H:i:s', strtotime('-2 days')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-2 days'))
+            ]
+        ];
+
+        foreach ($sample_announcements as $announcement) {
+            $this->db->insert('announcements', $announcement);
+            echo "Created announcement: {$announcement['title']} ({$announcement['visibility']})<br>";
+        }
+
+        echo "Sample announcements creation completed! <br>";
+        echo "Total announcements created: " . count($sample_announcements) . "<br>";
+    }
 }

@@ -40,13 +40,42 @@
                             </div>
 
                             <div class="card-body">
-                                <div class="announcement-content">
-                                    <?php echo isset($announcement['content']) ? nl2br(htmlspecialchars($announcement['content'])) : 'No content available.'; ?>
+                                <!-- Announcement Meta Information -->
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">
+                                                <i class="feather icon-user"></i>
+                                                <?php echo isset($announcement['sender_name']) ? htmlspecialchars($announcement['sender_name']) : 'System'; ?>
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <?php if (isset($announcement['visibility']) && $announcement['visibility'] === 'department'): ?>
+                                                <small class="text-muted">
+                                                    <i class="feather icon-users"></i>
+                                                    Department: <?php echo isset($announcement['department_name']) ? htmlspecialchars($announcement['department_name']) : 'N/A'; ?>
+                                                </small>
+                                            <?php else: ?>
+                                                <small class="text-muted">
+                                                    <i class="feather icon-globe"></i>
+                                                    Public Announcement
+                                                </small>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </div>
 
+                                <!-- Announcement Content -->
+                                <div class="announcement-content">
+                                    <?php echo isset($announcement['message']) ? nl2br(htmlspecialchars($announcement['message'])) : 'No content available.'; ?>
+                                </div>
+
+                                <!-- Priority Badge -->
                                 <?php if (isset($announcement['priority']) && $announcement['priority'] === 'high'): ?>
                                     <div class="mt-3">
-                                        <span class="badge badge-danger">High Priority</span>
+                                        <span class="badge badge-danger">
+                                            <i class="feather icon-alert-triangle"></i> High Priority
+                                        </span>
                                     </div>
                                 <?php endif; ?>
                             </div>

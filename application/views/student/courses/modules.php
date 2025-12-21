@@ -57,26 +57,29 @@
                         <div class="card h-100 module-card">
                             <div class="card-header bg-gradient-success text-white">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge badge-light">Module <?php echo $module['order']; ?></span>
-                                    <small>Order: <?php echo $module['order']; ?></small>
+                                    <span class="badge badge-light">Module <?php echo isset($module['order']) ? $module['order'] : 'N/A'; ?></span>
+                                    <small>Order: <?php echo isset($module['order']) ? $module['order'] : 'N/A'; ?></small>
                                 </div>
                             </div>
 
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?php echo htmlspecialchars($module['name']); ?></h5>
+                                <h5 class="card-title"><?php echo htmlspecialchars(isset($module['name']) ? $module['name'] : 'Untitled Module'); ?></h5>
 
                                 <p class="card-text text-muted flex-grow-1">
-                                    <?php echo htmlspecialchars(substr($module['description'], 0, 150)); ?>
-                                    <?php echo strlen($module['description']) > 150 ? '...' : ''; ?>
+                                    <?php echo htmlspecialchars(isset($module['description']) ? substr($module['description'], 0, 150) : 'No description available.'); ?>
+                                    <?php echo (isset($module['description']) && strlen($module['description']) > 150) ? '...' : ''; ?>
                                 </p>
 
                                 <div class="mt-auto">
                                     <!-- Module Stats -->
                                     <?php
                                     // Get lessons count for this module
-                                    $this->db->where('module_id', $module['id']);
-                                    $this->db->where('is_active', 1);
-                                    $lessons_count = $this->db->count_all_results('course_module_lessons');
+                                    $lessons_count = 0;
+                                    if (isset($module['id'])) {
+                                        $this->db->where('module_id', $module['id']);
+                                        $this->db->where('is_active', 1);
+                                        $lessons_count = $this->db->count_all_results('course_module_lessons');
+                                    }
                                     ?>
                                     <div class="mb-3">
                                         <small class="text-muted">
@@ -87,10 +90,16 @@
 
                                     <!-- Action Button -->
                                     <div class="d-grid">
-                                        <a href="<?php echo base_url('student-portal/module-lessons/' . $course['id'] . '/' . $module['id']); ?>"
-                                           class="btn btn-success btn-sm">
-                                            <i class="feather icon-play-circle"></i> Start Learning
-                                        </a>
+                                        <?php if (isset($module['id']) && isset($course['id'])): ?>
+                                            <a href="<?php echo base_url('student-portal/module-lessons/' . $course['id'] . '/' . $module['id']); ?>"
+                                               class="btn btn-success btn-sm">
+                                                <i class="feather icon-play-circle"></i> Start Learning
+                                            </a>
+                                        <?php else: ?>
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                <i class="feather icon-lock"></i> Module Unavailable
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

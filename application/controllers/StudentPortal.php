@@ -138,10 +138,13 @@ class StudentPortal extends CI_Controller {
         }
 
         // Get modules for this course
-        $data['modules'] = $this->db_model->get_all('course_modules', [
-            'course_id' => $course_id,
-            'is_active' => 1
-        ], 'order ASC');
+       // To this:
+    $data['modules'] = $this->db_model->get_all('course_modules', [
+        'course_id' => $course_id,
+        'is_active' => 1
+    ], '*', 'order', 'ASC');
+
+      
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/courses/modules', $data);
@@ -181,7 +184,7 @@ class StudentPortal extends CI_Controller {
         $data['lessons'] = $this->db_model->get_all('course_module_lessons', [
             'module_id' => $module_id,
             'is_active' => 1
-        ], 'order ASC');
+        ], '*','order', 'ASC');
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/courses/lessons', $data);
@@ -218,11 +221,25 @@ class StudentPortal extends CI_Controller {
         $data['student'] = $this->student_session;
         $data['college'] = $this->college;
 
-        // Get announcements (you may need to adjust this based on your announcements table)
-        $data['announcements'] = $this->db_model->get_all('announcements', [
-            'college_id' => $this->college['id'],
-            'is_active' => 1
-        ], 'created_at DESC');
+        // Get announcements - public announcements and department-specific announcements
+        $this->db->select('a.*, d.name as department_name, CONCAT(f.name, " (", r.name, ")") as sender_name');
+        $this->db->from('announcements a');
+        $this->db->join('faculty f', 'f.id = a.sender_id', 'left');
+        $this->db->join('roles r', 'r.id = f.role', 'left');
+        $this->db->join('departments d', 'd.id = a.department_id', 'left');
+        $this->db->where('a.college_id', $this->college['id']);
+        $this->db->where('a.is_active', 1);
+        // Show public announcements OR department-specific announcements for student's department
+        $this->db->group_start();
+        $this->db->where('a.visibility', 'all');
+        $this->db->or_group_start();
+        $this->db->where('a.visibility', 'department');
+        $this->db->where('a.department_id', $this->student_session['department']);
+        $this->db->group_end();
+        $this->db->group_end();
+        $this->db->order_by('a.created_at', 'DESC');
+
+        $data['announcements'] = $this->db->get()->result_array();
 
         $this->load->view('student/common/sidebar', $data);
         $this->load->view('student/announcements/index', $data);

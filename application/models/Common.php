@@ -448,5 +448,23 @@ class common extends CI_Model {
         return $query->get()->result_array();
     }
 
+    /**
+     * Get role name from role ID
+     * @param int $role_id
+     * @return string
+     */
+    public function get_role_name($role_id) {
+        $roles = [
+            ROLE_PRINCIPAL => 'Principal',
+            ROLE_VICE_PRINCIPAL => 'Vice Principal',
+            ROLE_HOD => 'HOD',
+            ROLE_STAFF => 'Staff',
+            ROLE_CUSTODIAN => 'Custodian',
+            ROLE_STUDENT => 'Student'
+        ];
+
+        return isset($roles[$role_id]) ? $roles[$role_id] : 'Unknown';
+    }
+
 
 }

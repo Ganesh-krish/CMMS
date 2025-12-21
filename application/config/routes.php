@@ -54,6 +54,17 @@ $route['logout'] = 'Welcome/logout';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// Student Portal Routes
+$route['student-portal/login'] = 'StudentPortal/login';
+$route['student-portal/authenticate'] = 'StudentPortal/authenticate';
+$route['student-portal/logout'] = 'StudentPortal/logout';
+$route['student-portal/dashboard'] = 'StudentPortal/dashboard';
+$route['student-portal/courses'] = 'StudentPortal/courses';
+$route['student-portal/course-modules/(:num)'] = 'StudentPortal/course_modules/$1';
+$route['student-portal/module-lessons/(:num)/(:num)'] = 'StudentPortal/module_lessons/$1/$2';
+$route['student-portal/view-lesson/(:num)/(:num)/(:num)'] = 'StudentPortal/view_lesson/$1/$2/$3';
+$route['student-portal/inventory'] = 'StudentPortal/inventory';
+$route['student-portal/announcements'] = 'StudentPortal/announcements';
 
 //Dashboard routes
 $route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
@@ -141,6 +152,7 @@ $route['(:any)/courses/delete_lesson/(:num)/(:num)/(:num)'] = 'Course/delete_les
 // Course Enrollments routes
 $route['(:any)/courses/enrollments/(:num)'] = 'Course/enrollments/$2';
 $route['(:any)/courses/view_lesson/(:num)/(:num)/(:num)'] = 'Course/view_lesson/$2/$3/$4';
+
 $route['(:any)/courses/enroll_student'] = 'Course/enroll_student';
 $route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'Course/update_enrollment_status/$2/$3';
 $route['(:any)/courses/unenroll_student/(:num)'] = 'Course/unenroll_student/$2';

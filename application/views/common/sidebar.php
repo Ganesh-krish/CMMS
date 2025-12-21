@@ -3,7 +3,7 @@
 <html lang="en" class="default-style layout-fixed layout-navbar-fixed">
 
 <head>
-    <title>Drillu</title>
+    <title><?php echo isset($college['name']) ? $college['name'] . ' - Management System' : 'College Management System'; ?></title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -374,7 +374,6 @@
     <div class="app-brand demo">
                     <!-- <span class="app-brand-logo demo"> -->
                     <img src="<?php echo isset($college['logo']) && !empty($college['logo']) ? base_url('uploads/college/' . $college['logo']) : base_url('assets/img/logo.svg'); ?>" alt="College Logo" width="100px" height="100px">                    </span>
-                    <!-- <a href="" class="app-brand-text demo sidenav-text font-weight-normal ml-2">Drillu</a> -->
                     <a href="javascript:" class="layout-sidenav-toggle sidenav-link text-large ml-auto">
                         <i class="ion ion-md-menu align-middle"></i>
                     </a>

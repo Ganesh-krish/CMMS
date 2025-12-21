@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="icon" type="image/png" href="<?= base_url("/") ?>assets/img/favicon.svg">
+    <link rel="icon" type="image/png" href="<?php echo isset($college['logo']) && !empty($college['logo']) ? base_url('uploads/college/' . $college['logo']) : base_url('assets/img/favicon.svg'); ?>">
 
     <!-- Icon fonts -->
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/fonts/ionicons.css">

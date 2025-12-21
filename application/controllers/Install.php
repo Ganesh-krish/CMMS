@@ -625,4 +625,36 @@ class Install extends CI_Controller
         echo "Sample announcements creation completed! <br>";
         echo "Total announcements created: " . count($sample_announcements) . "<br>";
     }
+
+    // Add role column to students table
+    public function add_student_role_column() {
+        echo "<h2>Adding Role Column to Students Table</h2>";
+
+        // Check if role column already exists
+        $columns = $this->db->list_fields('students');
+        if (in_array('role', $columns)) {
+            echo "Role column already exists in students table.<br>";
+            return;
+        }
+
+        // Add role column
+        $sql = "ALTER TABLE `students` ADD COLUMN `role` int(11) DEFAULT " . ROLE_STUDENT . " AFTER `batch`;";
+        if ($this->db->query($sql)) {
+            echo "✅ Successfully added 'role' column to students table.<br>";
+            echo "Default value set to ROLE_STUDENT (" . ROLE_STUDENT . ").<br>";
+        } else {
+            echo "❌ Failed to add role column.<br>";
+            echo "Error: " . $this->db->error()['message'] . "<br>";
+        }
+
+        // Add index for better performance
+        $index_sql = "ALTER TABLE `students` ADD INDEX `idx_students_role` (`role`);";
+        if ($this->db->query($index_sql)) {
+            echo "✅ Successfully added index on role column.<br>";
+        } else {
+            echo "⚠️ Could not add index (might already exist).<br>";
+        }
+
+        echo "Role column addition completed!<br>";
+    }
 }

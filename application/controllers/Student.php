@@ -147,9 +147,10 @@ class Student extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'registration_number' => $this->input->post('registration_number'),
+                    'roll_no' => $this->input->post('roll_no'), // Changed from registration_number
                     'department' => $this->input->post('department'),
                     'batch' => $this->input->post('batch'),
+                    'role' => $this->input->post('role') ?: ROLE_STUDENT, // Add role field with default
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'college_id' => $this->college['id'],
                     'is_active' => 1,
@@ -213,9 +214,10 @@ class Student extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'registration_number' => $this->input->post('registration_number'),
+                    'roll_no' => $this->input->post('roll_no'),
                     'department' => $this->input->post('department'),
                     'batch' => $this->input->post('batch'),
+                    'role' => $this->input->post('role') ?: ROLE_STUDENT,
                     'updated_at' => date('Y-m-d H:i:s')
                 );
 

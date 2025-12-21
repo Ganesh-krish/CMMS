@@ -107,6 +107,7 @@
                                             <th>Email</th>
                                             <th>Enrollment No</th>
                                             <th>Department</th>
+                                            <th>Role</th>
                                             <th>Status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
@@ -128,6 +129,22 @@
                                                         echo 'N/A';
                                                     }
                                                     ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $role_name = 'Student'; // Default
+                                                    if (isset($student['role'])) {
+                                                        switch ($student['role']) {
+                                                            case ROLE_STUDENT:
+                                                                $role_name = 'Student';
+                                                                break;
+                                                            // Add more roles here if needed in the future
+                                                            default:
+                                                                $role_name = 'Student';
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <span class="badge badge-info"><?php echo $role_name; ?></span>
                                                 </td>
                                                 <td>
                                                     <span class="badge badge-<?php echo $student['is_active'] ? 'success' : 'secondary'; ?>">

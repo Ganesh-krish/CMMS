@@ -124,11 +124,6 @@ class Welcome extends CI_Controller {
                 redirect('custodian/dashboard'); // Unified dashboard adapts to role
                 break;
 
-            case ROLE_STUDENT:
-                redirect('panel/student/dashboard');
-                break;
-
-            default:
                 // Unknown role - destroy session and redirect to login
                 $this->session->unset_userdata('user');
                 $this->session->set_flashdata('error', 'Invalid user role. Please login again.');

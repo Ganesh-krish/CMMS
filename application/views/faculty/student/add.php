@@ -108,7 +108,24 @@
                                         </select>
                                     </div>
                                 </div>
-                                <?php if (!isset($student)): ?>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="role"><i class="feather icon-user-check mr-2"></i>Role *</label>
+                                        <select class="form-control select2" id="role" name="role" required>
+                                            <option value="">Select Role</option>
+                                            <option value="<?php echo ROLE_STUDENT; ?>"
+                                                <?php echo (isset($student) && $student['role'] == ROLE_STUDENT) ? 'selected' : (!isset($student) ? 'selected' : ''); ?>>
+                                                Student
+                                            </option>
+                                            <!-- You can add more roles here if needed in the future -->
+                                        </select>
+                                        <small class="form-text text-muted">Select the student's role in the system</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if (!isset($student)): ?>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>
@@ -116,8 +133,11 @@
                                         <small class="form-text text-muted">Minimum 6 characters</small>
                                     </div>
                                 </div>
-                                <?php endif; ?>
+                                <div class="col-md-6">
+                                    <!-- Additional fields can go here if needed -->
+                                </div>
                             </div>
+                            <?php endif; ?>
 
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">

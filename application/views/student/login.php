@@ -96,6 +96,12 @@
             letter-spacing: 0.5px;
         }
 
+        .btn-login:hover {
+            background: #f5910a !important;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* .btn-login:hover {
             background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
             transform: translateY(-1px);
@@ -192,7 +198,7 @@
             <!-- Right Side - Banner (md-8) -->
             <div class="col-md-8 d-flex align-items-center p-4">
                 <div class="banner-container w-100"
-                     style="background-image: url('<?php echo isset($college['banner']) && !empty($college['banner']) ? base_url('uploads/college/' . $college['banner']) : base_url('assets/images/default-banner.jpg'); ?>');">
+                     style="background-image: url('<?php echo isset($college['banner']) && !empty($college['banner']) ? base_url('uploads/college/' . $college['banner']) : base_url('assets/faculty/img/bg/vr-bg.jpg'); ?>');">
                 </div>
             </div>
         </div>

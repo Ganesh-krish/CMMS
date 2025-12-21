@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="icon" type="image/png" href="<?= base_url("/") ?>assets/images/favicon.svg">
+    <link rel="icon" type="image/png" href="<?= base_url("/") ?>assets/img/favicon.svg">
     <!-- Icon fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/select2/select2.css">
@@ -556,7 +556,7 @@
                 <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-white container-p-x">
                     <a href="" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
                         <span class="app-brand-logo demo" style="margin-left: 10px;">
-                            <img src="<?= base_url('assets/images/logo.svg') ?>" alt="Brand Logo" width="100px" height="70px">
+                            <img src="<?= base_url('assets/img/logo.svg') ?>" alt="Brand Logo" width="100px" height="70px">
                         </span>
                         <!-- <span class="app-brand-text demo font-weight-normal ml-2">Nutz</span> -->
                     </a>

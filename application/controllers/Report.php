@@ -1542,7 +1542,7 @@ class Report extends CI_Controller
         $totals = [
             'students' => $this->db->where(['is_active' => 1, 'college_id' => $college_id])->count_all_results(TABLE_STUDENT),
             'staff' => $this->db->where(['is_active' => 1])->count_all_results(TABLE_FACULTY),
-            'courses' => $this->db->where(['is_active' => 1, 'college_id' => $college_id])->count_all_results(TABLE_COURCES),
+            'courses' => 0, // Courses module removed
             'batches' => $this->db->table_exists(TABLE_BATCHES) ? $this->db->where('college_id', $college_id)->count_all_results(TABLE_BATCHES) : 0,
             'modules' => $this->db->table_exists('course_modules') ? $this->db->where('course_id !=', null)->count_all_results('course_modules') : 0,
             'lessons' => $this->db->table_exists('lessons') ? $this->db->count_all('lessons') : 0,

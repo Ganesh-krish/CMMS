@@ -62,10 +62,7 @@ class Principal extends CI_Controller {
             array_merge(["is_active" => true], $this->college_filter(TABLE_STUDENT, $college_id))
         ));
         
-        $data["total_courses"] = count($this->db_model->get_all(
-            TABLE_COURCES,
-            array_merge(["is_active" => true], $this->college_filter(TABLE_COURCES, $college_id))
-        ));
+        $data["total_courses"] = 0; // Courses module removed
         
         // Tests module removed: keep metric zero
         $data["active_tests"] = 0;
@@ -134,36 +131,9 @@ class Principal extends CI_Controller {
         $data["department_names"] = [$this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $department])['name'] ?? 'My Department'];
         $data["department_student_counts"] = [$data["total_students"]];
         
-        // Get course enrollment data
-        $courses_q = $this->db->select('c.id, c.name')
-            ->from(TABLE_COURCES . ' c')
-            ->where('c.is_active', 1);
-
-        // For admin access ($staff_id = 0), show all courses in the college
-        // For regular staff, filter by courses they created
-        if ($staff_id !== 0) {
-            // Regular staff access - show only courses they created
-            $courses_q->where('c.created_by', $staff_id);
-        }
-
-        if ($this->has_college_column(TABLE_COURCES)) {
-            $courses_q->where('c.college_id', $college_id);
-        }
-        $courses = $courses_q
-            ->limit(10)
-            ->get()
-            ->result_array();
-            
+        // Course enrollment data - module removed
         $data["course_names"] = [];
         $data["course_enrollments"] = [];
-        
-        foreach ($courses as $course) {
-            $enrollments = $this->db->where('course_id', $course['id'])
-                ->count_all_results(TABLE_COURSE_STUDENTS);
-                
-            $data["course_names"][] = $course['name'];
-            $data["course_enrollments"][] = $enrollments;
-        }
         
         // Tests module removed: zeroed metrics
         $data["test_completion_rate"] = 0;

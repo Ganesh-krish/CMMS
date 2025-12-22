@@ -54,11 +54,7 @@ class Hod extends CI_Controller {
             "department" => $department
         ]));
         
-        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, [
-            "is_active" => true, 
-            "college_id" => $college_id,
-            "created_by" => $this->permissions['read']
-        ]));
+        $data["total_courses"] = 0; // Courses module removed
         
         $data["active_tests"] = $this->db->where('college_id', $college_id)
             ->where('is_active', 1)

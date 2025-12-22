@@ -56,12 +56,7 @@ class Staff extends CI_Controller
             "department" => $department
         ]));
         
-        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, [
-            "is_active" => true, 
-            "college_id" => $college_id,
-            "department" => $department,
-            'created_by' => $staff_id
-        ]));
+        $data["total_courses"] = 0; // Courses module removed
         
         $data["active_tests"] = $this->db->where('college_id', $college_id)
             ->where('is_active', 1)
@@ -392,11 +387,10 @@ class Staff extends CI_Controller
         $class["url"] =  $this->url;
         $class["college_id"] = $this->college['id'];
         $class["sidebar_href"] = base_url($this->url . "/staff");
-        $data["cources"] = $this->db_model->get_all(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'],"department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
-        // var_dump($data["cources"]);die;
-        $data["faculty"] = $this->db_model->get_row(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
+        $data["cources"] = []; // Courses module removed
+        $data["faculty"] = null; // Courses module removed
         $this->load->view('common/sidebar', $class);
-        $this->load->view('faculty/faculty/cources', $data);
+        $this->load->view('faculty/staff/view', $data); // Changed to staff view
         $this->load->view('common/footer');
     }
 

@@ -248,31 +248,6 @@ class common extends CI_Model {
 
         // Define permission rules by role and resource
         $permissions = [
-            // Course-related permissions
-            'course' => [
-                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
-            ],
-            'module' => [
-                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
-            ],
-            'lesson' => [
-                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL]
-            ],
-            // Inventory-related permissions
-            'inventory' => [
-                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'issue' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'return' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
-                'maintenance' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
-            ],
             // Announcement permissions
             'announcement' => [
                 'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD],
@@ -321,12 +296,8 @@ class common extends CI_Model {
 
     public function get_student_course_types($student)
     {
-        if (!$student || !isset($student->college_id)) {
-            return [];
-        }
-
-        $course_type_config = unserialize(COURSE_TYPES);
-        return $course_type_config ?: [];
+        // Course module removed - return empty array
+        return [];
     }
     // public function get_departments($id){
     //     $query = $this->db->query("

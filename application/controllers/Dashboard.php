@@ -216,7 +216,7 @@ class Dashboard extends CI_Controller
         $data["total_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_CUSTODIAN]));
         $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => 1]));
         $data["total_departments"] = count($this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]));
-        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["is_active" => 1]));
+        $data["total_courses"] = 0; // Courses module removed
 
         // Keep these for backward compatibility
         $data["active_tests"] = 0; // Placeholder
@@ -227,7 +227,7 @@ class Dashboard extends CI_Controller
     {
         $dept_id = $this->session_data['department'];
         $data["department_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["department" => $dept_id, "is_active" => true]));
-        $data["department_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["department" => $dept_id, "is_active" => true]));
+        $data["department_courses"] = 0; // Courses module removed
         $data["department_name"] = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $dept_id])['name'] ?? 'Department';
         return $data;
     }
@@ -235,7 +235,7 @@ class Dashboard extends CI_Controller
     private function get_staff_dashboard_data()
     {
         $staff_id = $this->session_data['id'];
-        $data["my_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["created_by" => $staff_id, "is_active" => true]));
+        $data["my_courses"] = 0; // Courses module removed
         $data["my_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => true])); // Limited view
         return $data;
     }

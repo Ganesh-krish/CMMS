@@ -54,16 +54,6 @@ $route['logout'] = 'Welcome/logout';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route['student-portal/login'] = 'StudentPortal/login';
-$route['student-portal/authenticate'] = 'StudentPortal/authenticate';
-$route['student-portal/logout'] = 'StudentPortal/logout';
-$route['student-portal/dashboard'] = 'StudentPortal/dashboard';
-$route['student-portal/courses'] = 'StudentPortal/courses';
-$route['student-portal/course-modules/(:num)'] = 'StudentPortal/course_modules/$1';
-$route['student-portal/module-lessons/(:num)/(:num)'] = 'StudentPortal/module_lessons/$1/$2';
-$route['student-portal/view-lesson/(:num)/(:num)/(:num)'] = 'StudentPortal/view_lesson/$1/$2/$3';
-$route['student-portal/inventory'] = 'StudentPortal/inventory';
-$route['student-portal/announcements'] = 'StudentPortal/announcements';
 
 //Dashboard routes
 $route['(:any)/dashboard'] = 'Dashboard/index';  // Dashboard route
@@ -121,80 +111,15 @@ $route['(:any)/principal/reset_password_student'] = 'Principal/reset_password_st
 $route['(:any)/staff/reset_password_student'] = 'Staff/reset_password_student';
 $route['(:any)/hod/reset_password_student'] = 'Hod/reset_password_student';
 
-// Music Groups Management routes
-$route['(:any)/groups'] = 'Groups/groups';
-$route['(:any)/groups/add'] = 'Groups/add_group';
-$route['(:any)/groups/edit/(:num)'] = 'Groups/edit_group/$2';
-$route['(:any)/groups/delete/(:num)'] = 'Groups/delete_group/$2';
-$route['(:any)/groups/group_students/(:num)'] = 'Groups/group_students/$2';
-$route['(:any)/groups/add_students_to_group/(:num)'] = 'Groups/add_students_to_group/$2';
-$route['(:any)/groups/remove_student/(:num)/(:num)'] = 'Groups/remove_student_from_group/$2/$3';
 
 // Student Portal Routes
 
 
-// Course Management routes
-$route['(:any)/courses'] = 'Course/index';
-$route['(:any)/courses/add'] = 'Course/add';
-$route['(:any)/courses/edit/(:num)'] = 'Course/edit/$2';
-$route['(:any)/courses/delete/(:num)'] = 'Course/delete/$2';
 
-// Course Modules routes
-$route['(:any)/courses/modules/(:num)'] = 'Course/modules/$2';
-$route['(:any)/courses/add_module'] = 'Course/add_module';
-$route['(:any)/courses/edit_module/(:num)/(:num)'] = 'Course/edit_module/$2/$3';
-$route['(:any)/courses/delete_module/(:num)/(:num)'] = 'Course/delete_module/$2/$3';
 
-// Course Lessons routes
-$route['(:any)/courses/lessons/(:num)/(:num)'] = 'Course/lessons/$2/$3';
-$route['(:any)/courses/add_lesson'] = 'Course/add_lesson';
-$route['(:any)/courses/edit_lesson/(:num)/(:num)/(:num)'] = 'Course/edit_lesson/$2/$3/$4';
-$route['(:any)/courses/delete_lesson/(:num)/(:num)/(:num)'] = 'Course/delete_lesson/$2/$3/$4';
 
-// Course Enrollments routes
-$route['(:any)/courses/enrollments/(:num)'] = 'Course/enrollments/$2';
-$route['(:any)/courses/view_lesson/(:num)/(:num)/(:num)'] = 'Course/view_lesson/$2/$3/$4';
 
-$route['(:any)/courses/enroll_student'] = 'Course/enroll_student';
-$route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'Course/update_enrollment_status/$2/$3';
-$route['(:any)/courses/unenroll_student/(:num)'] = 'Course/unenroll_student/$2';
 
-// Course Students overview route
-$route['(:any)/courses/students'] = 'Course/students';
-
-// System-level Course Management (SuperAdmin only)
-$route['(:any)/system_courses'] = 'Course/system_courses';
-$route['(:any)/courses/add_colleges/(:num)'] = 'Course/add_colleges/$2';
-$route['(:any)/courses/get_colleges'] = 'Course/get_colleges';
-$route['(:any)/courses/get_shared_colleges/(:num)'] = 'Course/get_shared_colleges/$2';
-$route['(:any)/courses/assign_course'] = 'Course/assign_course';
-$route['(:any)/courses/remove_course_assign/(:num)/(:num)'] = 'Course/remove_course_assign/$2/$3';
-$route['(:any)/courses/get_exclude_colleges/(:num)/(:num)'] = 'Course/get_exclude_colleges/$2/$3';
-
-// Musical Instruments/Inventory Management routes
-$route['(:any)/inventory'] = 'Inventory/index';
-$route['(:any)/inventory/create'] = 'Inventory/create';
-$route['(:any)/inventory/update/(:num)'] = 'Inventory/update/$2';
-$route['(:any)/inventory/view/(:num)'] = 'Inventory/get_instrument/$2';
-$route['(:any)/inventory/delete/(:num)'] = 'Inventory/delete/$2';
-$route['(:any)/inventory/issue/(:num)'] = 'Inventory/issue/$2';
-$route['(:any)/inventory/issue'] = 'Inventory/issue';
-$route['(:any)/inventory/return/(:num)'] = 'Inventory/return_item/$2';
-$route['(:any)/inventory/issues'] = 'Inventory/issues';
-$route['(:any)/inventory/reports'] = 'Inventory/reports';
-$route['(:any)/inventory/categories'] = 'Inventory/categories';
-$route['(:any)/inventory/add_category'] = 'Inventory/add_category';
-$route['(:any)/inventory/update_category'] = 'Inventory/update_category';
-
-// Musical Instruments API routes (for AJAX operations)
-$route['(:any)/api/inventory/create'] = 'Inventory/create_api';
-$route['(:any)/api/inventory/update/(:num)'] = 'Inventory/update_api/$2';
-$route['(:any)/api/inventory/issue'] = 'Inventory/issue_api';
-$route['(:any)/api/inventory/return'] = 'Inventory/return_item_api';
-$route['(:any)/api/get_students'] = 'Inventory/get_students_api';
-$route['(:any)/api/get_staff'] = 'Inventory/get_staff_api';
-$route['(:any)/api/get_issue_details'] = 'Inventory/get_issue_details_api';
-$route['(:any)/api/return_instrument'] = 'Inventory/return_instrument_api';
 
 // Announcements Management routes
 $route['(:any)/announcements'] = 'Announcement/index';

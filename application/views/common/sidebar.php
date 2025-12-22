@@ -463,25 +463,6 @@
                     <?php endif; ?>
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
 
-                        <li class="sidenav-item <?php if ($classname == "courses") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/courses") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-book"></i>
-                                <div>Courses</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
-
-                        <li class="sidenav-item <?php if ($classname == "inventory" || $classname == "inventory_issues" || $classname == "inventory_maintenance" || $classname == "inventory_reports") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/inventory") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-music"></i>
-                                <div>Musical Instruments</div>
-                            </a>
-                        </li>
                     <?php endif; ?>
 
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>

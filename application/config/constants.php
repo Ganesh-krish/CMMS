@@ -99,11 +99,6 @@ defined('TABLE_COLLEGE')      or define('TABLE_COLLEGE', "college");
 defined('TABLE_DEPARTMENT')      or define('TABLE_DEPARTMENT', "departments");
 defined('TABLE_FACULTY')    or define('TABLE_FACULTY', "faculty");
 defined('TABLE_STUDENT')      or define('TABLE_STUDENT', "students");
-defined('TABLE_COURCES')      or define('TABLE_COURCES', "courses");
-defined('TABLE_COURSE_ENROLLMENTS')      or define('TABLE_COURSE_ENROLLMENTS', "course_enrollments");
-defined('TABLE_COURSE_STUDENTS')      or define('TABLE_COURSE_STUDENTS', "course_enrollments"); // Alias for enrollments
-defined('TABLE_COURSE_MODULES')      or define('TABLE_COURSE_MODULES', "course_modules");
-defined('TABLE_COURSE_MODULE_LESSONS') or define('TABLE_COURSE_MODULE_LESSONS', "course_module_lessons");
 
 // Musical Instrument Inventory Tables
 defined('TABLE_INSTRUMENTS')               or define('TABLE_INSTRUMENTS', "instruments");
@@ -119,16 +114,6 @@ defined('TABLE_ANNOUNCEMENTS')             or define('TABLE_ANNOUNCEMENTS', "ann
 
 
 
-define('COURSE_TYPES', json_encode([
-    1 => ['name' => 'Courses', 'color' => ''],
-    2 => ['name' => 'Company Specific Test', 'color' => '#55A3F4'],
-    3 => ['name' => 'Exams & Labs', 'color' => '#F4AB55']
-]));
-
-define('COURSE_MODES', json_encode([
-    1 => ['name' => 'Normal', 'color' => ''],
-    2 => ['name' => 'Gamification', 'color' => '#62D493']
-]));
 
 // New role hierarchy for educational institution
 defined('ROLE_PRINCIPAL')      or define('ROLE_PRINCIPAL', 1);      // Principal

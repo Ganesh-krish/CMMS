@@ -246,17 +246,6 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-3">
-                            <!-- Course Management -->
-                            <a href="<?php echo base_url($url.'/courses'); ?>" class="btn btn-outline-primary btn-lg p-4">
-                                <i class="feather icon-book mr-3" style="font-size: 24px;"></i>
-                                Manage Courses
-                            </a>
-
-                            <a href="<?php echo base_url($url.'/course/new'); ?>" class="btn btn-outline-info btn-lg p-4">
-                                <i class="feather icon-plus-circle mr-3" style="font-size: 24px;"></i>
-                                Add New Course
-                            </a>
-
                             <!-- User Management -->
                             <a href="<?php echo base_url($url.'/students'); ?>" class="btn btn-outline-info btn-lg p-4">
                                 <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
@@ -274,20 +263,10 @@
                                 Announcements
                             </a>
 
-                            <a href="<?php echo base_url($url.'/groups'); ?>" class="btn btn-outline-warning btn-lg p-4">
-                                <i class="feather icon-users mr-3" style="font-size: 24px;"></i>
-                                Student Groups
-                            </a>
-
-                            <!-- Resources & Administration -->
+                            <!-- Administration -->
                             <a href="<?php echo base_url($url.'/departments'); ?>" class="btn btn-outline-dark btn-lg p-4">
                                 <i class="feather icon-layers mr-3" style="font-size: 24px;"></i>
                                 Manage Departments
-                            </a>
-
-                            <a href="<?php echo base_url($url.'/inventory'); ?>" class="btn btn-outline-danger btn-lg p-4">
-                                <i class="feather icon-package mr-3" style="font-size: 24px;"></i>
-                                Inventory
                             </a>
 
                             <!-- Settings -->

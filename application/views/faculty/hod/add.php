@@ -26,7 +26,7 @@
                         <h5>Department Administrator Information</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="">
+                        <form method="post" action="<?php echo isset($hod) ? base_url($url.'/management/hod/edit/'.$hod['id']) : base_url($url.'/management/hod/add'); ?>">
                             <div class="form-group">
                                 <label for="name"><i class="feather icon-user mr-2"></i>Full Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"

@@ -25,7 +25,7 @@
                         <h5>Department Information</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="">
+                        <form method="post" action="<?php echo isset($department) ? base_url($url.'/departments/edit/'.$department['id']) : base_url($url.'/departments/add'); ?>">
                             <div class="mb-3">
                                 <label for="name" class="form-label"><i class="feather icon-briefcase mr-2"></i>Department Name *</label>
                                 <input type="text" class="form-control" id="name" name="name"

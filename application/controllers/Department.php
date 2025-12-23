@@ -77,7 +77,7 @@ class Department extends CI_Controller {
             $this->form_validation->set_rules('name', 'Department Name', 'trim|required|min_length[1]|max_length[255]');
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message',array("danger",validation_errors()));
-                return redirect($this->url.'/departments');
+                return redirect($this->url.'/departments/add');
             } else {
                 $data = array(
                     'name' => $this->input->post('name'),
@@ -113,7 +113,7 @@ class Department extends CI_Controller {
             $this->form_validation->set_rules('name', 'Department Name', 'trim|min_length[3]|max_length[255]');
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message',array("danger",validation_errors()));
-                return redirect($this->url.'/departments');
+                return redirect($this->url.'/departments/edit/'.$id);
             } else {
                 $data = array(
                     'name' => $this->input->post('name'),

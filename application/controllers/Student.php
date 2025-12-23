@@ -132,9 +132,9 @@ class Student extends CI_Controller {
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|is_unique[student.email]');
+            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|callback_check_email_unique[0]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required|is_unique[student.registration_number]');
+            $this->form_validation->set_rules('roll_no', 'Registration Number', 'trim|required|callback_check_roll_no_unique[0]');
             $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
@@ -200,9 +200,9 @@ class Student extends CI_Controller {
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email');
+            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|callback_check_email_unique['.$id.']');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required');
+            $this->form_validation->set_rules('roll_no', 'Registration Number', 'trim|required|callback_check_roll_no_unique['.$id.']');
             $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
 
@@ -281,6 +281,36 @@ class Student extends CI_Controller {
         }
         $this->session->set_flashdata('message', $message);
         redirect($this->url.'/students');
+    }
+
+    public function check_email_unique($email, $student_id) {
+        $existing_student = $this->db_model->get_row(TABLE_STUDENT, [
+            'email' => $email,
+            'is_active' => 1,
+            'college_id' => $this->college['id']
+        ]);
+
+        if ($existing_student && $existing_student['id'] != $student_id) {
+            $this->form_validation->set_message('check_email_unique', 'This email address is already in use by another student.');
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    public function check_roll_no_unique($roll_no, $student_id) {
+        $existing_student = $this->db_model->get_row(TABLE_STUDENT, [
+            'roll_no' => $roll_no,
+            'is_active' => 1,
+            'college_id' => $this->college['id']
+        ]);
+
+        if ($existing_student && $existing_student['id'] != $student_id) {
+            $this->form_validation->set_message('check_roll_no_unique', 'This enrollment number is already in use by another student.');
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
     public function reset_password_student() {

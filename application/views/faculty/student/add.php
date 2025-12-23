@@ -53,8 +53,7 @@
                         <h5>Student Information</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="<?php echo base_url($url.'/students'); ?>">
-                            <input type="hidden" name="action" value="<?php echo isset($student) ? 'update' : 'create'; ?>">
+                        <form method="post" action="<?php echo isset($student) ? base_url($url.'/students/edit/'.$student['id']) : base_url($url.'/students/add'); ?>">
                             <?php if(isset($student)): ?>
                                 <input type="hidden" name="id" value="<?php echo $student['id']; ?>">
                             <?php endif; ?>
@@ -89,6 +88,17 @@
                                         <label for="roll_no"><i class="feather icon-hash mr-2"></i>Enrollment Number *</label>
                                         <input type="text" class="form-control" id="roll_no" name="roll_no"
                                                value="<?php echo isset($student) ? htmlspecialchars($student['roll_no']) : ''; ?>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="batch"><i class="feather icon-calendar mr-2"></i>Batch *</label>
+                                        <input type="text" class="form-control" id="batch" name="batch"
+                                               value="<?php echo isset($student) ? htmlspecialchars($student['batch']) : ''; ?>" required
+                                               placeholder="e.g., 2023-2024">
                                     </div>
                                 </div>
                             </div>

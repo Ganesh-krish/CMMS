@@ -265,8 +265,9 @@ class Student extends CI_Controller {
             $this->session_data = $this->session->userdata($this->url);
         }
 
-        // Prevent deletion of own account if student
-        if ($id == $this->session_data['id']) {
+        // Prevent deletion of own account - only applies to students, not administrators
+        // Administrators (principals) should be able to delete students
+        if ($this->session_data['role'] == ROLE_STUDENT && $id == $this->session_data['id']) {
             $this->session->set_flashdata('message', array('warning', "You cannot delete your own account."));
             redirect($this->url.'/students');
             return;

@@ -71,7 +71,11 @@
                                     <div class="form-group">
                                         <label for="email"><i class="feather icon-mail mr-2"></i>Email *</label>
                                         <input type="email" class="form-control" id="email" name="email"
-                                               value="<?php echo isset($student) ? htmlspecialchars($student['email']) : ''; ?>" required>
+                                               value="<?php echo isset($student) ? htmlspecialchars($student['email']) : ''; ?>" required
+                                               <?php echo isset($student) ? 'readonly' : ''; ?>>
+                                        <?php if(isset($student)): ?>
+                                            <small class="form-text text-muted">Email cannot be changed after creation</small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +92,11 @@
                                     <div class="form-group">
                                         <label for="roll_no"><i class="feather icon-hash mr-2"></i>Enrollment Number *</label>
                                         <input type="text" class="form-control" id="roll_no" name="roll_no"
-                                               value="<?php echo isset($student) ? htmlspecialchars($student['roll_no']) : ''; ?>" required>
+                                               value="<?php echo isset($student) ? htmlspecialchars($student['roll_no']) : ''; ?>" required
+                                               <?php echo isset($student) ? 'readonly' : ''; ?>>
+                                        <?php if(isset($student)): ?>
+                                            <small class="form-text text-muted">Enrollment number cannot be changed after creation</small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -106,20 +114,6 @@
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="role"><i class="feather icon-user-check mr-2"></i>Role *</label>
-                                        <select class="form-control select2" id="role" name="role" required>
-                                            <option value="">Select Role</option>
-                                            <option value="<?php echo ROLE_STUDENT; ?>"
-                                                <?php echo (isset($student) && $student['role'] == ROLE_STUDENT) ? 'selected' : (!isset($student) ? 'selected' : ''); ?>>
-                                                Student
-                                            </option>
-                                            <!-- You can add more roles here if needed in the future -->
-                                        </select>
-                                        <small class="form-text text-muted">Select the student's role in the system</small>
                                     </div>
                                 </div>
                             </div>

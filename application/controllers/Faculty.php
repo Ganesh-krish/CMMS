@@ -70,6 +70,7 @@ class Faculty extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "faculty_instructor";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/instructor/view', $data);
@@ -115,6 +116,7 @@ class Faculty extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "faculty_instructor";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/instructor/add', $data);
@@ -161,6 +163,7 @@ class Faculty extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "faculty_instructor";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/instructor/add', $data);
@@ -186,6 +189,7 @@ class Faculty extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "faculty_custodian";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
         $class["sidebar_href"] = base_url($this->url."/faculty/custodian");
 
         $this->load->view('common/sidebar', $class);
@@ -229,6 +233,7 @@ class Faculty extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "faculty_custodian";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/faculty/custodian");
 
             $this->load->view('common/sidebar', $class);
@@ -273,6 +278,7 @@ class Faculty extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "faculty_custodian";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/faculty/custodian");
 
             $this->load->view('common/sidebar', $class);

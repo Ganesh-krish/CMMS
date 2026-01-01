@@ -64,8 +64,8 @@ class Management extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "management_principal";
         $class["url"] = $this->url;
-        $class["sidebar_href"] = base_url($this->url."/management/principal");
         $class["college"] = $this->college;
+        $class["sidebar_href"] = base_url($this->url."/management/principal");
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/principal/view', $data);
@@ -110,6 +110,7 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_principal";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/management/principal");
 
             $this->load->view('common/sidebar', $class);
@@ -155,8 +156,8 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_principal";
             $class["url"] = $this->url;
-            $class["sidebar_href"] = base_url($this->url."/management/principal");
             $class["college"] = $this->college;
+            $class["sidebar_href"] = base_url($this->url."/management/principal");
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/principal/add', $data);
@@ -190,6 +191,7 @@ class Management extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "management_vice_principal";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
         $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
         $this->load->view('common/sidebar', $class);
@@ -234,6 +236,7 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_vice_principal";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
             $this->load->view('common/sidebar', $class);
@@ -279,6 +282,7 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_vice_principal";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/management/vice_principal");
 
             $this->load->view('common/sidebar', $class);
@@ -313,6 +317,7 @@ class Management extends CI_Controller {
         $data["url"] = $this->url;
         $class["classname"] = "management_hod";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
         $class["sidebar_href"] = base_url($this->url."/management/hod");
 
         $this->load->view('common/sidebar', $class);
@@ -359,6 +364,7 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_hod";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/management/hod");
 
             $this->load->view('common/sidebar', $class);
@@ -406,6 +412,7 @@ class Management extends CI_Controller {
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
             $class["classname"] = "management_hod";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
             $class["sidebar_href"] = base_url($this->url."/management/hod");
 
             $this->load->view('common/sidebar', $class);

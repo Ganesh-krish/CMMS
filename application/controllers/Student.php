@@ -134,7 +134,7 @@ class Student extends CI_Controller {
             $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|is_unique[student.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required|is_unique[student.registration_number]');
+            $this->form_validation->set_rules('roll_no', 'Enrollment Number', 'trim|required|is_unique[student.roll_no]');
             $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
@@ -150,7 +150,7 @@ class Student extends CI_Controller {
                     'roll_no' => $this->input->post('roll_no'), // Changed from registration_number
                     'department' => $this->input->post('department'),
                     'batch' => $this->input->post('batch'),
-                    'role' => $this->input->post('role') ?: ROLE_STUDENT, // Add role field with default
+                    'role' => ROLE_STUDENT,
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'college_id' => $this->college['id'],
                     'is_active' => 1,
@@ -200,9 +200,7 @@ class Student extends CI_Controller {
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('registration_number', 'Registration Number', 'trim|required');
             $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
 
@@ -212,12 +210,9 @@ class Student extends CI_Controller {
             } else {
                 $data = array(
                     'name' => $this->input->post('name'),
-                    'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
-                    'roll_no' => $this->input->post('roll_no'),
                     'department' => $this->input->post('department'),
                     'batch' => $this->input->post('batch'),
-                    'role' => $this->input->post('role') ?: ROLE_STUDENT,
                     'updated_at' => date('Y-m-d H:i:s')
                 );
 

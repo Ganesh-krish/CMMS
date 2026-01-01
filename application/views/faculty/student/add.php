@@ -53,7 +53,7 @@
                         <h5>Student Information</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="<?php echo base_url($url.'/students/add'); ?>">
+                        <form method="post" action="<?php echo isset($student) ? base_url($url.'/students/edit/'.$student['id']) : base_url($url.'/students/add'); ?>">
                             <input type="hidden" name="action" value="<?php echo isset($student) ? 'update' : 'create'; ?>">
                             <?php if(isset($student)): ?>
                                 <input type="hidden" name="id" value="<?php echo $student['id']; ?>">
@@ -121,8 +121,13 @@
                                         <label for="batch"><i class="feather icon-calendar mr-2"></i>Batch Year *</label>
                                         <input type="number" class="form-control" id="batch" name="batch"
                                                value="<?php echo isset($student) ? htmlspecialchars($student['batch']) : date('Y'); ?>"
-                                               placeholder="e.g. 2024" required min="2000" max="2030">
-                                        <small class="form-text text-muted">Enter the batch year (e.g. 2024)</small>
+                                               placeholder="e.g. 2024" required min="2000" max="2030"
+                                               <?php echo isset($student) ? 'readonly' : ''; ?>>
+                                        <?php if(isset($student)): ?>
+                                            <small class="form-text text-muted">Batch year cannot be changed after creation</small>
+                                        <?php else: ?>
+                                            <small class="form-text text-muted">Enter the batch year (e.g. 2024)</small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

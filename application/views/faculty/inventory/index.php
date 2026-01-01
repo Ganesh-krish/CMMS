@@ -129,12 +129,14 @@
                                 <th>S.No</th>
                                 <th>Image</th>
                                 <th>Name</th>
+                                <th>Description</th>
                                 <th>Category</th>
                                 <th>Serial No</th>
                                 <th>Model</th>
                                 <th>Brand</th>
                                 <th>Condition</th>
                                 <th>Price</th>
+                                <th>Created Date</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -153,6 +155,7 @@
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo $instrument['name']; ?></td>
+                                        <td><?php echo $instrument['description'] ?? 'N/A'; ?></td>
                                         <td><?php echo $categories[$instrument['category']] ?? $instrument['category']; ?></td>
                                         <td><?php echo $instrument['serial_no']; ?></td>
                                         <td><?php echo $instrument['model'] ?? 'N/A'; ?></td>
@@ -168,6 +171,7 @@
                                             </span>
                                         </td>
                                         <td><?php echo $instrument['instrument_price'] ? '₹' . number_format($instrument['instrument_price'], 2) : 'N/A'; ?></td>
+                                        <td><?php echo $instrument['created_at'] ? date('d M Y', strtotime($instrument['created_at'])) : 'N/A'; ?></td>
                                         <td>
                                             <span class="badge badge-<?php
                                                 $status = $instrument['availability_status'];
@@ -222,7 +226,7 @@
                             <?php }
                             } else { ?>
                                 <tr>
-                                    <td colspan="11" class="text-center">No instruments found</td>
+                                    <td colspan="13" class="text-center">No instruments found</td>
                                 </tr>
                             <?php } ?>
                         </tbody>

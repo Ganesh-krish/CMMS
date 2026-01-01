@@ -179,6 +179,9 @@
                                            placeholder="Enter your password" required>
                                     <label for="password">Password</label>
                                 </div>
+                                <button class="btn btn-outline-light border-0" type="button" id="toggleLoginPassword" style="padding: 0.75rem;">
+                                    <i class="feather icon-eye" style="color:#ffffff;"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -199,5 +202,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle functionality
+        function togglePasswordVisibility(passwordField, toggleButton) {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            const icon = toggleButton.querySelector('i');
+            if (type === 'password') {
+                icon.className = 'feather icon-eye';
+            } else {
+                icon.className = 'feather icon-eye-off';
+            }
+        }
+
+        // Add event listener for password toggle button
+        const togglePasswordBtn = document.getElementById('toggleLoginPassword');
+        const passwordField = document.getElementById('password');
+
+        if (togglePasswordBtn && passwordField) {
+            togglePasswordBtn.addEventListener('click', function() {
+                togglePasswordVisibility(passwordField, togglePasswordBtn);
+            });
+        }
+    });
+    </script>
 </body>
 </html>

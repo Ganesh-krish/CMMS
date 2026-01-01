@@ -319,7 +319,7 @@ class Groups extends CI_Controller
             $group_exists = $this->db_model->get_row(TABLE_GROUPS,$conditions);
             if($group_exists){
                 
-                $this->db_model->update(TABLE_GROUPS, ['is_active' => 0], ['id' => $groupId]);
+                $this->db_model->delete(TABLE_GROUPS, ['id' => $groupId]);
                 echo json_encode([
                     'status' => 'success',
                     'message' => 'Group deleted successfully'
@@ -449,7 +449,7 @@ class Groups extends CI_Controller
     }
 
     public function delete_group($id) {
-        $result = $this->db_model->update(TABLE_GROUPS, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_GROUPS, ["id" => $id]);
         $message = array('success', "Music Group deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete music group.");
@@ -546,8 +546,7 @@ class Groups extends CI_Controller
     }
 
     public function remove_student_from_group($group_id, $student_id) {
-        $result = $this->db_model->update(TABLE_MEMGROUPS,
-            ["is_active" => 0],
+        $result = $this->db_model->delete(TABLE_MEMGROUPS,
             ["group_id" => $group_id, "student_id" => $student_id]
         );
 

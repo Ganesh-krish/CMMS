@@ -84,6 +84,11 @@ $route['(:any)/management/hod/add'] = 'Management/add_hod';
 $route['(:any)/management/hod/edit/(:num)'] = 'Management/edit_hod/$2';
 $route['(:any)/management/hod/delete/(:num)'] = 'Management/delete_hod/$2';
 
+// Management Reset Password routes
+$route['(:any)/management/reset_password_principal'] = 'Management/reset_password_principal';
+$route['(:any)/management/reset_password_vice_principal'] = 'Management/reset_password_vice_principal';
+$route['(:any)/management/reset_password_hod'] = 'Management/reset_password_hod';
+
 // Faculty Management routes (Instructor & Custodian)
 $route['(:any)/faculty/instructor'] = 'Faculty/instructor';
 $route['(:any)/faculty/instructor/add'] = 'Faculty/add_instructor';

@@ -289,11 +289,14 @@ class Hod extends CI_Controller {
         $class["classname"] = "hod";
         $class["url"] =  $this->url; 
         $class["sidebar_href"] = base_url($this->url."/hod");
-        $data["hod"] = $this->db_model->get_all(
+        $data["hod"] = $this->db_model->get_with_joins(
             TABLE_FACULTY,
+            TABLE_FACULTY.'.*, d.name as department_name',
+            [TABLE_DEPARTMENT.' d' => TABLE_FACULTY.'.department = d.id'],
             [
-                "is_active"=>true,
-                "role"=>ROLE_VICE_PRINCIPAL
+                TABLE_FACULTY.".is_active" => true,
+                TABLE_FACULTY.".role" => ROLE_HOD,
+                "d.is_active" => 1
             ]
         );
 		$this->load->view('common/sidebar',$class); 
@@ -421,7 +424,7 @@ class Hod extends CI_Controller {
             }
             $departments = explode(";", $this->session_data['other_department']);
             array_push($departments, $this->session_data['department']);
-           $update= $this->db_model->update(TABLE_FACULTY,["password"=>$post['password']],["role !="=>ROLE_VICE_PRINCIPAL,"is_active"=>1,"id"=>$post['id'],"department"=>$departments]);
+           $update= $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["role !="=>ROLE_VICE_PRINCIPAL,"is_active"=>1,"id"=>$post['id'],"department"=>$departments]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));
@@ -442,7 +445,7 @@ class Hod extends CI_Controller {
             }
             $departments = explode(";", $this->session_data['other_department']);
             array_push($departments, $this->session_data['department']); 
-           $update= $this->db_model->update(TABLE_STUDENT,["password"=>$post['password']],["is_active"=>1,"college_id"=>$this->college['id'],"id"=>$post['id'],"department"=>$departments]);
+           $update= $this->db_model->update(TABLE_STUDENT,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"college_id"=>$this->college['id'],"id"=>$post['id'],"department"=>$departments]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));

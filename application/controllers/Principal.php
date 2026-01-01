@@ -455,7 +455,7 @@ class Principal extends CI_Controller {
 				$this->session->set_flashdata('message',array("danger",validation_errors())); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));
             }
-           $update= $this->db_model->update(TABLE_FACULTY,["password"=>$post['password']],["is_active"=>1,"id"=>$post['id']]);
+           $update= $this->db_model->update(TABLE_FACULTY,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"id"=>$post['id']]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));
@@ -473,7 +473,7 @@ class Principal extends CI_Controller {
 				$this->session->set_flashdata('message',array("danger",validation_errors())); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));
             }
-           $update= $this->db_model->update(TABLE_STUDENT,["password"=>$post['password']],["is_active"=>1,"college_id"=>$this->college['id'],"id"=>$post['id']]);
+           $update= $this->db_model->update(TABLE_STUDENT,["password"=>password_hash($post['password'], PASSWORD_DEFAULT)],["is_active"=>1,"college_id"=>$this->college['id'],"id"=>$post['id']]);
            if(!$update){
                 $this->session->set_flashdata('message',array("danger","Something Went Wrong")); 
                 return redirect($_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:base_url($this->url."/principal"));
@@ -711,7 +711,7 @@ class Principal extends CI_Controller {
     }
 
     public function delete_department($id) {
-        $result = $this->db_model->update(TABLE_DEPARTMENT, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_DEPARTMENT, ["id" => $id]);
         $message = array('success', "Department Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");
@@ -817,7 +817,7 @@ class Principal extends CI_Controller {
     }
 
     public function delete_vice_principal($id) {
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id]);
         $message = array('success', "Vice-Principal Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");
@@ -902,7 +902,7 @@ class Principal extends CI_Controller {
     }
 
     public function delete_hod($id) {
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id]);
         $message = array('success', "Department Administrator Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");

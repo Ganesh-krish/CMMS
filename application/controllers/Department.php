@@ -142,7 +142,7 @@ class Department extends CI_Controller {
     }
 
     public function delete($id){
-        $result=$this->db_model->update(TABLE_DEPARTMENT,["is_active"=>0],["id"=>$id]);
+        $result=$this->db_model->delete(TABLE_DEPARTMENT,["id"=>$id]);
         $message = array('success',"Department Deleted Successfully");
         if(!$result){
             $message = array('danger',"Something went wrong");

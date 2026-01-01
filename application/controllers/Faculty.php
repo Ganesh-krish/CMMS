@@ -169,7 +169,7 @@ class Faculty extends CI_Controller {
     }
 
     public function delete_instructor($id) {
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_STAFF]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id, "role" => ROLE_STAFF]);
         $message = array('success', "Instructor deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Instructor.");
@@ -282,7 +282,7 @@ class Faculty extends CI_Controller {
     }
 
     public function delete_custodian($id) {
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_CUSTODIAN]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id, "role" => ROLE_CUSTODIAN]);
         $message = array('success', "Custodian deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Custodian.");

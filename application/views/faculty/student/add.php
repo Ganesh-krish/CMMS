@@ -129,7 +129,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                    <i class="feather icon-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                         <small class="form-text text-muted">Minimum 6 characters</small>
                                     </div>
                                 </div>
@@ -161,5 +168,28 @@ document.addEventListener('DOMContentLoaded', function() {
         allowClear: true,
         width: '100%'
     });
+
+    // Password visibility toggle functionality
+    function togglePasswordVisibility(passwordField, toggleButton) {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+
+        const icon = toggleButton.querySelector('i');
+        if (type === 'password') {
+            icon.className = 'feather icon-eye';
+        } else {
+            icon.className = 'feather icon-eye-off';
+        }
+    }
+
+    // Add event listener for password toggle button
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('password');
+
+    if (togglePasswordBtn && passwordField) {
+        togglePasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(passwordField, togglePasswordBtn);
+        });
+    }
 });
 </script>

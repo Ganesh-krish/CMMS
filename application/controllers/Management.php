@@ -144,8 +144,8 @@ class Management extends CI_Controller {
                 redirect($this->url.'/management/principal');
             }
         } else {
-            $data["administrator"] = $this->db_model->get_row(TABLE_FACULTY, ["id" => $id, "role" => ROLE_PRINCIPAL, "is_active" => 1]);
-            if (!$data["administrator"]) {
+            $data["user"] = $this->db_model->get_row(TABLE_FACULTY, ["id" => $id, "role" => ROLE_PRINCIPAL, "is_active" => 1]);
+            if (!$data["user"]) {
                 $this->session->set_flashdata('message', array('danger', "Administrator not found."));
                 redirect($this->url.'/management/principal');
             }
@@ -170,7 +170,7 @@ class Management extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_PRINCIPAL]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id, "role" => ROLE_PRINCIPAL]);
         $message = array('success', "Administrator deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Administrator.");
@@ -293,7 +293,7 @@ class Management extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_VICE_PRINCIPAL]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id, "role" => ROLE_VICE_PRINCIPAL]);
         $message = array('success', "Assistant Administrator deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Assistant Administrator.");
@@ -416,7 +416,7 @@ class Management extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_FACULTY, ["is_active" => 0], ["id" => $id, "role" => ROLE_HOD]);
+        $result = $this->db_model->delete(TABLE_FACULTY, ["id" => $id, "role" => ROLE_HOD]);
         $message = array('success', "Department Administrator deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete Department Administrator.");

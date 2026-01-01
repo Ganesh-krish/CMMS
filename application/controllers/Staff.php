@@ -522,7 +522,7 @@ class Staff extends CI_Controller
                 $this->session->set_flashdata('message', array("danger", validation_errors()));
                 return redirect($_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : base_url($this->url . "/principal"));
             }
-            $update = $this->db_model->update(TABLE_STUDENT, ["password" => $post['password']], ["is_active" => 1, "college_id" => $this->college['id'], "id" => $post['id'], "department" => $this->session_data['department']]);
+            $update = $this->db_model->update(TABLE_STUDENT, ["password" => password_hash($post['password'], PASSWORD_DEFAULT)], ["is_active" => 1, "college_id" => $this->college['id'], "id" => $post['id'], "department" => $this->session_data['department']]);
             if (!$update) {
                 $this->session->set_flashdata('message', array("danger", "Something Went Wrong"));
                 return redirect($_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : base_url($this->url . "/principal"));

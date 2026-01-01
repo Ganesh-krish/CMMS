@@ -200,6 +200,35 @@ function initializePasswordResetValidation() {
         confirmPasswordField.classList.remove('is-invalid');
     });
 
+    // Password visibility toggle functionality
+    function togglePasswordVisibility(passwordField, toggleButton) {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+
+        const icon = toggleButton.querySelector('i');
+        if (type === 'password') {
+            icon.className = 'feather icon-eye';
+        } else {
+            icon.className = 'feather icon-eye-off';
+        }
+    }
+
+    // Add event listeners for password toggle buttons
+    const toggleNewPasswordBtn = document.getElementById('toggleNewPassword');
+    const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
+
+    if (toggleNewPasswordBtn) {
+        toggleNewPasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(newPasswordField, toggleNewPasswordBtn);
+        });
+    }
+
+    if (toggleConfirmPasswordBtn) {
+        toggleConfirmPasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(confirmPasswordField, toggleConfirmPasswordBtn);
+        });
+    }
+
     // Manually handle modal dismissal
     var cancelBtn = form.querySelector('.btn-secondary');
     var closeBtn = document.querySelector('#passwordResetModal .close');
@@ -257,14 +286,28 @@ function initializePasswordResetValidation() {
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="newPassword">New Password</label>
-                        <input type="password" class="form-control" id="newPassword" name="password"
-                               placeholder="Enter new password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="newPassword" name="password"
+                                   placeholder="Enter new password" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                                    <i class="feather icon-eye"></i>
+                                </button>
+                            </div>
+                        </div>
                         <small class="form-text text-muted">Password must be at least 6 characters long.</small>
                     </div>
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirmPassword"
-                               placeholder="Confirm new password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword"
+                                   placeholder="Confirm new password" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                    <i class="feather icon-eye"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="invalid-feedback" id="passwordMatchError">
                             Passwords do not match.
                         </div>

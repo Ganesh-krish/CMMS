@@ -61,10 +61,7 @@ class Inventory_model extends CI_Model
     public function delete_instrument($id)
     {
         $this->db->where('id', $id);
-        return $this->db->update(TABLE_INSTRUMENTS, [
-            'is_active' => 0,
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        return $this->db->delete(TABLE_INSTRUMENTS);
     }
 
     // ============================

@@ -274,7 +274,7 @@ class Student extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_STUDENT, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_STUDENT, ["id" => $id]);
         $message = array('success', "Student deleted successfully!");
         if (!$result) {
             $message = array('danger', "Failed to delete student.");

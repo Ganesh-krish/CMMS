@@ -351,7 +351,7 @@ class Course extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_COURCES, ["is_active" => 0], ["id" => $id]);
+        $result = $this->db_model->delete(TABLE_COURCES, ["id" => $id]);
         $message = array('success', "Course Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");
@@ -588,7 +588,7 @@ class Course extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update(TABLE_COURSE_MODULES, ["is_active" => 0], ["id" => $module_id]);
+        $result = $this->db_model->delete(TABLE_COURSE_MODULES, ["id" => $module_id]);
         $message = array('success', "Module Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");
@@ -834,7 +834,7 @@ class Course extends CI_Controller {
             return;
         }
 
-        $result = $this->db_model->update('course_module_lessons', ["is_active" => 0], ["id" => $lesson_id]);
+        $result = $this->db_model->delete('course_module_lessons', ["id" => $lesson_id]);
         $message = array('success', "Lesson Deleted Successfully");
         if(!$result){
             $message = array('danger', "Something went wrong");

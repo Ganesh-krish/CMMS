@@ -427,7 +427,7 @@ class Dashboard extends CI_Controller
 
     private function delete_student_private() {
         $id = $this->input->post('id');
-        $this->db_model->update(TABLE_STUDENT, ['is_active' => 0], ['id' => $id]);
+        $this->db_model->delete(TABLE_STUDENT, ['id' => $id]);
         $this->session->set_flashdata('message', [1, 'Student deleted successfully']);
         redirect($this->url.'/students');
     }
@@ -488,7 +488,7 @@ class Dashboard extends CI_Controller
             redirect($this->url.'/dashboard');
         }
 
-        $this->db_model->update(TABLE_STUDENT, ['is_active' => 0], ['id' => $id]);
+        $this->db_model->delete(TABLE_STUDENT, ['id' => $id]);
         $this->session->set_flashdata('message', [1, 'Student deleted successfully']);
         redirect($this->url.'/students');
     }

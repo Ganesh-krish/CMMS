@@ -130,11 +130,12 @@ class Student extends CI_Controller {
         }
 
         $post = $this->input->post();
+
         if($post){
             $this->form_validation->set_rules('name', 'Full Name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|is_unique[student.email]');
+            $this->form_validation->set_rules('email', 'Email Address', 'trim|required|valid_email|is_unique[students.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
-            $this->form_validation->set_rules('roll_no', 'Enrollment Number', 'trim|required|is_unique[student.roll_no]');
+            $this->form_validation->set_rules('roll_no', 'Enrollment Number', 'trim|required|is_unique[students.roll_no]');
             $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('batch', 'Batch', 'trim|required');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
@@ -157,7 +158,9 @@ class Student extends CI_Controller {
                     'created_at' => date('Y-m-d H:i:s')
                 );
 
-                if ($this->db_model->insert(TABLE_STUDENT, $data)) {
+                $insert_id = $this->db_model->insert(TABLE_STUDENT, $data);
+
+                if ($insert_id) {
                     $this->session->set_flashdata('message', array('success', "Student added successfully!"));
                 } else {
                     $this->session->set_flashdata('message', array('danger', "Failed to add student."));

@@ -53,7 +53,7 @@
                         <h5>Student Information</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="<?php echo base_url($url.'/students'); ?>">
+                        <form method="post" action="<?php echo base_url($url.'/students/add'); ?>">
                             <input type="hidden" name="action" value="<?php echo isset($student) ? 'update' : 'create'; ?>">
                             <?php if(isset($student)): ?>
                                 <input type="hidden" name="id" value="<?php echo $student['id']; ?>">
@@ -114,6 +114,15 @@
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="batch"><i class="feather icon-calendar mr-2"></i>Batch Year *</label>
+                                        <input type="number" class="form-control" id="batch" name="batch"
+                                               value="<?php echo isset($student) ? htmlspecialchars($student['batch']) : date('Y'); ?>"
+                                               placeholder="e.g. 2024" required min="2000" max="2030">
+                                        <small class="form-text text-muted">Enter the batch year (e.g. 2024)</small>
                                     </div>
                                 </div>
                             </div>

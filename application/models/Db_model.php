@@ -315,7 +315,7 @@ public function get_max($table, $field, $where = []) {
         return $this->db->count_all_results($table);
     }
 
-    public function get_sum($table, $conditions = [], $column) {
+    public function get_sum($table, $column, $conditions = []) {
         $this->db->select_sum($column);
         if (!empty($conditions)) {
             foreach ($conditions as $key => $value) {

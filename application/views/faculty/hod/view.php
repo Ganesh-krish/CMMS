@@ -73,7 +73,16 @@
                                                 <td><?php echo htmlspecialchars($hod['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($hod['email']); ?></td>
                                                 <td><?php echo htmlspecialchars($hod['phone'] ?? '-'); ?></td>
-                                                <td><?php echo isset($hod['department_name']) && $hod['department_name'] ? htmlspecialchars($hod['department_name']) : 'N/A'; ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (isset($hod['department']) && $hod['department']) {
+                                                        $dept = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $hod['department']]);
+                                                        echo $dept ? htmlspecialchars($dept['name']) : 'N/A';
+                                                    } else {
+                                                        echo 'N/A';
+                                                    }
+                                                    ?>
+                                                </td>
                                                 <td>
                                                     <span class="badge badge-<?php echo $hod['is_active'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $hod['is_active'] ? 'Active' : 'Inactive'; ?>

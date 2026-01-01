@@ -65,6 +65,7 @@ class Management extends CI_Controller {
         $class["classname"] = "management_principal";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/management/principal");
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/principal/view', $data);
@@ -155,6 +156,7 @@ class Management extends CI_Controller {
             $class["classname"] = "management_principal";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/management/principal");
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/principal/add', $data);
@@ -324,6 +326,7 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[faculty.email]');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
 
             if ($this->form_validation->run() == FALSE) {
@@ -334,6 +337,7 @@ class Management extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
+                    'department' => $this->input->post('department'),
                     'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
                     'role' => ROLE_HOD,
                     'designation' => DESIGNATION_HOD,
@@ -369,6 +373,7 @@ class Management extends CI_Controller {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]');
             $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
             $this->form_validation->set_rules('phone', 'Phone Number', 'trim|required|min_length[10]|max_length[15]');
+            $this->form_validation->set_rules('department', 'Department', 'trim|required');
 
             if ($this->form_validation->run() == FALSE) {
                 $this->session->set_flashdata('message', array('danger', validation_errors()));
@@ -378,6 +383,7 @@ class Management extends CI_Controller {
                     'name' => $this->input->post('name'),
                     'email' => $this->input->post('email'),
                     'phone' => $this->input->post('phone'),
+                    'department' => $this->input->post('department'),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'updated_by' => $this->session_data['id']
                 );

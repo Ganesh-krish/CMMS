@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 01, 2026 at 02:01 PM
+-- Generation Time: Jan 03, 2026 at 02:43 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -74,7 +74,7 @@ CREATE TABLE `college` (
 --
 
 INSERT INTO `college` (`id`, `name`, `email`, `phone`, `address`, `city`, `state`, `website`, `established_year`, `description`, `logo`, `banner`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', NULL, NULL, 'https://www.democollege.com', NULL, 'A comprehensive educational institution offering quality education.', NULL, NULL, 1, NULL, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57');
+(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', 'Srivilliputhur', 'Tamil Nadu', 'https://www.democollege.com', 2025, 'A comprehensive educational institution offering quality education.', 'logo_1767403549_6291.jpg', 'logo_1767403549_62911.jpg', 1, 2, NULL, '2026-01-02 15:18:46', '2026-01-03 01:25:50');
 
 -- --------------------------------------------------------
 
@@ -181,12 +181,12 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`id`, `name`, `college_id`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Instrumental Music', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(2, 'Vocal Music', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(3, 'Percussion', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(4, 'Western Music', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(5, 'Indian Classical Music', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(6, 'Music Theory & Composition', 1, 1, 1, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57');
+(1, 'Instrumental Music', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(2, 'Vocal Music', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(3, 'Percussion', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(4, 'Western Music', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(5, 'Indian Classical Music', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(6, 'Music Theory & Composition', 1, 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46');
 
 -- --------------------------------------------------------
 
@@ -219,7 +219,14 @@ CREATE TABLE `faculty` (
 --
 
 INSERT INTO `faculty` (`id`, `name`, `email`, `phone`, `password`, `role`, `designation`, `department`, `other_department`, `college_id`, `joining_date`, `file_path`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Super Administrator', 'admin@college.com', '+1-234-567-8901', '$2y$10$GzQLtlqs8/1YpbYuX2qDFebXwE1jCcLGO7sM2gzAIl6PU1bHRTFNy', 1, 1, NULL, NULL, 1, '2026-01-01', NULL, 1, NULL, NULL, '2026-01-01 12:58:57', '2026-01-01 12:58:57');
+(1, 'Super Administrator', 'admin@college.com', '+1-234-567-8901', '$2y$10$JDHAfl6iDGYh/u4QRH5eSOPUD2zT1TWBVvAyTe1egycvCq7ujYEaS', 1, 1, NULL, NULL, 1, '2026-01-02', NULL, 1, NULL, NULL, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(2, 'K Ganesh krishna', 'ganeshkrishna203@gmail.com', '06380249114', '$2y$10$6LoW49tNrsJ1qiCAtEYxFuYPMNKE9dpNfjz6vyGtOF0PKHR9p/WGm', 2, 2, NULL, NULL, 1, NULL, NULL, 1, 1, NULL, '2026-01-02 15:19:39', '2026-01-02 15:19:39'),
+(3, 'prabha', 'prabha@gmail.com', '1234567890', '$2y$10$WFm.f./3EvzyHfysq89KXucayQAimxNDci7FgTkuwENRrJ49s9SMC', 3, 3, '4', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:17:35', '2026-01-03 01:17:35'),
+(4, 'Mani', 'mani@gmail.com', '7380249114', '$2y$10$LdVHKr892Sd0WS4AdxiYbeBnjxSh5XmZKynEP6WoGoVdP0rZrY5JK', 3, 3, '2', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:32:31', '2026-01-03 01:32:31'),
+(5, 'surya', 'surya@gmail.com', '06380249114', '$2y$10$k5pdH..RKL28J9F5MpuzmOftFLC86u3/TDH1ajL36eWFx3d1gosl2', 3, 3, '3', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:33:24', '2026-01-03 01:33:24'),
+(6, 'ramesh', 'ramesh@gamil.com', '8380249114', '$2y$10$74w0fAakLMo79Pa3EF46Tu0CZviSixkPnBEArxngmM3G0NceMtOxW', 4, 4, '2', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:36:47', '2026-01-03 01:36:47'),
+(7, 'Raj', 'Raj@gmail.com', '7380249114', '$2y$10$7Rt4Mm5UMPg7pYQ6St3Tb.cg0RMjFzJ0pyjPUfqpFVe9rriVbaEcu', 4, 4, '3', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:37:16', '2026-01-03 01:37:16'),
+(8, 'muthu', 'muthu@gmail.com', '7380249114', '$2y$10$cRNJK9dlSupOdax2hBnl2.vC4.bEDpurlkNYSP960wpU2yx7T44e2', 4, 4, '4', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:38:40', '2026-01-03 01:38:40');
 
 -- --------------------------------------------------------
 
@@ -289,11 +296,11 @@ CREATE TABLE `instrument_categories` (
 --
 
 INSERT INTO `instrument_categories` (`id`, `name`, `description`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'String Instruments', 'Guitar, Violin, etc.', NULL, NULL, 1, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(2, 'Percussion Instruments', 'Drums, Tabla, etc.', NULL, NULL, 1, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(3, 'Wind Instruments', 'Flute, Trumpet, etc.', NULL, NULL, 1, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(4, 'Keyboard Instruments', 'Piano, Keyboard, etc.', NULL, NULL, 1, '2026-01-01 12:58:57', '2026-01-01 12:58:57'),
-(5, 'Electronic Instruments', 'Synthesizers, etc.', NULL, NULL, 1, '2026-01-01 12:58:57', '2026-01-01 12:58:57');
+(1, 'String Instruments', 'Guitar, Violin, etc.', NULL, NULL, 1, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(2, 'Percussion Instruments', 'Drums, Tabla, etc.', NULL, NULL, 1, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(3, 'Wind Instruments', 'Flute, Trumpet, etc.', NULL, NULL, 1, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(4, 'Keyboard Instruments', 'Piano, Keyboard, etc.', NULL, NULL, 1, '2026-01-02 15:18:46', '2026-01-02 15:18:46'),
+(5, 'Electronic Instruments', 'Synthesizers, etc.', NULL, NULL, 1, '2026-01-02 15:18:46', '2026-01-02 15:18:46');
 
 -- --------------------------------------------------------
 
@@ -370,7 +377,10 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `name`, `email`, `phone`, `password`, `roll_no`, `department`, `batch`, `college_id`, `joining_date`, `file_path`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`, `role`) VALUES
-(1, 'K Ganesh krishna', 'ganeshkrishna203@gmail.com', '06380249114', '$2y$10$p8AHk06tSEdqebEJXk/IueYZHZIwxASuBPltcAinQKoVjIKq7QrHC', 'ug1221', '5', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-01 13:01:03', '2026-01-01 13:01:03', '6');
+(1, 'john', 'its2@demo.in', '06380249114', '$2y$10$a4KXCxS.FXTD2fCE0E/zv.F0Svbb0ybvIA8Mud3uMR6DF63D0Cltu', 'ug1221', '4', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:28:07', '2026-01-03 01:28:07', '6'),
+(2, 'doe', 'its1@demo.in', '0638024911', '$2y$10$8jqNh8jze5oadzahYOZjNOiaPWOSzFtW.2SE.M6Zq5zKdUcPT8Cqe', 'ug1222', '4', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:28:44', '2026-01-03 01:28:44', '6'),
+(3, 'jim', 'eces1@demo.in', '06380249124', '$2y$10$Yt1xsQhpENlfQfMnsxCQFue6/y2tUP78k5lQ6Tqv3rBq6byF5SIwW', 'ug1223', '3', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:30:00', '2026-01-03 01:30:00', '6'),
+(4, 'cook', 'eces2@demo.in', '8380249114', '$2y$10$7xcxKCrC.xVgz6xjJieDO.TsqHhCWVIhmYf3lPrK5EycMVURySOrC', 'ug1224', '2', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:31:46', '2026-01-03 01:31:46', '6');
 
 --
 -- Indexes for dumped tables
@@ -542,7 +552,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `faculty`
 --
 ALTER TABLE `faculty`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `groups`
@@ -578,7 +588,7 @@ ALTER TABLE `memgroups`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

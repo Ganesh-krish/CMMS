@@ -206,22 +206,26 @@
                                             </span>
                                         </td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                            <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE || $instrument['availability_status'] == '1' || $instrument['availability_status'] == 1): ?>
-                                                <a href="<?php echo site_url($url.'/inventory/issue/'.$instrument['id']); ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>">
-                                                    <i class="feather icon-send"></i> Issue
-                                                </a>
-                                            <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED || $instrument['availability_status'] == '2' || $instrument['availability_status'] == 2): ?>
-                                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
-                                                    <i class="feather icon-rotate-ccw"></i> Return
+                                            <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
+                                                <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE || $instrument['availability_status'] == '1' || $instrument['availability_status'] == 1): ?>
+                                                    <a href="<?php echo site_url($url.'/inventory/issue/'.$instrument['id']); ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>">
+                                                        <i class="feather icon-send"></i> Issue
+                                                    </a>
+                                                <?php elseif ($instrument['availability_status'] == INSTRUMENT_STATUS_ISSUED || $instrument['availability_status'] == '2' || $instrument['availability_status'] == 2): ?>
+                                                    <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); returnInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                        <i class="feather icon-rotate-ccw"></i> Return
+                                                    </button>
+                                                <?php endif; ?>
+                                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); editInstrument(<?php echo $instrument['id']; ?>)">
+                                                    <i class="feather icon-edit"></i> Edit
                                                 </button>
-                                            <?php endif; ?>
-                                            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); editInstrument(<?php echo $instrument['id']; ?>)">
-                                                <i class="feather icon-edit"></i> Edit
-                                            </button>
-                                            <?php if ($permissions['can_delete']): ?>
-                                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
-                                                    <i class="feather icon-trash"></i> Delete
-                                                </button>
+                                                <?php if ($permissions['can_delete']): ?>
+                                                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteInstrument(<?php echo $instrument['id']; ?>, '<?php echo addslashes($instrument['name']); ?>')">
+                                                        <i class="feather icon-trash"></i> Delete
+                                                    </button>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>

@@ -55,8 +55,8 @@
                                 <div class="form-group">
                                     <label for="password"><i class="feather icon-lock mr-2"></i>Password *</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control" id="password" name="password"
-                                               required minlength="6">
+                                    <input type="password" class="form-control" id="password" name="password"
+                                           required minlength="6">
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                                 <i class="feather icon-eye"></i>

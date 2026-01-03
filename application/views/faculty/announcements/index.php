@@ -142,7 +142,21 @@
                                                         <a class="dropdown-item" href="<?php echo base_url($url.'/announcements/view/'.$announcement['id']); ?>">
                                                             <i class="feather icon-eye"></i> View
                                                         </a>
-                                                        <?php if ($announcement['sender_id'] == $current_user['id'] || $current_user['role'] == ROLE_PRINCIPAL): ?>
+                                                        <?php
+                                                        $can_edit_delete = false;
+                                                        if ($announcement['sender_id'] == $current_user['id']) {
+                                                            // User can always edit/delete their own announcements
+                                                            $can_edit_delete = true;
+                                                        } elseif ($current_user['role'] == ROLE_PRINCIPAL) {
+                                                            // Principal can edit/delete all announcements
+                                                            $can_edit_delete = true;
+                                                        } elseif ($current_user['role'] == ROLE_VICE_PRINCIPAL && in_array($announcement['sender_role'], [ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN])) {
+                                                            // Vice Principal can edit/delete announcements from HOD, Staff, and Custodian
+                                                            $can_edit_delete = true;
+                                                        }
+                                                        // HODs can only edit/delete their own announcements (covered by first condition)
+                                                        if ($can_edit_delete):
+                                                        ?>
                                                             <a class="dropdown-item" href="<?php echo base_url($url.'/announcements/edit/'.$announcement['id']); ?>">
                                                                 <i class="feather icon-edit"></i> Edit
                                                             </a>

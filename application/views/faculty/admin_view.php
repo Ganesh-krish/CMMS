@@ -37,7 +37,8 @@
             </div>
             <?php endif; ?>
 
-            <!-- Total Asst Administrators Card -->
+            <!-- Total Asst Administrators Card - Hidden for HODs -->
+            <?php if (!isset($show_hod_view) || !$show_hod_view): ?>
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -53,8 +54,10 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
 
-            <!-- Total Dept Administrators Card -->
+            <!-- Total Dept Administrators Card - Hidden for HODs -->
+            <?php if (!isset($show_hod_view) || !$show_hod_view): ?>
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -70,6 +73,7 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Total Faculty Card -->
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
@@ -122,7 +126,8 @@
                 </div>
             </div>
 
-            <!-- Total Departments Card -->
+            <!-- Total Departments Card - Hidden for HODs -->
+            <?php if (!isset($show_hod_view) || !$show_hod_view): ?>
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -138,6 +143,7 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Total Courses Card -->
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">

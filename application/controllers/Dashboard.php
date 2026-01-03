@@ -247,22 +247,39 @@ class Dashboard extends CI_Controller
     {
         $dept_id = $this->session_data['department'];
 
+        // Debug: Check if department exists in session
+        if (!isset($this->session_data['department']) || empty($this->session_data['department'])) {
+            log_message('error', 'HOD Dashboard - No department found in session data: ' . json_encode($this->session_data));
+            $dept_id = null;
+        }
+
         // Ensure department ID is a string for proper comparison
         $dept_id = (string) $dept_id;
 
         // Debug: Log department ID for troubleshooting
         log_message('debug', 'HOD Dashboard - Department ID: ' . $dept_id . ' (type: ' . gettype($dept_id) . ')');
 
-        $data["department_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["department" => $dept_id, "is_active" => 1]));
-        $data["department_instructors"] = count($this->db_model->get_all(TABLE_FACULTY, ["department" => $dept_id, "role" => ROLE_STAFF, "is_active" => 1]));
+        // Get department-specific counts and map them to the same variable names as admin_view
+        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["department" => $dept_id, "is_active" => 1]));
+        $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, ["department" => $dept_id, "role" => ROLE_STAFF, "is_active" => 1]));
         // Custodians don't belong to departments, so show all custodians for the college
-        $data["department_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_CUSTODIAN, "college_id" => $this->college['id'], "is_active" => 1]));
+        $data["total_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_CUSTODIAN, "college_id" => $this->college['id'], "is_active" => 1]));
         // Courses table doesn't have department column, so get all courses for the college
-        $data["department_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["college_id" => $this->college['id'], "is_active" => 1]));
+        $courses = $this->db_model->get_all(TABLE_COURCES, ["college_id" => $this->college['id'], "is_active" => 1]);
+        $data["total_courses"] = count($courses);
+        log_message('debug', 'HOD Dashboard - Courses query result count: ' . count($courses) . ', College ID: ' . $this->college['id']);
+        log_message('debug', 'HOD Dashboard - College data: ' . json_encode($this->college));
         $data["department_name"] = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $dept_id])['name'] ?? 'Department';
 
+        // Set counts that don't apply to HODs to 0
+        $data["total_administrators"] = 0; // HODs don't see other administrators
+        $data["total_asst_administrators"] = 0; // HODs don't see assistant administrators
+        $data["total_dept_administrators"] = 0; // HODs don't see other department administrators
+        $data["total_departments"] = 0; // HODs only manage their own department
+
         // Debug: Log counts for troubleshooting
-        log_message('debug', 'HOD Dashboard counts - Students: ' . $data["department_students"] . ', Instructors: ' . $data["department_instructors"] . ', Custodians: ' . $data["department_custodians"] . ', Courses: ' . $data["department_courses"]);
+        log_message('debug', 'HOD Dashboard counts - total_students: ' . $data["total_students"] . ', total_faculty: ' . $data["total_faculty"] . ', total_custodians: ' . $data["total_custodians"] . ', total_courses: ' . $data["total_courses"]);
+        log_message('debug', 'HOD Dashboard final data array: ' . json_encode($data));
 
         return $data;
     }

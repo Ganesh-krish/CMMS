@@ -409,7 +409,9 @@
                                 <div>Management</div>
                             </a>
                             <ul class="submenu">
-                                <li><a href="<?php echo base_url($url.'/management/principal'); ?>" class="<?php if ($classname == "management_principal") echo "active"; ?>">Administrator</a></li>
+                                <?php if ($designation == ROLE_PRINCIPAL): ?>
+                                    <li><a href="<?php echo base_url($url.'/management/principal'); ?>" class="<?php if ($classname == "management_principal") echo "active"; ?>">Administrator</a></li>
+                                <?php endif; ?>
                                 <li><a href="<?php echo base_url($url.'/management/vice_principal'); ?>" class="<?php if ($classname == "management_vice_principal") echo "active"; ?>">Asst Administrator</a></li>
                                 <li><a href="<?php echo base_url($url.'/management/hod'); ?>" class="<?php if ($classname == "management_hod") echo "active"; ?>">Dept Administrator</a></li>
                             </ul>
@@ -579,7 +581,27 @@
                                                                             if ($session_data && isset($session_data['name']) && $session_data['name']) {
                                                                                 echo $session_data['name'];
                                                                             } else {
-                                                                                echo 'Administrator';
+                                                                                // Show role-specific title
+                                                                                $user_role = $session_data['role'] ?? $designation ?? ROLE_PRINCIPAL;
+                                                                                switch ($user_role) {
+                                                                                    case ROLE_PRINCIPAL:
+                                                                                        echo 'Principal';
+                                                                                        break;
+                                                                                    case ROLE_VICE_PRINCIPAL:
+                                                                                        echo 'Asst Administrator';
+                                                                                        break;
+                                                                                    case ROLE_HOD:
+                                                                                        echo 'Dept Administrator';
+                                                                                        break;
+                                                                                    case ROLE_STAFF:
+                                                                                        echo 'Instructor';
+                                                                                        break;
+                                                                                    case ROLE_CUSTODIAN:
+                                                                                        echo 'Custodian';
+                                                                                        break;
+                                                                                    default:
+                                                                                        echo 'Administrator';
+                                                                                }
                                                                             }
                                                                         ?></span>
                             </span>

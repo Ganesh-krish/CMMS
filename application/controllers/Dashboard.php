@@ -56,25 +56,29 @@ class Dashboard extends CI_Controller
         $class["college"] = $this->college;
 
         // Role-specific dashboard data
-        if ($role == ROLE_VICE_PRINCIPAL) {
-            // Vice-Principal dashboard
+        if ($role == ROLE_PRINCIPAL) {
+            // Principal dashboard - show unified dashboard
             $data = array_merge($data, $this->get_principal_dashboard_data());
-            $view_file = 'faculty/principal/view';
+            $data["title"] = "Dashboard Overview";
+            $data["show_full_admin"] = true;
+            $view_file = 'faculty/admin_view';
+        } elseif ($role == ROLE_VICE_PRINCIPAL) {
+            // Vice-Principal dashboard - show assistant admin dashboard
+            $data = array_merge($data, $this->get_vice_principal_dashboard_data());
+            $data["title"] = "Assistant Administrator Dashboard";
+            $data["show_vice_principal_view"] = true;
+            $view_file = 'faculty/admin_view';
         } elseif ($role == ROLE_HOD) {
-            // HOD dashboard
+            // HOD dashboard - show department admin dashboard
             $data = array_merge($data, $this->get_hod_dashboard_data());
-            $view_file = 'faculty/hod/view';
+            $data["title"] = "Department Administrator Dashboard";
+            $data["show_hod_view"] = true;
+            $view_file = 'faculty/admin_view';
         } elseif (in_array($role, [ROLE_STAFF, ROLE_CUSTODIAN])) {
             // Staff dashboard - use common dashboard for now
             $data = array_merge($data, $this->get_staff_dashboard_data());
             $data["title"] = "Staff Dashboard";
             $data["show_staff_view"] = true;
-            $view_file = 'faculty/admin_view';
-        } elseif ($role == ROLE_PRINCIPAL) {
-            // SuperAdmin dashboard - show unified dashboard
-            $data = array_merge($data, $this->get_principal_dashboard_data());
-            $data["title"] = "Dashboard Overview";
-            $data["show_full_admin"] = true;
             $view_file = 'faculty/admin_view';
         } else {
             // Default dashboard
@@ -210,6 +214,22 @@ class Dashboard extends CI_Controller
     {
         // Get comprehensive stats for principal - all 8 metrics
         $data["total_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_PRINCIPAL]));
+        $data["total_asst_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_VICE_PRINCIPAL]));
+        $data["total_dept_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_HOD]));
+        $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_STAFF]));
+        $data["total_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_CUSTODIAN]));
+        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => 1]));
+        $data["total_departments"] = count($this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]));
+        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["is_active" => 1]));
+
+        // Keep these for backward compatibility
+        $data["active_tests"] = 0; // Placeholder
+        return $data;
+    }
+
+    private function get_vice_principal_dashboard_data()
+    {
+        // Get stats for vice principal - similar to principal but with some restrictions
         $data["total_asst_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_VICE_PRINCIPAL]));
         $data["total_dept_administrators"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_HOD]));
         $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, ["is_active" => 1, "role" => ROLE_STAFF]));

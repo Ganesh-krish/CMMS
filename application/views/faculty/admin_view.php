@@ -18,7 +18,8 @@
 
         <!-- Statistics Cards - 8 Total -->
         <div class="row mb-4">
-            <!-- Total Administrators Card -->
+            <!-- Total Administrators Card - Only for Principals -->
+            <?php if (isset($show_full_admin) && $show_full_admin): ?>
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -34,6 +35,7 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Total Asst Administrators Card -->
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">

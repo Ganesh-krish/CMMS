@@ -37,11 +37,16 @@ class Groups extends CI_Controller
         $this->permissions = $this->faculty_common->get_access_permissions($this->session_data);
         // print_r($this->permissions);
           
-        // Only SuperAdmin can manage administrators
+        // Role-based access control for groups management
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        // print_r($role);
-        
-        if ($role !== ROLE_PRINCIPAL) {
+
+        // Allow appropriate roles to access groups management:
+        // - Principal: Full access to all group management
+        // - Vice Principal: Can manage groups
+        // - HOD: Can manage groups in their department
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+
+        if (!in_array($role, $allowed_roles, true)) {
             redirect($this->url.'/dashboard');
         }
     }

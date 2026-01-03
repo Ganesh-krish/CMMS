@@ -81,6 +81,7 @@ class Course extends CI_Controller {
         }
 
         $data['departments'] = $departments;
+        $data['current_user_role'] = $user_role; // Pass current user role to view
 
         // Statistics for course management
         $course_ids = array_column($data["courses"], 'id');
@@ -392,6 +393,8 @@ class Course extends CI_Controller {
         }
 
         $data["course"] = $course;
+        $data["current_user_role"] = $user_role; // Pass current user role to view
+        $data["permissions"] = $this->permissions; // Pass permissions to view
         $data["modules"] = $this->db_model->get_all(TABLE_COURSE_MODULES, [
             "course_id" => $course_id,
             "is_active" => 1
@@ -431,6 +434,7 @@ class Course extends CI_Controller {
 
         $data["course"] = $course;
         $data["module"] = $module;
+        $data["current_user_role"] = $user_role; // Pass current user role to view
         $data["lessons"] = $this->db_model->get_all("course_module_lessons", [
                 "module_id" => $module_id,
             "is_active" => 1

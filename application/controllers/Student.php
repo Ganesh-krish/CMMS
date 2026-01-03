@@ -45,7 +45,8 @@ class Student extends CI_Controller {
         // - Principal: Full access to all student management
         // - Vice Principal: Can manage students
         // - HOD: Can view students in their department
-        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        // - Staff: Can view students in their department
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
 
         if (!in_array($role, $allowed_roles, true)) {
             redirect($this->url.'/dashboard');
@@ -77,16 +78,16 @@ class Student extends CI_Controller {
 
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
-        if ($role == ROLE_HOD) {
-            // HODs can only see students from their department
+        if ($role == ROLE_HOD || $role == ROLE_STAFF) {
+            // HODs and Staff can only see students from their department
             $dept_id = $this->session_data['department'];
             $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
                 "is_active" => 1,
                 "college_id" => $this->college['id'],
                 "department" => $dept_id
             ]);
-            $data["can_edit_students"] = false; // HODs cannot edit students
-            $data["can_delete_students"] = false; // HODs cannot delete students
+            $data["can_edit_students"] = false; // HODs and Staff cannot edit students
+            $data["can_delete_students"] = false; // HODs and Staff cannot delete students
         } else {
             // Principals and Vice Principals can see all students
             $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
@@ -126,6 +127,7 @@ class Student extends CI_Controller {
         $data["department_stats"] = $department_stats;
 
         $data["url"] = $this->url;
+        $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "students";
         $class["url"] = $this->url;
 

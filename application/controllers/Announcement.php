@@ -28,8 +28,8 @@ class Announcement extends CI_Controller
         $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
 
         // Define access levels for announcements
-        $create_edit_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
-        $read_only_roles = [ROLE_STAFF, ROLE_CUSTODIAN];
+        $create_edit_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
+        $read_only_roles = [ROLE_CUSTODIAN];
         $allowed_roles = array_merge($create_edit_roles, $read_only_roles);
 
         if (!in_array($role, $allowed_roles, true)) {
@@ -111,8 +111,8 @@ class Announcement extends CI_Controller
 
             if ($visibility === 'department') {
                 $department_id = $this->input->post('department_id');
-                // For HOD, force their own department
-                if ($role == ROLE_HOD) {
+                // For HOD and Staff, force their own department
+                if ($role == ROLE_HOD || $role == ROLE_STAFF) {
                     $department_id = $this->session_data['department'];
                 }
                 if (empty($department_id)) {
@@ -151,10 +151,10 @@ class Announcement extends CI_Controller
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
-        // Pre-select department for HODs when creating department announcements
-        if ($role == ROLE_HOD) {
+        // Pre-select department for HODs and Staff when creating department announcements
+        if ($role == ROLE_HOD || $role == ROLE_STAFF) {
             $data["selected_department"] = $this->session_data['department'];
-            $data["force_department_visibility"] = true; // Force department visibility for HODs
+            $data["force_department_visibility"] = true; // Force department visibility for HODs and Staff
         }
 
         $this->load->view('common/sidebar', $class);
@@ -196,8 +196,8 @@ class Announcement extends CI_Controller
 
             if ($visibility === 'department') {
                 $department_id = $this->input->post('department_id');
-                // For HOD, force their own department
-                if ($role == ROLE_HOD) {
+                // For HOD and Staff, force their own department
+                if ($role == ROLE_HOD || $role == ROLE_STAFF) {
                     $department_id = $this->session_data['department'];
                 }
                 if (empty($department_id)) {

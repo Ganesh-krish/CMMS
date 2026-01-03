@@ -44,7 +44,7 @@
                                     <input type="hidden" name="visibility" value="department">
                                 <?php endif; ?>
                                 <?php if (isset($force_department_visibility) && $force_department_visibility): ?>
-                                    <small class="form-text text-muted">As a Department Administrator, you can only create department-specific announcements.</small>
+                                    <small class="form-text text-muted">As a Department Administrator/Faculty, you can only create department-specific announcements.</small>
                                 <?php endif; ?>
                                 <?php echo form_error('visibility', '<div class="text-danger">', '</div>'); ?>
                             </div>

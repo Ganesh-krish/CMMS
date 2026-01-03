@@ -26,9 +26,11 @@
                                 <p class="mb-0"><?php echo htmlspecialchars($group['description'] ?? 'No description available'); ?></p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                 <a href="<?php echo base_url($url.'/groups/add_students/'.$group['id']); ?>" class="btn btn-primary">
                                     <i class="feather icon-user-plus"></i> Add Students
                                 </a>
+                                <?php endif; ?>
                                 <a href="<?php echo base_url($url.'/groups'); ?>" class="btn btn-secondary">
                                     <i class="feather icon-arrow-left"></i> Back to Groups
                                 </a>
@@ -89,11 +91,15 @@
                                                     ?>
                                                 </td>
                                                 <td>
+                                                    <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                                     <a href="<?php echo base_url($url.'/groups/remove_student/'.$group['id'].'/'.$student['id']); ?>"
                                                        onclick="return confirm('Remove <?php echo htmlspecialchars($student['name']); ?> from this music group?')"
                                                        class="btn btn-sm btn-outline-danger" title="Remove from Group">
                                                         <i class="feather icon-user-minus"></i> Remove
                                                     </a>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">-</span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

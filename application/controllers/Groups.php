@@ -44,7 +44,8 @@ class Groups extends CI_Controller
         // - Principal: Full access to all group management
         // - Vice Principal: Can manage groups
         // - HOD: Can manage groups in their department
-        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD];
+        // - Staff: Can view groups in their department
+        $allowed_roles = [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF];
 
         if (!in_array($role, $allowed_roles, true)) {
             redirect($this->url.'/dashboard');
@@ -343,10 +344,23 @@ class Groups extends CI_Controller
     // ============ MUSIC GROUPS MANAGEMENT METHODS ============
 
     public function groups() {
-        $data["groups"] = $this->db_model->get_all(TABLE_GROUPS, [
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+
+        // Base conditions
+        $conditions = [
             "is_active" => 1,
             "college_id" => $this->college['id']
-        ]);
+        ];
+
+        // Filter by department for HODs and Staff (only if department column exists)
+        if ($role == ROLE_HOD || $role == ROLE_STAFF) {
+            if ($this->db->field_exists('department', TABLE_GROUPS)) {
+                $conditions["department"] = $this->session_data['department'];
+            }
+            // If no department column, allow access to all groups (they can still only manage students from their department)
+        }
+
+        $data["groups"] = $this->db_model->get_all(TABLE_GROUPS, $conditions);
 
         // Get student count for each group
         $total_students_in_groups = 0;
@@ -365,6 +379,7 @@ class Groups extends CI_Controller
         );
 
         $data["url"] = $this->url;
+        $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "groups";
         $class["url"] = $this->url;
 
@@ -374,6 +389,14 @@ class Groups extends CI_Controller
     }
 
     public function add_group() {
+        // Check permissions - only Principal, Vice Principal, and HOD can create groups
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to create groups."));
+            redirect($this->url.'/groups');
+            return;
+        }
+
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Group Name', 'trim|required|min_length[2]|max_length[100]');
@@ -412,6 +435,14 @@ class Groups extends CI_Controller
     }
 
     public function edit_group($id) {
+        // Check permissions - only Principal, Vice Principal, and HOD can edit groups
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to edit groups."));
+            redirect($this->url.'/groups');
+            return;
+        }
+
         $post = $this->input->post();
         if($post){
             $this->form_validation->set_rules('name', 'Group Name', 'trim|required|min_length[2]|max_length[100]');
@@ -454,6 +485,14 @@ class Groups extends CI_Controller
     }
 
     public function delete_group($id) {
+        // Check permissions - only Principal, Vice Principal, and HOD can delete groups
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to delete groups."));
+            redirect($this->url.'/groups');
+            return;
+        }
+
         $result = $this->db_model->delete(TABLE_GROUPS, ["id" => $id]);
         $message = array('success', "Music Group deleted successfully!");
         if (!$result) {
@@ -491,9 +530,9 @@ class Groups extends CI_Controller
         $existing_student_ids = array_column($data["group_students"], 'id');
         $conditions = ["is_active" => 1, "college_id" => $this->college['id']];
 
-        // Filter by department for HODs
+        // Filter by department for HODs and Staff
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        if ($role == ROLE_HOD) {
+        if ($role == ROLE_HOD || $role == ROLE_STAFF) {
             $dept_id = $this->session_data['department'];
             $conditions["department"] = $dept_id;
         }
@@ -504,6 +543,7 @@ class Groups extends CI_Controller
         $data["available_students"] = $this->db_model->get_all(TABLE_STUDENT, $conditions);
 
         $data["url"] = $this->url;
+        $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "groups";
         $class["url"] = $this->url;
 
@@ -513,6 +553,14 @@ class Groups extends CI_Controller
     }
 
     public function add_students_to_group($group_id) {
+        // Check permissions - only Principal, Vice Principal, and HOD can manage group membership
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to manage group membership."));
+            redirect($this->url.'/groups/group_students/'.$group_id);
+            return;
+        }
+
         $post = $this->input->post();
         if($post){
             $student_ids = $this->input->post('student_ids');
@@ -559,6 +607,14 @@ class Groups extends CI_Controller
     }
 
     public function add_students_page($group_id) {
+        // Check permissions - only Principal, Vice Principal, and HOD can manage group membership
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to manage group membership."));
+            redirect($this->url.'/groups');
+            return;
+        }
+
         $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "is_active" => 1]);
         if (!$data["group"]) {
             $this->session->set_flashdata('message', array('danger', "Music Group not found."));
@@ -576,9 +632,9 @@ class Groups extends CI_Controller
         // Get all students not in this group for adding
         $conditions = ["is_active" => 1, "college_id" => $this->college['id']];
 
-        // Filter by department for HODs
+        // Filter by department for HODs and Staff
         $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
-        if ($role == ROLE_HOD) {
+        if ($role == ROLE_HOD || $role == ROLE_STAFF) {
             $dept_id = $this->session_data['department'];
             $conditions["department"] = $dept_id;
         }
@@ -598,6 +654,14 @@ class Groups extends CI_Controller
     }
 
     public function remove_student_from_group($group_id, $student_id) {
+        // Check permissions - only Principal, Vice Principal, and HOD can manage group membership
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to manage group membership."));
+            redirect($this->url.'/groups/group_students/'.$group_id);
+            return;
+        }
+
         $result = $this->db_model->delete(TABLE_MEMGROUPS,
             ["group_id" => $group_id, "student_id" => $student_id]
         );

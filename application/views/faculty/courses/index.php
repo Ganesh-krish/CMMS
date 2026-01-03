@@ -81,9 +81,11 @@
                                 <p class="mb-0">Manage courses, modules, and enrollments</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                 <a href="<?php echo base_url($url.'/courses/add'); ?>" class="btn btn-primary">
                                     <i class="feather icon-plus"></i> Add Course
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

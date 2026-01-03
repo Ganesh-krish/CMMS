@@ -73,9 +73,11 @@
                                 <p class="mb-0">Manage student information and enrollment</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                 <a href="<?php echo base_url($url.'/students/add'); ?>" class="btn btn-primary">
                                     <i class="feather icon-plus"></i> Add Student
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -93,9 +95,11 @@
                                 <i class="feather icon-users" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Students</h4>
                                 <p class="text-muted">There are no students to display.</p>
+                                <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                 <a href="<?php echo base_url($url.'/students/add'); ?>" class="btn btn-primary">
                                     Add First Student
                                 </a>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">

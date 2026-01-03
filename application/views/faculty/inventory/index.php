@@ -51,8 +51,8 @@
             </div>
         </div>
 
-        <!-- Quick Actions - Hidden for HODs -->
-        <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
+        <!-- Quick Actions - Hidden for HODs and Staff -->
+        <?php if ((!isset($current_user_is_hod) || !$current_user_is_hod) && (!isset($current_user_is_staff) || !$current_user_is_staff)): ?>
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -206,7 +206,7 @@
                                             </span>
                                         </td>
                                         <td class="d-flex gap-1" style="flex-wrap: wrap;">
-                                            <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
+                                            <?php if ((!isset($current_user_is_hod) || !$current_user_is_hod) && (!isset($current_user_is_staff) || !$current_user_is_staff)): ?>
                                                 <?php if ($instrument['availability_status'] == INSTRUMENT_STATUS_AVAILABLE || $instrument['availability_status'] == '1' || $instrument['availability_status'] == 1): ?>
                                                     <a href="<?php echo site_url($url.'/inventory/issue/'.$instrument['id']); ?>" class="btn btn-sm btn-warning" title="Issue instrument ID: <?php echo $instrument['id']; ?>">
                                                         <i class="feather icon-send"></i> Issue

@@ -275,9 +275,9 @@ class common extends CI_Model {
             ],
             // Announcement permissions
             'announcement' => [
-                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD],
-                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD],
-                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD]
+                'create' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'edit' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF],
+                'delete' => [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]
             ],
             // General permissions
             'general' => [

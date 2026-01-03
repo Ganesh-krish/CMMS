@@ -75,10 +75,10 @@ class Dashboard extends CI_Controller
             $data["show_hod_view"] = true;
             $view_file = 'faculty/admin_view';
         } elseif (in_array($role, [ROLE_STAFF, ROLE_CUSTODIAN])) {
-            // Staff dashboard - use common dashboard for now
+            // Staff dashboard - use same layout as HOD dashboard
             $data = array_merge($data, $this->get_staff_dashboard_data());
-            $data["title"] = "Staff Dashboard";
-            $data["show_staff_view"] = true;
+            $data["title"] = "Faculty Dashboard";
+            $data["show_hod_view"] = true; // Use same layout as HOD dashboard
             $view_file = 'faculty/admin_view';
         } else {
             // Default dashboard
@@ -287,8 +287,42 @@ class Dashboard extends CI_Controller
     private function get_staff_dashboard_data()
     {
         $staff_id = $this->session_data['id'];
-        $data["my_courses"] = count($this->db_model->get_all(TABLE_COURCES, ["created_by" => $staff_id, "is_active" => true]));
-        $data["my_students"] = count($this->db_model->get_all(TABLE_STUDENT, ["is_active" => true])); // Limited view
+        $department_id = $this->session_data['department'];
+
+        // Use same data format as HOD dashboard for consistent display
+        $data["total_students"] = count($this->db_model->get_all(TABLE_STUDENT, [
+            "department" => $department_id,
+            "is_active" => 1,
+            "college_id" => $this->college['id']
+        ])); // Department students
+
+        $data["total_faculty"] = count($this->db_model->get_all(TABLE_FACULTY, [
+            "department" => $department_id,
+            "role" => ROLE_STAFF,
+            "is_active" => 1
+        ])); // Other faculty in department
+
+        // Custodians don't belong to departments, so show all custodians for the college
+        $data["total_custodians"] = count($this->db_model->get_all(TABLE_FACULTY, [
+            "role" => ROLE_CUSTODIAN,
+            "college_id" => $this->college['id'],
+            "is_active" => 1
+        ]));
+
+        // Courses table doesn't have department column, so get all courses for the college
+        $data["total_courses"] = count($this->db_model->get_all(TABLE_COURCES, [
+            "college_id" => $this->college['id'],
+            "is_active" => 1
+        ]));
+
+        // Set irrelevant counts to 0 (same as HOD)
+        $data["total_administrators"] = 0;
+        $data["total_asst_administrators"] = 0;
+        $data["total_dept_administrators"] = 0;
+        $data["total_departments"] = 0;
+
+        $data["department_name"] = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $department_id])['name'] ?? 'Department';
+
         return $data;
     }
 

@@ -52,9 +52,11 @@
                                 <p class="mb-0">Manage course modules and lessons</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (isset($permissions['create']) && $permissions['create']): ?>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModuleModal">
                                     <i class="feather icon-plus"></i> Add Module
                                 </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -72,9 +74,11 @@
                                 <i class="feather icon-layers" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Modules</h4>
                                 <p class="text-muted">There are no modules in this course yet.</p>
+                                <?php if (isset($permissions['create']) && $permissions['create']): ?>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModuleModal">
                                     Add First Module
                                 </button>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -111,14 +115,18 @@
                                                         </a>
 
                                                         <!-- Edit Module -->
+                                                        <?php if (isset($permissions['edit']) && $permissions['edit']): ?>
                                                         <button type="button" class="btn btn-warning btn-sm" onclick="editModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>', '<?php echo htmlspecialchars(addslashes($module['description'])); ?>', <?php echo $module['order']; ?>)" title="Edit Module">
                                                             <i class="feather icon-edit"></i>
                                                         </button>
+                                                        <?php endif; ?>
 
                                                         <!-- Delete Module -->
+                                                        <?php if (isset($permissions['delete']) && $permissions['delete']): ?>
                                                         <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteModule(<?php echo $module['id']; ?>, '<?php echo htmlspecialchars(addslashes($module['name'])); ?>')" title="Delete Module">
                                                             <i class="feather icon-trash"></i>
                                                         </button>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>

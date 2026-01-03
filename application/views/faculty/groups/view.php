@@ -72,9 +72,11 @@
                                 <p class="mb-0">Create and manage music groups for students</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                 <a href="<?php echo base_url($url.'/groups/add'); ?>" class="btn btn-success">
                                     <i class="feather icon-plus"></i> Add Music Group
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -128,6 +130,7 @@
                                                 </td>
                                                 <td><?php echo date('d M Y', strtotime($group['created_at'])); ?></td>
                                                 <td>
+                                                    <?php if (!isset($current_user_role) || $current_user_role != ROLE_STAFF): ?>
                                                     <div class="btn-group" role="group">
                                                         <a href="<?php echo base_url($url.'/groups/edit/'.$group['id']); ?>" class="btn btn-sm btn-success" title="Edit Group">
                                                             <i class="feather icon-edit"></i>
@@ -136,6 +139,9 @@
                                                             <i class="feather icon-trash"></i>
                                                         </a>
                                                     </div>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">-</span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

@@ -74,12 +74,17 @@ class Dashboard extends CI_Controller
             $data["title"] = "Department Administrator Dashboard";
             $data["show_hod_view"] = true;
             $view_file = 'faculty/admin_view';
-        } elseif (in_array($role, [ROLE_STAFF, ROLE_CUSTODIAN])) {
+        } elseif ($role == ROLE_STAFF) {
             // Staff dashboard - use same layout as HOD dashboard
             $data = array_merge($data, $this->get_staff_dashboard_data());
             $data["title"] = "Faculty Dashboard";
             $data["show_hod_view"] = true; // Use same layout as HOD dashboard
             $view_file = 'faculty/admin_view';
+        } elseif ($role == ROLE_CUSTODIAN) {
+            // Custodian dashboard - simplified dashboard
+            $data = array_merge($data, $this->get_custodian_dashboard_data());
+            $data["title"] = "Custodian Dashboard";
+            $view_file = 'faculty/custodian_dashboard';
         } else {
             // Default dashboard
             $data = array_merge($data, $this->get_default_dashboard_data());
@@ -322,6 +327,38 @@ class Dashboard extends CI_Controller
         $data["total_departments"] = 0;
 
         $data["department_name"] = $this->db_model->get_row(TABLE_DEPARTMENT, ["id" => $department_id])['name'] ?? 'Department';
+
+        return $data;
+    }
+
+    private function get_custodian_dashboard_data()
+    {
+        // Get inventory statistics for custodian dashboard
+        $data["total_instruments"] = count($this->db_model->get_all(TABLE_INSTRUMENTS, [
+            "college_id" => $this->college['id'],
+            "is_active" => 1
+        ]));
+
+        $data["available_instruments"] = count($this->db_model->get_all(TABLE_INSTRUMENTS, [
+            "college_id" => $this->college['id'],
+            "is_active" => 1,
+            "availability_status" => INSTRUMENT_STATUS_AVAILABLE
+        ]));
+
+        $data["issued_instruments"] = count($this->db_model->get_all(TABLE_INSTRUMENTS, [
+            "college_id" => $this->college['id'],
+            "is_active" => 1,
+            "availability_status" => INSTRUMENT_STATUS_ISSUED
+        ]));
+
+        // Get recent announcements
+        $all_announcements = $this->db_model->get_all(TABLE_ANNOUNCEMENTS, [
+            "college_id" => $this->college['id'],
+            "is_active" => 1
+        ], "*", "created_at", "DESC");
+
+        // Limit to 5 most recent
+        $data["recent_announcements"] = array_slice($all_announcements, 0, 5);
 
         return $data;
     }

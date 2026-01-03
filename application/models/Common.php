@@ -84,13 +84,16 @@ class common extends CI_Model {
             case DESIGNATION_VICE_PRINCIPAL:
                 redirect( base_url("$url/vice_principal"));
                 break;
-            case ROLE_VICE_PRINCIPAL:
+            case ROLE_HOD:
             case DESIGNATION_HOD:
                 redirect( base_url("$url/hod"));
                 break;
             case ROLE_STAFF:
             case DESIGNATION_STAFF:
                 redirect( base_url("$url/staff"));
+                break;
+            case ROLE_CUSTODIAN:
+                redirect( base_url("$url/custodian"));
                 break;
             case 'student':
                 redirect( base_url("$url/student"));

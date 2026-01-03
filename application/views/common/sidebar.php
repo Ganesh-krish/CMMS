@@ -476,7 +476,7 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
+                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "inventory" || $classname == "inventory_issues" || $classname == "inventory_maintenance" || $classname == "inventory_reports") {
                                                     echo "active";
@@ -501,7 +501,7 @@
                         -->
                     <?php endif; ?>
 
-                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
+                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF, ROLE_CUSTODIAN])): ?>
                         <li class="sidenav-item <?php if ($classname == "announcements") {
                                                     echo "active";
                                                 } ?>">

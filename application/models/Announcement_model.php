@@ -66,9 +66,16 @@ class Announcement_model extends CI_Model
             } elseif ($user_role == ROLE_STAFF) {
                 // Staff can see all announcements + their department's announcements
                 $this->db->where("(a.visibility = 'all' OR (a.visibility = 'department' AND a.department_id = {$user_department}))");
+            } elseif ($user_role == ROLE_CUSTODIAN) {
+                // Custodians can see all announcements (they don't belong to departments)
+                $this->db->where("a.visibility = 'all'");
             } else {
                 // Students can only see announcements for their department or all announcements
-                $this->db->where("(a.visibility = 'all' OR (a.visibility = 'department' AND a.department_id = {$user_department}))");
+                if (!empty($user_department)) {
+                    $this->db->where("(a.visibility = 'all' OR (a.visibility = 'department' AND a.department_id = {$user_department}))");
+                } else {
+                    $this->db->where("a.visibility = 'all'");
+                }
             }
         }
 
@@ -179,6 +186,7 @@ class Announcement_model extends CI_Model
         return 0;
     }
 }
+
 
 
 

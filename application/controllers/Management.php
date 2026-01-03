@@ -316,7 +316,21 @@ class Management extends CI_Controller {
     // ============ HOD MANAGEMENT ============
 
     public function hod() {
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+
+        // All users can see all HODs for reading
         $data["hods"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_HOD, "is_active" => 1]);
+
+        if ($role == ROLE_HOD) {
+            // HODs can only edit their own account
+            $data["can_edit_others"] = false;
+            $data["current_user_is_hod"] = true;
+        } else {
+            // Principals and Vice Principals can edit all HODs
+            $data["can_edit_others"] = true;
+            $data["current_user_is_hod"] = false;
+        }
+
         $data["current_user_id"] = $this->session_data['id'];
 
         $data["url"] = $this->url;

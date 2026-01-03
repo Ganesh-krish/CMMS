@@ -55,7 +55,17 @@
                                             <option value="">Select Department</option>
                                             <?php foreach ($departments as $dept): ?>
                                                 <option value="<?php echo $dept['id']; ?>"
-                                                        <?php echo (isset($course) && $course['department'] == $dept['id']) ? 'selected' : set_select('department', $dept['id']); ?>>
+                                                        <?php
+                                                        $is_selected = false;
+                                                        if (isset($course) && $course['department'] == $dept['id']) {
+                                                            $is_selected = true;
+                                                        } elseif (isset($selected_department) && $selected_department == $dept['id']) {
+                                                            $is_selected = true;
+                                                        } elseif (set_select('department', $dept['id'])) {
+                                                            $is_selected = true;
+                                                        }
+                                                        echo $is_selected ? 'selected' : '';
+                                                        ?>>
                                                     <?php echo htmlspecialchars($dept['name']); ?>
                                                 </option>
                                             <?php endforeach; ?>

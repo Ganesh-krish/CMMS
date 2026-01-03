@@ -51,7 +51,8 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
+        <!-- Quick Actions - Hidden for HODs -->
+        <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -80,6 +81,7 @@
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
         <!-- Filters -->
         <div class="card mb-4">

@@ -132,6 +132,7 @@ $route['(:any)/groups/add'] = 'Groups/add_group';
 $route['(:any)/groups/edit/(:num)'] = 'Groups/edit_group/$2';
 $route['(:any)/groups/delete/(:num)'] = 'Groups/delete_group/$2';
 $route['(:any)/groups/group_students/(:num)'] = 'Groups/group_students/$2';
+$route['(:any)/groups/add_students/(:num)'] = 'Groups/add_students_page/$2';
 $route['(:any)/groups/add_students_to_group/(:num)'] = 'Groups/add_students_to_group/$2';
 $route['(:any)/groups/remove_student/(:num)/(:num)'] = 'Groups/remove_student_from_group/$2/$3';
 

@@ -154,15 +154,23 @@
                                                 <td><?php echo date('d M Y', strtotime($student['created_at'])); ?></td>
                                                 <td>
                                                     <div class="btn-group" role="group">
+                                                        <?php if (isset($can_edit_students) && $can_edit_students): ?>
                                                         <a href="<?php echo base_url($url.'/students/edit/'.$student['id']); ?>" class="btn btn-success btn-sm" title="Edit">
                                                             <i class="feather icon-edit"></i>
                                                         </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (isset($can_delete_students) && $can_delete_students): ?>
                                                         <button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="openDeleteModal(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['name']); ?>')">
                                                             <i class="feather icon-trash"></i>
                                                         </button>
+                                                        <?php endif; ?>
+
+                                                        <?php if (isset($can_edit_students) && $can_edit_students): ?>
                                                         <button type="button" class="btn btn-warning btn-sm" title="Reset Password" onclick="openPasswordResetModal(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['name']); ?>')">
                                                             <i class="feather icon-lock"></i>
                                                         </button>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>

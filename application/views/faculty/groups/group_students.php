@@ -26,9 +26,9 @@
                                 <p class="mb-0"><?php echo htmlspecialchars($group['description'] ?? 'No description available'); ?></p>
                             </div>
                             <div class="col-md-6 text-right">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStudentsModal">
+                                <a href="<?php echo base_url($url.'/groups/add_students/'.$group['id']); ?>" class="btn btn-primary">
                                     <i class="feather icon-user-plus"></i> Add Students
-                                </button>
+                                </a>
                                 <a href="<?php echo base_url($url.'/groups'); ?>" class="btn btn-secondary">
                                     <i class="feather icon-arrow-left"></i> Back to Groups
                                 </a>
@@ -110,76 +110,6 @@
         </div>
     </div>
 </div>
-
-<!-- Add Students Modal -->
-<div class="modal fade" id="addStudentsModal" tabindex="-1" role="dialog" aria-labelledby="addStudentsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addStudentsModalLabel">Add Students to <?php echo htmlspecialchars($group['name']); ?> Group</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="addStudentsForm" method="POST" action="<?php echo base_url($url.'/groups/add_students_to_group/'.$group['id']); ?>">
-                <div class="modal-body">
-                    <?php if (!empty($available_students)): ?>
-                        <div class="form-group">
-                            <label><i class="feather icon-users mr-2"></i>Select Students to Add:</label>
-                            <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-                                <?php foreach ($available_students as $student): ?>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="student_ids[]" value="<?php echo $student['id']; ?>" id="student_<?php echo $student['id']; ?>">
-                                        <label class="form-check-label" for="student_<?php echo $student['id']; ?>">
-                                            <strong><?php echo htmlspecialchars($student['name']); ?></strong>
-                                            (<?php echo htmlspecialchars($student['email']); ?> - <?php echo htmlspecialchars($student['roll_no']); ?>)
-                                        </label>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                            <small class="form-text text-muted">Select one or more students to add to this music group.</small>
-                        </div>
-                        <div class="mt-3">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" onclick="return validateSelection()">
-                                <i class="feather icon-user-plus"></i> Add Selected Students
-                            </button>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4">
-                            <i class="feather icon-user-check" style="font-size: 3rem; color: #28a745;"></i>
-                            <h5 class="mt-3">All Students Added</h5>
-                            <p class="text-muted">All available students are already members of this music group.</p>
-                        </div>
-                        <div class="text-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function validateSelection() {
-    var selectedStudents = document.querySelectorAll('input[name="student_ids[]"]:checked');
-
-    if (selectedStudents.length === 0) {
-        alert('Please select at least one student to add to the group.');
-        return false;
-    }
-
-    return confirm('Add ' + selectedStudents.length + ' student(s) to this music group?');
-}
-
-// Select/Deselect All functionality (optional enhancement)
-function toggleAllStudents(checked) {
-    var checkboxes = document.querySelectorAll('input[name="student_ids[]"]');
-    checkboxes.forEach(function(checkbox) {
-        checkbox.checked = checked;
-    });
-}
 </script>
         </div>
     </div>

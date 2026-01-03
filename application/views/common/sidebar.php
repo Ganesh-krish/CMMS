@@ -412,7 +412,9 @@
                                 <?php if ($designation == ROLE_PRINCIPAL): ?>
                                     <li><a href="<?php echo base_url($url.'/management/principal'); ?>" class="<?php if ($classname == "management_principal") echo "active"; ?>">Administrator</a></li>
                                 <?php endif; ?>
-                                <li><a href="<?php echo base_url($url.'/management/vice_principal'); ?>" class="<?php if ($classname == "management_vice_principal") echo "active"; ?>">Asst Administrator</a></li>
+                                <?php if ($designation != ROLE_HOD): ?>
+                                    <li><a href="<?php echo base_url($url.'/management/vice_principal'); ?>" class="<?php if ($classname == "management_vice_principal") echo "active"; ?>">Asst Administrator</a></li>
+                                <?php endif; ?>
                                 <li><a href="<?php echo base_url($url.'/management/hod'); ?>" class="<?php if ($classname == "management_hod") echo "active"; ?>">Dept Administrator</a></li>
                             </ul>
                         </li>

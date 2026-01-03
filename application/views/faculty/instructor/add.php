@@ -58,7 +58,15 @@
                                     <?php if(isset($departments) && !empty($departments)): ?>
                                         <?php foreach($departments as $dept): ?>
                                             <option value="<?php echo $dept['id']; ?>"
-                                                <?php echo (isset($instructor) && $instructor['department'] == $dept['id']) ? 'selected' : ''; ?>>
+                                                <?php
+                                                $is_selected = false;
+                                                if (isset($instructor) && $instructor['department'] == $dept['id']) {
+                                                    $is_selected = true;
+                                                } elseif (isset($selected_department) && $selected_department == $dept['id']) {
+                                                    $is_selected = true;
+                                                }
+                                                echo $is_selected ? 'selected' : '';
+                                                ?>>
                                                 <?php echo htmlspecialchars($dept['name']); ?>
                                             </option>
                                         <?php endforeach; ?>

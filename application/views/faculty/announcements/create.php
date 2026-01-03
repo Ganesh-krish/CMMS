@@ -22,48 +22,70 @@
                     <div class="card-body">
                         <form action="<?php echo base_url($url.'/announcements/create'); ?>" method="post">
                             <div class="mb-3">
-                                <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="title" name="title" required placeholder="Enter announcement title">
-                                <?php echo form_error('title', '<div class="text-danger">', '</div>'); ?>
+                                <label for="title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-lg" id="title" name="title" required placeholder="Enter announcement title">
+                                <?php echo form_error('title', '<div class="text-danger small">', '</div>'); ?>
                             </div>
 
                             <div class="mb-3">
-                                <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="message" name="message" rows="8" required placeholder="Enter your announcement message"></textarea>
-                                <?php echo form_error('message', '<div class="text-danger">', '</div>'); ?>
+                                <label for="message" class="form-label fw-bold">Message <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="message" name="message" rows="6" required placeholder="Enter your announcement message"></textarea>
+                                <?php echo form_error('message', '<div class="text-danger small">', '</div>'); ?>
                             </div>
 
                             <div class="mb-3">
                                 <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
-                                <select class="form-control" id="visibility" name="visibility" required onchange="toggleDepartmentField()">
+                                <select class="form-select" id="visibility" name="visibility" required onchange="toggleDepartmentField()" <?php echo (isset($force_department_visibility) && $force_department_visibility) ? 'disabled' : ''; ?>>
                                     <option value="">Select Visibility</option>
-                                    <option value="all">All Users (Public)</option>
-                                    <option value="department">Department Only</option>
+                                    <option value="all" <?php echo (isset($force_department_visibility) && $force_department_visibility) ? '' : 'selected'; ?>>All Users (Public)</option>
+                                    <option value="department" <?php echo (isset($force_department_visibility) && $force_department_visibility) ? 'selected' : ''; ?>>Department Only</option>
                                 </select>
+                                <?php if (isset($force_department_visibility) && $force_department_visibility): ?>
+                                    <input type="hidden" name="visibility" value="department">
+                                <?php endif; ?>
+                                <?php if (isset($force_department_visibility) && $force_department_visibility): ?>
+                                    <small class="form-text text-muted">As a Department Administrator, you can only create department-specific announcements.</small>
+                                <?php endif; ?>
                                 <?php echo form_error('visibility', '<div class="text-danger">', '</div>'); ?>
                             </div>
 
-                            <div class="mb-3" id="departmentField" style="display: none;">
+                            <div class="mb-3" id="departmentField" style="<?php echo (isset($force_department_visibility) && $force_department_visibility) ? '' : 'display: none;'; ?>">
                                 <label for="department_id" class="form-label">Department <span class="text-danger">*</span></label>
-                                <select class="form-control select2" id="department_id" name="department_id">
+                                <select class="form-select" id="department_id" name="department_id" <?php echo (isset($force_department_visibility) && $force_department_visibility) ? 'required' : ''; ?>>
                                     <option value="">Select Department</option>
                                     <?php foreach ($departments as $dept): ?>
-                                        <option value="<?php echo $dept['id']; ?>"><?php echo htmlspecialchars($dept['name']); ?></option>
+                                        <option value="<?php echo $dept['id']; ?>"
+                                            <?php
+                                            $is_selected = false;
+                                            if (isset($selected_department) && $selected_department == $dept['id']) {
+                                                $is_selected = true;
+                                            }
+                                            echo $is_selected ? 'selected' : '';
+                                            ?>>
+                                            <?php echo htmlspecialchars($dept['name']); ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if (isset($force_department_visibility) && $force_department_visibility): ?>
+                                    <small class="form-text text-muted">Only your department will see this announcement.</small>
+                                <?php endif; ?>
                             </div>
 
                             <div class="mb-3">
                                 <label for="priority" class="form-label">Priority</label>
-                                <select class="form-control" id="priority" name="priority">
+                                <select class="form-select" id="priority" name="priority">
                                     <option value="normal">Normal</option>
                                     <option value="high">High Priority</option>
                                 </select>
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="<?php echo base_url($url.'/announcements'); ?>" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-primary">Create Announcement</button>
+                                <a href="<?php echo base_url($url.'/announcements'); ?>" class="btn btn-outline-secondary">
+                                    <i class="feather icon-x me-1"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="feather icon-plus me-1"></i>Create Announcement
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -78,6 +100,8 @@ function toggleDepartmentField() {
     const visibility = document.getElementById('visibility').value;
     const departmentField = document.getElementById('departmentField');
 
+    <?php if (!isset($force_department_visibility) || !$force_department_visibility): ?>
+    // Only toggle visibility for non-HOD users
     if (visibility === 'department') {
         departmentField.style.display = 'block';
         document.getElementById('department_id').required = true;
@@ -85,16 +109,17 @@ function toggleDepartmentField() {
         departmentField.style.display = 'none';
         document.getElementById('department_id').required = false;
     }
+    <?php endif; ?>
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     toggleDepartmentField();
 
-    // Initialize Select2
-    $('.select2').select2({
-        placeholder: "Select an option",
-        allowClear: true
+    // Initialize form selects
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.classList.add('form-select');
     });
 });
 </script>

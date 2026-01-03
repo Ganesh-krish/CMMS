@@ -252,6 +252,12 @@ class Course extends CI_Controller {
                 "college_id" => $this->college['id']
             ]);
 
+            // Pre-select department for HODs
+            $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            if ($user_role == ROLE_HOD) {
+                $data["selected_department"] = $this->session_data['department'];
+            }
+
             $data["url"] = $this->url;
             $class["classname"] = "courses";
             $class["url"] = $this->url;

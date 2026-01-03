@@ -151,6 +151,12 @@ class Announcement extends CI_Controller
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["college_id" => $this->college['id'], "is_active" => 1]);
 
+        // Pre-select department for HODs when creating department announcements
+        if ($role == ROLE_HOD) {
+            $data["selected_department"] = $this->session_data['department'];
+            $data["force_department_visibility"] = true; // Force department visibility for HODs
+        }
+
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/announcements/create', $data);
         $this->load->view('common/footer');

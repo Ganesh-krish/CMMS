@@ -48,7 +48,24 @@ class Faculty extends CI_Controller {
     // ============ INSTRUCTOR MANAGEMENT ============
 
     public function instructor() {
-        $data["instructors"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_STAFF, "is_active" => 1]);
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+
+        if ($role == ROLE_HOD) {
+            // HODs can only see instructors from their department
+            $dept_id = $this->session_data['department'];
+            $data["instructors"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_STAFF, "department" => $dept_id, "is_active" => 1]);
+            $data["can_edit_instructors"] = false; // HODs cannot edit instructors
+            $data["can_delete_instructors"] = false; // HODs cannot delete instructors
+            $data["can_add_instructors"] = false; // HODs cannot add instructors
+            $data["current_user_is_hod"] = true;
+        } else {
+            // Principals and Vice Principals can see all instructors
+            $data["instructors"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_STAFF, "is_active" => 1]);
+            $data["can_edit_instructors"] = true;
+            $data["can_delete_instructors"] = true;
+            $data["can_add_instructors"] = true; // Principals and Vice Principals can add instructors
+            $data["current_user_is_hod"] = false;
+        }
 
         // Statistics for instructor management
         $data["stats"] = array(
@@ -121,6 +138,13 @@ class Faculty extends CI_Controller {
         } else {
             $data["url"] = $this->url;
             $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
+
+            // Pre-select department for HODs
+            $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            if ($user_role == ROLE_HOD) {
+                $data["selected_department"] = $this->session_data['department'];
+            }
+
             $class["classname"] = "faculty_instructor";
             $class["url"] = $this->url;
             $class["college"] = $this->college;
@@ -191,7 +215,23 @@ class Faculty extends CI_Controller {
     // ============ CUSTODIAN MANAGEMENT ============
 
     public function custodian() {
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+
         $data["custodians"] = $this->db_model->get_all(TABLE_FACULTY, ["role" => ROLE_CUSTODIAN, "is_active" => 1]);
+
+        if ($role == ROLE_HOD) {
+            // HODs have read-only access to custodians
+            $data["can_edit_custodians"] = false;
+            $data["can_delete_custodians"] = false;
+            $data["can_add_custodians"] = false; // HODs cannot add custodians
+            $data["current_user_is_hod"] = true;
+        } else {
+            // Principals and Vice Principals can manage custodians
+            $data["can_edit_custodians"] = true;
+            $data["can_delete_custodians"] = true;
+            $data["can_add_custodians"] = true; // Principals and Vice Principals can add custodians
+            $data["current_user_is_hod"] = false;
+        }
 
         $data["url"] = $this->url;
         $class["classname"] = "faculty_custodian";

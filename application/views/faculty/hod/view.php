@@ -27,9 +27,11 @@
                                 <p class="mb-0">Manage department administrators (HODs)</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
                                 <a href="<?php echo base_url($url.'/management/hod/add'); ?>" class="btn btn-primary">
                                     <i class="feather icon-plus"></i> Add Department Administrator
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -47,9 +49,11 @@
                                 <i class="feather icon-user-check" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Department Administrators</h4>
                                 <p class="text-muted">There are no department administrators to display.</p>
+                                <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
                                 <a href="<?php echo base_url($url.'/management/hod/add'); ?>" class="btn btn-primary">
                                     Add First Department Administrator
                                 </a>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -90,19 +94,26 @@
                                                 </td>
                                                 <td><?php echo date('d M Y', strtotime($hod['created_at'])); ?></td>
                                                 <td>
+                                                    <?php if ($hod['id'] == $current_user_id || (isset($can_edit_others) && $can_edit_others)): ?>
                                                     <div class="btn-group" role="group">
                                                         <a href="<?php echo base_url($url.'/management/hod/edit/'.$hod['id']); ?>" class="btn btn-sm btn-success" title="Edit">
                                                             <i class="feather icon-edit"></i>
                                                         </a>
-                                                        <?php if ($hod['id'] != $current_user_id): ?>
+
+                                                        <?php if ((isset($can_edit_others) && $can_edit_others) && $hod['id'] != $current_user_id): ?>
                                                         <a href="#" onclick="confirmDelete(<?php echo $hod['id']; ?>, '<?php echo htmlspecialchars($hod['name']); ?>')" class="btn btn-sm btn-danger" title="Delete">
                                                             <i class="feather icon-trash"></i>
                                                         </a>
                                                         <?php endif; ?>
+
                                                         <a href="#" onclick="resetPassword(<?php echo $hod['id']; ?>, '<?php echo htmlspecialchars($hod['name']); ?>')" class="btn btn-sm btn-warning" title="Reset Password">
                                                             <i class="feather icon-lock"></i>
                                                         </a>
                                                     </div>
+                                                    <?php else: ?>
+                                                    <!-- Empty cell for other HODs when current user is HOD -->
+                                                    <span class="text-muted">-</span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

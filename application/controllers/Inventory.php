@@ -72,6 +72,10 @@ class Inventory extends CI_Controller
         // Add permissions to view data
         $data["permissions"] = $this->permissions;
 
+        // Check if current user is HOD for UI restrictions
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        $data["current_user_is_hod"] = ($role == ROLE_HOD);
+
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/inventory/index', $data);
         $this->load->view('faculty/inventory/modals');

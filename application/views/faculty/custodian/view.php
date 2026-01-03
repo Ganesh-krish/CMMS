@@ -27,9 +27,11 @@
                                 <p class="mb-0">Manage inventory custodians and equipment handlers</p>
                             </div>
                             <div class="col-md-6 text-right">
+                                <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
                                 <a href="<?php echo base_url($url.'/faculty/custodian/add'); ?>" class="btn btn-primary">
                                     <i class="feather icon-plus"></i> Add Custodian
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -47,9 +49,11 @@
                                 <i class="feather icon-package" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Custodians</h4>
                                 <p class="text-muted">There are no custodians to display.</p>
+                                <?php if (!isset($current_user_is_hod) || !$current_user_is_hod): ?>
                                 <a href="<?php echo base_url($url.'/faculty/custodian/add'); ?>" class="btn btn-primary">
                                     Add First Custodian
                                 </a>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -80,15 +84,23 @@
                                                 <td><?php echo date('d M Y', strtotime($custodian['created_at'])); ?></td>
                                                 <td>
                                                     <div class="btn-group" role="group">
+                                                        <?php if (isset($can_edit_custodians) && $can_edit_custodians): ?>
                                                         <a href="<?php echo base_url($url.'/faculty/custodian/edit/'.$custodian['id']); ?>" class="btn btn-sm btn-success" title="Edit">
                                                             <i class="feather icon-edit"></i>
                                                         </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (isset($can_delete_custodians) && $can_delete_custodians): ?>
                                                         <a href="#" onclick="confirmDelete(<?php echo $custodian['id']; ?>, '<?php echo htmlspecialchars($custodian['name']); ?>')" class="btn btn-sm btn-danger" title="Delete">
                                                             <i class="feather icon-trash"></i>
                                                         </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (isset($can_edit_custodians) && $can_edit_custodians): ?>
                                                         <a href="#" onclick="resetPassword(<?php echo $custodian['id']; ?>, '<?php echo htmlspecialchars($custodian['name']); ?>')" class="btn btn-sm btn-warning" title="Reset Password">
                                                             <i class="feather icon-lock"></i>
                                                         </a>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>

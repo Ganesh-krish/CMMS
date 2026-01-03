@@ -490,6 +490,14 @@ class Groups extends CI_Controller
         // Get all students not in this group for adding
         $existing_student_ids = array_column($data["group_students"], 'id');
         $conditions = ["is_active" => 1, "college_id" => $this->college['id']];
+
+        // Filter by department for HODs
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if ($role == ROLE_HOD) {
+            $dept_id = $this->session_data['department'];
+            $conditions["department"] = $dept_id;
+        }
+
         if (!empty($existing_student_ids)) {
             $this->db_model->db->where_not_in('id', $existing_student_ids);
         }
@@ -548,6 +556,45 @@ class Groups extends CI_Controller
         } else {
             redirect($this->url.'/groups');
         }
+    }
+
+    public function add_students_page($group_id) {
+        $data["group"] = $this->db_model->get_row(TABLE_GROUPS, ["id" => $group_id, "is_active" => 1]);
+        if (!$data["group"]) {
+            $this->session->set_flashdata('message', array('danger', "Music Group not found."));
+            redirect($this->url.'/groups');
+        }
+
+        // Get students in this group
+        $group_members = $this->db_model->get_all(TABLE_MEMGROUPS, [
+            'group_id' => $group_id,
+            'is_active' => 1
+        ]);
+
+        $existing_student_ids = array_column($group_members, 'student_id');
+
+        // Get all students not in this group for adding
+        $conditions = ["is_active" => 1, "college_id" => $this->college['id']];
+
+        // Filter by department for HODs
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        if ($role == ROLE_HOD) {
+            $dept_id = $this->session_data['department'];
+            $conditions["department"] = $dept_id;
+        }
+
+        if (!empty($existing_student_ids)) {
+            $this->db_model->db->where_not_in('id', $existing_student_ids);
+        }
+        $data["available_students"] = $this->db_model->get_all(TABLE_STUDENT, $conditions);
+
+        $data["url"] = $this->url;
+        $class["classname"] = "groups";
+        $class["url"] = $this->url;
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/groups/add_students', $data);
+        $this->load->view('common/footer');
     }
 
     public function remove_student_from_group($group_id, $student_id) {

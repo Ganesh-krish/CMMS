@@ -75,10 +75,27 @@ class Student extends CI_Controller {
             $this->session_data = $this->session->userdata($this->url);
         }
 
-        $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
-            "is_active" => 1,
-            "college_id" => $this->college['id']
-        ]);
+        $role = (int) ($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+
+        if ($role == ROLE_HOD) {
+            // HODs can only see students from their department
+            $dept_id = $this->session_data['department'];
+            $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id'],
+                "department" => $dept_id
+            ]);
+            $data["can_edit_students"] = false; // HODs cannot edit students
+            $data["can_delete_students"] = false; // HODs cannot delete students
+        } else {
+            // Principals and Vice Principals can see all students
+            $data["students"] = $this->db_model->get_all(TABLE_STUDENT, [
+                "is_active" => 1,
+                "college_id" => $this->college['id']
+            ]);
+            $data["can_edit_students"] = true;
+            $data["can_delete_students"] = true;
+        }
 
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
             "is_active" => 1,
@@ -177,6 +194,12 @@ class Student extends CI_Controller {
                 "is_active" => 1,
                 "college_id" => $this->college['id']
             ]);
+
+            // Pre-select department for HODs
+            $user_role = $this->session_data['role'] ?? $this->session_data['designation'] ?? null;
+            if ($user_role == ROLE_HOD) {
+                $data["selected_department"] = $this->session_data['department'];
+            }
 
             $data["url"] = $this->url;
             $class["classname"] = "students";

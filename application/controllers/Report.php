@@ -12,7 +12,7 @@ class Report extends CI_Controller
         parent::__construct();
         $this->load->model('common', 'common');
         $this->load->model('Db_model', 'db_model');
-        $this->load->model('Test_model', 'test_model');
+        
 
         // Check unified session (similar to Course controller)
         $user = $this->session->userdata('user');

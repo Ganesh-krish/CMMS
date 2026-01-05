@@ -355,7 +355,7 @@
 </div>
 
 <!-- Load Bootstrap Select for this page -->
-<link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.css">
+<link rel="stylesheet" href="<?= base_url('') ?>assets/libs/bootstrap-select/bootstrap-select.css">
 
 <script>
 $(document).ready(function() {

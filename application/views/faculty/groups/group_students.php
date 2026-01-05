@@ -121,10 +121,10 @@
     </div>
 </div>
 
-<script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+<script src="<?= base_url('') ?>assets/libs/datatables/datatables.js"></script>
+<script src="<?= base_url('') ?>assets/js/pages/forms_selects.js"></script>
+<script src="<?= base_url('') ?>assets/libs/bootstrap-select/bootstrap-select.js"></script>
+<script src="<?= base_url('') ?>assets/libs/select2/select2.js"></script>
 
 <script>
 $(document).ready(function() {

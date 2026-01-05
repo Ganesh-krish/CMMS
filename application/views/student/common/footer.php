@@ -13,7 +13,7 @@
     <!-- / Layout wrapper -->
 
     <!-- Core scripts -->
-    <script src="<?= base_url('') ?>assets/faculty/libs/popper/popper.js"></script>
+    <script src="<?= base_url('') ?>assets/libs/popper/popper.js"></script>
     <script src="<?= base_url('') ?>assets/faculty/js/pace.js"></script>
     <script src="<?= base_url('') ?>assets/faculty/js/bootstrap.js"></script>
     <script src="<?= base_url('') ?>assets/faculty/js/sidenav.js"></script>

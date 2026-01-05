@@ -346,7 +346,7 @@ function proceedDelete() {
     }
 </script>
 
-<script src="<?= base_url('') ?>assets/faculty/libs/datatables/datatables.js"></script>
+<script src="<?= base_url('') ?>assets/libs/datatables/datatables.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
@@ -354,5 +354,5 @@ function proceedDelete() {
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
 <script src="<?= base_url('') ?>assets/faculty/js/pages/forms_selects.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/bootstrap-select/bootstrap-select.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/libs/select2/select2.js"></script>
+<script src="<?= base_url('') ?>assets/libs/bootstrap-select/bootstrap-select.js"></script>
+<script src="<?= base_url('') ?>assets/libs/select2/select2.js"></script>

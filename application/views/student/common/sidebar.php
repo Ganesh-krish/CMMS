@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/bootstrap-material.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/shreerang-material.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/uikit.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/libs/perfect-scrollbar/perfect-scrollbar.css">
 
     <!-- Student Portal Custom Styles -->
     <style>

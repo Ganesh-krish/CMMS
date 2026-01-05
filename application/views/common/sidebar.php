@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" href="<?= base_url("/") ?>assets/images/favicon.svg">
     <!-- Icon fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/select2/select2.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/libs/select2/select2.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -23,23 +23,23 @@
 
 
     <!-- Icon fonts -->
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/fonts/ionicons.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/fonts/feather.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/fonts/ionicons.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/fonts/feather.css">
     
     <!-- Core stylesheets -->
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/bootstrap-material.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/shreerang-material.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/uikit.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/perfect-scrollbar/perfect-scrollbar.css">
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/libs/bootstrap-multiselect/bootstrap-multiselect.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/css/bootstrap-material.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/css/shreerang-material.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/css/uikit.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/libs/bootstrap-multiselect/bootstrap-multiselect.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="<?= base_url('') ?>assets/faculty/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <link rel="stylesheet" href="<?= base_url('') ?>assets/faculty/css/pages/tickets.css">
+    <script src="<?= base_url('') ?>assets/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <link rel="stylesheet" href="<?= base_url('') ?>assets/css/pages/tickets.css">
 
     <link rel="stylesheet" href="<?= base_url("/") ?>assets/packages/highlight.min.css">
     <link rel="stylesheet" href="<?= base_url("/") ?>assets/packages/fontawesome-6.3.css">
@@ -658,7 +658,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-<script src="<?= base_url('') ?>assets/faculty/js/datatables-config.js"></script>
+    <script src="<?= base_url('') ?>assets/js/datatables-config.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 

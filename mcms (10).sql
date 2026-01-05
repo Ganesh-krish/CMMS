@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 03, 2026 at 02:43 AM
+-- Generation Time: Jan 05, 2026 at 07:17 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -43,6 +43,14 @@ CREATE TABLE `announcements` (
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`id`, `title`, `message`, `visibility`, `department_id`, `sender_id`, `college_id`, `priority`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'nzhfbsd', 'iubuibuiib', 'department', 4, 3, 1, 'normal', 1, NULL, NULL, '2026-01-03 09:29:48', '2026-01-03 09:29:48'),
+(2, 'hii', 'heo boduy', 'all', NULL, 1, 1, 'high', 1, NULL, NULL, '2026-01-03 23:12:34', '2026-01-03 23:12:34');
+
 -- --------------------------------------------------------
 
 --
@@ -59,7 +67,10 @@ CREATE TABLE `college` (
   `state` varchar(100) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
   `established_year` year(4) DEFAULT NULL,
-  `description` text DEFAULT NULL,
+  `correspondent` varchar(255) DEFAULT NULL,
+  `vice_correspondent` varchar(255) DEFAULT NULL,
+  `our_vision` text DEFAULT NULL,
+  `our_mission` text DEFAULT NULL,
   `logo` varchar(255) DEFAULT NULL,
   `banner` varchar(255) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -73,8 +84,8 @@ CREATE TABLE `college` (
 -- Dumping data for table `college`
 --
 
-INSERT INTO `college` (`id`, `name`, `email`, `phone`, `address`, `city`, `state`, `website`, `established_year`, `description`, `logo`, `banner`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', 'Srivilliputhur', 'Tamil Nadu', 'https://www.democollege.com', 2025, 'A comprehensive educational institution offering quality education.', 'logo_1767403549_6291.jpg', 'logo_1767403549_62911.jpg', 1, 2, NULL, '2026-01-02 15:18:46', '2026-01-03 01:25:50');
+INSERT INTO `college` (`id`, `name`, `email`, `phone`, `address`, `city`, `state`, `website`, `established_year`, `correspondent`, `vice_correspondent`, `our_vision`, `our_mission`, `logo`, `banner`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', 'Srivilliputhur', 'Tamil Nadu', 'https://www.democollege.com', 2025, 'John Doe', 'James Cook', 'The vision of the Musical College is to become a center of excellence in music education by nurturing creative talent, preserving rich musical traditions, and promoting innovation in the field of music. The institution aims to inspire students to achieve artistic excellence, cultural awareness, and professional competence while contributing meaningfully to the global music community', 'The mission of the Musical College is to provide high-quality music education through structured academic programs, practical training, and performance opportunities. The college is committed to developing students’ technical skills, creativity, and discipline while encouraging research, collaboration, and respect for diverse musical forms. Through dedicated faculty and modern learning resources, the institution strives to shape skilled musicians who uphold artistic integrity and cultural values.', 'logo_1767636583_6556.png', 'logo_1767403549_62911.jpg', 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-05 18:09:43');
 
 -- --------------------------------------------------------
 
@@ -96,6 +107,13 @@ CREATE TABLE `courses` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `courses`
+--
+
+INSERT INTO `courses` (`id`, `name`, `description`, `course_code`, `tag`, `college_id`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'metowk', 'sdadfsdfsf', '98281', NULL, 1, 3, NULL, 1, '2026-01-03 17:57:23', '2026-01-03 17:57:23');
+
 -- --------------------------------------------------------
 
 --
@@ -116,6 +134,14 @@ CREATE TABLE `course_enrollments` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `course_enrollments`
+--
+
+INSERT INTO `course_enrollments` (`id`, `course_id`, `student_id`, `enrolled_by`, `progress_percentage`, `status`, `created_by`, `updated_by`, `enrolled_at`, `completed_at`, `updated_at`) VALUES
+(1, 1, 1, 3, '0.00', 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23'),
+(2, 1, 2, 3, '0.00', 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23');
+
 -- --------------------------------------------------------
 
 --
@@ -134,6 +160,13 @@ CREATE TABLE `course_modules` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_modules`
+--
+
+INSERT INTO `course_modules` (`id`, `course_id`, `name`, `description`, `order`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 1, 'K Ganesh krishna', 'addad', 1, 8, NULL, 1, '2026-01-03 18:13:01', '2026-01-03 18:13:01');
 
 -- --------------------------------------------------------
 
@@ -226,7 +259,8 @@ INSERT INTO `faculty` (`id`, `name`, `email`, `phone`, `password`, `role`, `desi
 (5, 'surya', 'surya@gmail.com', '06380249114', '$2y$10$k5pdH..RKL28J9F5MpuzmOftFLC86u3/TDH1ajL36eWFx3d1gosl2', 3, 3, '3', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:33:24', '2026-01-03 01:33:24'),
 (6, 'ramesh', 'ramesh@gamil.com', '8380249114', '$2y$10$74w0fAakLMo79Pa3EF46Tu0CZviSixkPnBEArxngmM3G0NceMtOxW', 4, 4, '2', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:36:47', '2026-01-03 01:36:47'),
 (7, 'Raj', 'Raj@gmail.com', '7380249114', '$2y$10$7Rt4Mm5UMPg7pYQ6St3Tb.cg0RMjFzJ0pyjPUfqpFVe9rriVbaEcu', 4, 4, '3', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:37:16', '2026-01-03 01:37:16'),
-(8, 'muthu', 'muthu@gmail.com', '7380249114', '$2y$10$cRNJK9dlSupOdax2hBnl2.vC4.bEDpurlkNYSP960wpU2yx7T44e2', 4, 4, '4', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:38:40', '2026-01-03 01:38:40');
+(8, 'muthu', 'muthu@gmail.com', '7380249114', '$2y$10$cRNJK9dlSupOdax2hBnl2.vC4.bEDpurlkNYSP960wpU2yx7T44e2', 4, 4, '4', NULL, 1, NULL, NULL, 1, 2, NULL, '2026-01-03 01:38:40', '2026-01-03 01:38:40'),
+(9, 'kumar', 'kumar@gmail.com', '06380249118', '$2y$10$VlePOcXA0KS3.PbfsgLYaeQdHlk3pzoBiJ.hjzd1XoP6ENgJIHVXu', 5, 5, NULL, NULL, 1, NULL, NULL, 1, 1, NULL, '2026-01-03 17:40:31', '2026-01-03 17:40:31');
 
 -- --------------------------------------------------------
 
@@ -246,6 +280,13 @@ CREATE TABLE `groups` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `groups`
+--
+
+INSERT INTO `groups` (`id`, `name`, `description`, `college_id`, `group_expiry`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'WMGRP', 'OWEn', 1, NULL, 3, NULL, 1, '2026-01-03 02:24:46', '2026-01-03 02:24:46');
 
 -- --------------------------------------------------------
 
@@ -273,6 +314,13 @@ CREATE TABLE `instruments` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `instruments`
+--
+
+INSERT INTO `instruments` (`id`, `name`, `category`, `serial_no`, `model`, `brand`, `condition_notes`, `instrument_price`, `instrument_image`, `description`, `availability_status`, `condition`, `college_id`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'piano', 'string', 'JRK660', 'Octavé ', 'Juarez ', 'lit ebtoke', '100000.00', 'uploads/instruments/07c7da1eec88d74c2a62a8b45b7c4fe9.png', 'SDSsaDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0, 'excellent', 1, 1, NULL, 1, '2026-01-03 17:41:44', '2026-01-03 17:41:44');
 
 -- --------------------------------------------------------
 
@@ -345,6 +393,14 @@ CREATE TABLE `memgroups` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `memgroups`
+--
+
+INSERT INTO `memgroups` (`id`, `group_id`, `student_id`, `college_id`, `added_by`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, NULL, 3, NULL, 1, '2026-01-03 02:34:35', '2026-01-03 02:34:35'),
+(2, 1, 2, 1, NULL, 3, NULL, 1, '2026-01-03 02:34:35', '2026-01-03 02:34:35');
 
 -- --------------------------------------------------------
 
@@ -510,7 +566,7 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `college`
@@ -522,19 +578,19 @@ ALTER TABLE `college`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `course_enrollments`
 --
 ALTER TABLE `course_enrollments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `course_modules`
 --
 ALTER TABLE `course_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `course_module_lessons`
@@ -552,19 +608,19 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `faculty`
 --
 ALTER TABLE `faculty`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `groups`
 --
 ALTER TABLE `groups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `instruments`
 --
 ALTER TABLE `instruments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `instrument_categories`
@@ -582,7 +638,7 @@ ALTER TABLE `instrument_issues`
 -- AUTO_INCREMENT for table `memgroups`
 --
 ALTER TABLE `memgroups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `students`

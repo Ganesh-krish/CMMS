@@ -43,6 +43,7 @@ class Staff extends CI_Controller
         $class["classname"] = "home";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         
         // Get current college and staff/department info
         $college_id = $this->college['id'];
@@ -370,6 +371,7 @@ class Staff extends CI_Controller
         $class["classname"] = "staff";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $data["post_url"] = base_url($this->url . "/staff/reset_password");
         $data["staff"] = $this->db_model->get_all(TABLE_FACULTY, ["is_active" => true, "role" => ROLE_STAFF, "department" => $this->session_data['department']]);
 
@@ -392,6 +394,7 @@ class Staff extends CI_Controller
         $class["url"] =  $this->url;
         $class["college_id"] = $this->college['id'];
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $data["cources"] = $this->db_model->get_all(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'],"department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
         // var_dump($data["cources"]);die;
         $data["faculty"] = $this->db_model->get_row(TABLE_COURCES, ["is_active" => true, "college_id" => $this->college['id'], "department" => $this->session_data['department'],'created_by' => $this->session_data['id']]);
@@ -408,6 +411,7 @@ class Staff extends CI_Controller
         $class["classname"] = "students";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $data["post_url"] = base_url($this->url . "/staff/reset_password_student");
 
         $batch = $this->input->get('batch');

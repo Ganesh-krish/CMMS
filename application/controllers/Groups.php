@@ -137,6 +137,7 @@ class Groups extends CI_Controller
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] =  $this->url;
+            $class["college"] = $this->college;
             $data["title"] = "Add Group";
             $data["college_id"] = $this->college['id'];
             $data["department"] = $this->session_data['department'];
@@ -382,6 +383,7 @@ class Groups extends CI_Controller
         $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "groups";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/view', $data);
@@ -427,6 +429,7 @@ class Groups extends CI_Controller
             $class["classname"] = "groups";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/groups");
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/groups/add', $data);
@@ -477,6 +480,7 @@ class Groups extends CI_Controller
             $class["classname"] = "groups";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/groups");
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/groups/add', $data);
@@ -546,6 +550,7 @@ class Groups extends CI_Controller
         $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "groups";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/group_students', $data);
@@ -647,6 +652,7 @@ class Groups extends CI_Controller
         $data["url"] = $this->url;
         $class["classname"] = "groups";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/groups/add_students', $data);

@@ -50,6 +50,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "home";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url . "/principal");
+        $class["college"] = $this->college;
         
         // Get current college and staff/department info
         $college_id = $this->college['id'] ?? SINGLE_COLLEGE_ID;
@@ -244,8 +245,9 @@ class Principal extends CI_Controller {
         $data["post_url"] = base_url($this->url."/principal/reset_password");
         $data["add_url"] = base_url($this->url."/principal/add");
         $class["classname"] = "principal";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
         $data["principal"] = $this->db_model->get_all(
             TABLE_FACULTY,
             [
@@ -313,6 +315,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "vice_principal";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
         $data["vice_principal"] = $this->db_model->get_all(
             TABLE_FACULTY,
             [
@@ -337,6 +340,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "hod";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
         $data["hod"] = $this->db_model->get_all(
             TABLE_FACULTY,
             [
@@ -361,6 +365,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "staff";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
         $data["staff"] = $this->db_model->get_all(
             TABLE_FACULTY,
             [
@@ -392,6 +397,7 @@ class Principal extends CI_Controller {
         $class["url"] =  $this->url;
         $class["college_id"] = $this->college['id'];
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $group_conditions = ["is_active"=>1,"college_id"=>$this->college['id']];
 
         $data["groups"] = $this->db_model->get_all(TABLE_GROUPS,$group_conditions);
@@ -409,6 +415,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "students";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
         $data["memgroups"] = $this->db_model->get_groupMembers($this->college['id']);
 
 
@@ -594,6 +601,7 @@ class Principal extends CI_Controller {
             $class["classname"] = "profile";
             $class["url"] =  $this->url;
             $class["sidebar_href"] = base_url($this->url."/principal");
+            $class["college"] = $this->college;
 
             $data["college"] = $this->db_model->get_row(TABLE_COLLEGE, ["id" => $this->college['id'], "is_active" => true]);
             $data['logo'] = $data["college"]['logo'];
@@ -609,6 +617,7 @@ class Principal extends CI_Controller {
         $class["classname"] = "departments";
         $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/principal");
+        $class["college"] = $this->college;
 
         // Get departments
         $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
@@ -897,6 +906,7 @@ class Principal extends CI_Controller {
             $class["classname"] = "hod_edit";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url . "/principal");
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/hod/edit', $data);

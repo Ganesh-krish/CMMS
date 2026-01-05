@@ -130,6 +130,7 @@ class Student extends CI_Controller {
         $data["current_user_role"] = $role; // Pass current user role to view
         $class["classname"] = "students";
         $class["url"] = $this->url;
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/student/view', $data);
@@ -206,6 +207,7 @@ class Student extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/student/add', $data);
@@ -271,6 +273,7 @@ class Student extends CI_Controller {
             $data["url"] = $this->url;
             $class["classname"] = "students";
             $class["url"] = $this->url;
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/student/add', $data);

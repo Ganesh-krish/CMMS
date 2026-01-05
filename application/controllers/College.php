@@ -109,6 +109,7 @@ class College extends CI_Controller {
             $class["classname"] = "college";
             $class["url"] = $this->url;
             $class["sidebar_href"] = base_url($this->url."/college/view");
+            $class["college"] = $this->college;
 
             $this->load->view('common/sidebar', $class);
             $this->load->view('faculty/college/edit', $data);
@@ -124,6 +125,7 @@ class College extends CI_Controller {
         $class["classname"] = "college";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url."/college/view");
+        $class["college"] = $this->college;
 
         $this->load->view('common/sidebar', $class);
         $this->load->view('faculty/college/view', $data);

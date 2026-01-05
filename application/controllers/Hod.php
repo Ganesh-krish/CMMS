@@ -41,6 +41,7 @@ class Hod extends CI_Controller {
         $class["classname"] = "home";
         $class["url"] = $this->url;
         $class["sidebar_href"] = base_url($this->url . "/hod");
+        $class["college"] = $this->college;
         
         // Get current college and staff/department info
         $college_id = $this->college['id'];
@@ -287,8 +288,9 @@ class Hod extends CI_Controller {
         $data["post_url"] = base_url($this->url."/hod/reset_password");
         $data["add_url"] = base_url($this->url."/hod/add");
         $class["classname"] = "hod";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/hod");
+        $class["college"] = $this->college;
         $data["hod"] = $this->db_model->get_with_joins(
             TABLE_FACULTY,
             TABLE_FACULTY.'.*, d.name as department_name',
@@ -312,8 +314,9 @@ class Hod extends CI_Controller {
     public function staff(){
         $data["url"] = $this->url;
         $class["classname"] = "staff";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/hod");
+        $class["college"] = $this->college;
         $data["post_url"] = base_url($this->url."/hod/reset_password");
         $data["add_url"] = base_url($this->url."/hod/add_staff");
         $departments = explode(";", $this->session_data['other_department']);
@@ -332,8 +335,9 @@ class Hod extends CI_Controller {
     public function students(){
         $data["url"] = $this->url;
         $class["classname"] = "students";
-        $class["url"] =  $this->url; 
+        $class["url"] =  $this->url;
         $class["sidebar_href"] = base_url($this->url."/hod");
+        $class["college"] = $this->college;
         $data["post_url"] = base_url($this->url."/hod/reset_password_student"); 
         $departments = explode(",", $this->session_data['other_department']);
         array_push($departments, $this->session_data['department']);
@@ -398,6 +402,7 @@ class Hod extends CI_Controller {
         $class["url"] =  $this->url;
         $class["college_id"] = $this->college['id'];
         $class["sidebar_href"] = base_url($this->url . "/staff");
+        $class["college"] = $this->college;
         $group_conditions = ["is_active"=>1,"college_id"=>$this->college['id']];
 
         if(is_array($this->permissions['read'])){

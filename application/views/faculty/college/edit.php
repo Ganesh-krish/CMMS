@@ -90,9 +90,31 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="correspondent">Correspondent</label>
+                                        <input type="text" class="form-control" id="correspondent" name="correspondent"
+                                               value="<?php echo isset($college['correspondent']) ? htmlspecialchars($college['correspondent']) : ''; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="vice_correspondent">Vice-Correspondent</label>
+                                        <input type="text" class="form-control" id="vice_correspondent" name="vice_correspondent"
+                                               value="<?php echo isset($college['vice_correspondent']) ? htmlspecialchars($college['vice_correspondent']) : ''; ?>">
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="4"><?php echo isset($college['description']) ? htmlspecialchars($college['description']) : ''; ?></textarea>
+                                <label for="our_vision">Our Vision</label>
+                                <textarea class="form-control" id="our_vision" name="our_vision" rows="4"><?php echo isset($college['our_vision']) ? htmlspecialchars($college['our_vision']) : ''; ?></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="our_mission">Our Mission</label>
+                                <textarea class="form-control" id="our_mission" name="our_mission" rows="4"><?php echo isset($college['our_mission']) ? htmlspecialchars($college['our_mission']) : ''; ?></textarea>
                             </div>
 
                             <div class="row">
@@ -149,6 +171,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
 

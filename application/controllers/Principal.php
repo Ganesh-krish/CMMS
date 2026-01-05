@@ -568,7 +568,10 @@ class Principal extends CI_Controller {
                 'phone' => $this->input->post('phone'),
                 'email' => $this->input->post('email'),
                 'website' => $this->input->post('website'),
-                'description' => $this->input->post('description'),
+                'correspondent' => $this->input->post('correspondent'),
+                'vice_correspondent' => $this->input->post('vice_correspondent'),
+                'our_vision' => $this->input->post('our_vision'),
+                'our_mission' => $this->input->post('our_mission'),
                 'updated_by' => $this->session_data['id']
             ];
 

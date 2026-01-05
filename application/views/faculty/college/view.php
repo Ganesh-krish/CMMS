@@ -93,9 +93,29 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Correspondent:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['correspondent'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Vice-Correspondent:</label>
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($college['vice_correspondent'] ?? 'N/A'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Description:</label>
-                            <p class="form-control-plaintext"><?php echo nl2br(htmlspecialchars($college['description'] ?? 'N/A')); ?></p>
+                            <label class="form-label fw-bold">Our Vision:</label>
+                            <p class="form-control-plaintext"><?php echo nl2br(htmlspecialchars($college['our_vision'] ?? 'N/A')); ?></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Our Mission:</label>
+                            <p class="form-control-plaintext"><?php echo nl2br(htmlspecialchars($college['our_mission'] ?? 'N/A')); ?></p>
                         </div>
 
                         <!-- College Banner -->

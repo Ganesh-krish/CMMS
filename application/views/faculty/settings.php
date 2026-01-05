@@ -47,9 +47,25 @@
                         <textarea class="form-control" id="address" name="address" rows="3" required><?php echo $college['address'] ?? ''; ?></textarea>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="correspondent" class="form-label">Correspondent</label>
+                            <input type="text" class="form-control" id="correspondent" name="correspondent" value="<?php echo $college['correspondent'] ?? ''; ?>" placeholder="Enter correspondent name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vice_correspondent" class="form-label">Vice-Correspondent</label>
+                            <input type="text" class="form-control" id="vice_correspondent" name="vice_correspondent" value="<?php echo $college['vice_correspondent'] ?? ''; ?>" placeholder="Enter vice-correspondent name">
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Brief description about the college"><?php echo $college['description'] ?? ''; ?></textarea>
+                        <label for="our_vision" class="form-label">Our Vision</label>
+                        <textarea class="form-control" id="our_vision" name="our_vision" rows="4" placeholder="Enter college vision"><?php echo $college['our_vision'] ?? ''; ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="our_mission" class="form-label">Our Mission</label>
+                        <textarea class="form-control" id="our_mission" name="our_mission" rows="4" placeholder="Enter college mission"><?php echo $college['our_mission'] ?? ''; ?></textarea>
                     </div>
 
                     <div class="row">

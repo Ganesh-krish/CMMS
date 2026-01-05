@@ -402,6 +402,20 @@
                             <div>Dashboard</div>
                         </a>
                     </li>
+                    
+
+                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])): ?>
+                        <li class="sidenav-item <?php if ($classname == "profile") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url("$url/college/view") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-settings"></i>
+                                <div>Profile</div>
+                            </a>
+                        </li>
+
+                    <?php endif; ?>
+
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>
                         <li class="sidenav-item">
                             <a href="#" class="sidenav-link dropdown-toggle">
@@ -419,6 +433,19 @@
                             </ul>
                         </li>
                     <?php endif; ?>
+
+                      <!-- System Administration (Principal and Vice-Principal) -->
+                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])): ?>
+                        <li class="sidenav-item <?php if ($classname == "departments") {
+                                                    echo "active";
+                                                } ?>">
+                            <a href="<?= base_url($url . "/departments") ?>" class="sidenav-link ">
+                                <i class="sidenav-icon feather icon-layers"></i>
+                                <div>Department</div>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD])): ?>
                         <li class="sidenav-item">
                             <a href="#" class="sidenav-link dropdown-toggle">
@@ -432,17 +459,7 @@
                         </li>
                     <?php endif; ?>
 
-                    <!-- System Administration (Principal and Vice-Principal) -->
-                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])): ?>
-                        <li class="sidenav-item <?php if ($classname == "departments") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url($url . "/departments") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-layers"></i>
-                                <div>Departments</div>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                  
                     <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF])): ?>
 
                         <li class="sidenav-item <?php if ($classname == "students") {
@@ -450,7 +467,7 @@
                                                 } ?>">
                             <a href="<?= base_url($url . "/students") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-user"></i>
-                                <div>Students</div>
+                                <div>Student</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -461,7 +478,7 @@
                                                 } ?>">
                             <a href="<?= base_url($url . "/groups") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-users"></i>
-                                <div>Music Groups</div>
+                                <div>Music Group</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -507,7 +524,7 @@
                                                 } ?>">
                             <a href="<?= base_url($url . "/announcements") ?>" class="sidenav-link ">
                                 <i class="sidenav-icon feather icon-bell"></i>
-                                <div>Announcements</div>
+                                <div>Announcement</div>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -525,25 +542,6 @@
                         </li>
                     <?php endif; ?> -->
 
-
-
-
-                    
-
-                    
-            
-
-                    <?php if (in_array($designation, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL])): ?>
-                        <li class="sidenav-item <?php if ($classname == "profile") {
-                                                    echo "active";
-                                                } ?>">
-                            <a href="<?= base_url("$url/college/view") ?>" class="sidenav-link ">
-                                <i class="sidenav-icon feather icon-settings"></i>
-                                <div>Settings Page</div>
-                            </a>
-                        </li>
-
-                    <?php endif; ?>
 
                     <!-- Logout Menu Item -->
                     <li class="sidenav-item">

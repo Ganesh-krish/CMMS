@@ -14,7 +14,8 @@
             </div>
         <?php   } ?>
 
-        <!-- Statistics Cards -->
+        <!-- Statistics Cards - Commented out to hide from UI -->
+        <!--
         <div class="row mb-4">
             <!-- Total Groups -->
             <div class="col-md-3 col-sm-6 mb-3">
@@ -60,6 +61,7 @@
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
+        -->
 
         <!-- Actions Bar -->
         <div class="row mb-4">

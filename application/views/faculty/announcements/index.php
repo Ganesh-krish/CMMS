@@ -10,7 +10,7 @@
 
         <?php if ($this->session->flashdata('message')) { ?>
             <div class="alert alert-dark-<?= $this->session->flashdata('message')[0] ?> alert-dismissible fade show" id="alert">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span><?= $this->session->flashdata('message')[1] ?></span>
             </div>
         <?php } ?>
@@ -65,7 +65,7 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <?php if ($permissions['can_create']): ?>
-                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createAnnouncementModal">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAnnouncementModal">
                                         <i class="feather icon-plus"></i> Create Announcement
                                     </button>
                                 <?php endif; ?>
@@ -97,7 +97,7 @@
                                 <h4 class="mt-3">No Announcements</h4>
                                 <p class="text-muted">There are no announcements to display.</p>
                                 <?php if ($permissions['can_create']): ?>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAnnouncementModal">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAnnouncementModal">
                                         Create First Announcement
                                     </button>
                                 <?php endif; ?>
@@ -135,7 +135,7 @@
                                             </div>
                                             <div class="ml-3">
                                                 <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                                         <i class="feather icon-more-vertical"></i>
                                                     </button>
                                                     <div class="dropdown-menu">

@@ -59,23 +59,42 @@
                             <div class="card-header bg-gradient-warning text-white">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge badge-light">Lesson <?php echo $lesson['order']; ?></span>
-                                    <small>
+                                    <div class="d-flex align-items-center gap-2">
                                         <?php
-                                        $icon_class = 'icon-file-text';
-                                        switch($lesson['type']) {
-                                            case LESSON_TYPE_TEXT:
-                                                $icon_class = 'icon-file-text';
-                                                break;
-                                            case LESSON_TYPE_VIDEO:
-                                                $icon_class = 'icon-video';
-                                                break;
-                                            case LESSON_TYPE_FILE:
-                                                $icon_class = 'icon-file';
-                                                break;
+                                        // Show lesson status badge
+                                        $lesson_status = isset($lesson['status']) ? $lesson['status'] : 'not_started';
+                                        $status_class = 'secondary';
+                                        $status_icon = 'circle';
+                                        
+                                        if ($lesson_status === 'in_progress') {
+                                            $status_class = 'warning';
+                                            $status_icon = 'clock';
+                                        } elseif ($lesson_status === 'completed') {
+                                            $status_class = 'success';
+                                            $status_icon = 'check-circle';
                                         }
                                         ?>
-                                        <i class="feather <?php echo $icon_class; ?>"></i>
-                                    </small>
+                                        <span class="badge badge-<?php echo $status_class; ?>" title="<?php echo ucfirst(str_replace('_', ' ', $lesson_status)); ?>">
+                                            <i class="feather icon-<?php echo $status_icon; ?>"></i>
+                                        </span>
+                                        <small>
+                                            <?php
+                                            $icon_class = 'icon-file-text';
+                                            switch($lesson['type']) {
+                                                case LESSON_TYPE_TEXT:
+                                                    $icon_class = 'icon-file-text';
+                                                    break;
+                                                case LESSON_TYPE_VIDEO:
+                                                    $icon_class = 'icon-video';
+                                                    break;
+                                                case LESSON_TYPE_FILE:
+                                                    $icon_class = 'icon-file';
+                                                    break;
+                                            }
+                                            ?>
+                                            <i class="feather <?php echo $icon_class; ?>"></i>
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
 

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2026 at 07:17 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Jan 12, 2026 at 02:56 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -54,6 +54,25 @@ INSERT INTO `announcements` (`id`, `title`, `message`, `visibility`, `department
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `certificate_requests`
+--
+
+CREATE TABLE `certificate_requests` (
+  `id` int(11) NOT NULL,
+  `enrollment_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `requested_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reviewed_by` int(11) DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `rejection_reason` text DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `college`
 --
 
@@ -85,7 +104,7 @@ CREATE TABLE `college` (
 --
 
 INSERT INTO `college` (`id`, `name`, `email`, `phone`, `address`, `city`, `state`, `website`, `established_year`, `correspondent`, `vice_correspondent`, `our_vision`, `our_mission`, `logo`, `banner`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', 'Srivilliputhur', 'Tamil Nadu', 'https://www.democollege.com', 2025, 'John Doe', 'James Cook', 'The vision of the Musical College is to become a center of excellence in music education by nurturing creative talent, preserving rich musical traditions, and promoting innovation in the field of music. The institution aims to inspire students to achieve artistic excellence, cultural awareness, and professional competence while contributing meaningfully to the global music community', 'The mission of the Musical College is to provide high-quality music education through structured academic programs, practical training, and performance opportunities. The college is committed to developing students’ technical skills, creativity, and discipline while encouraging research, collaboration, and respect for diverse musical forms. Through dedicated faculty and modern learning resources, the institution strives to shape skilled musicians who uphold artistic integrity and cultural values.', 'logo_1767636583_6556.png', 'logo_1767403549_62911.jpg', 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-05 18:09:43');
+(1, 'Demo College', 'info@democollege.com', '+1-234-567-8900', '123 College Street, City, State 12345', 'Srivilliputhur', 'Tamil Nadu', 'https://www.democollege.com', '2025', 'John Doe', 'James Cook', 'The vision of the Musical College is to become a center of excellence in music education by nurturing creative talent, preserving rich musical traditions, and promoting innovation in the field of music. The institution aims to inspire students to achieve artistic excellence, cultural awareness, and professional competence while contributing meaningfully to the global music community', 'The mission of the Musical College is to provide high-quality music education through structured academic programs, practical training, and performance opportunities. The college is committed to developing students’ technical skills, creativity, and discipline while encouraging research, collaboration, and respect for diverse musical forms. Through dedicated faculty and modern learning resources, the institution strives to shape skilled musicians who uphold artistic integrity and cultural values.', 'logo_1767636583_6556.png', 'logo_1767403549_62911.jpg', 1, 1, NULL, '2026-01-02 15:18:46', '2026-01-05 18:09:43');
 
 -- --------------------------------------------------------
 
@@ -117,6 +136,26 @@ INSERT INTO `courses` (`id`, `name`, `description`, `course_code`, `tag`, `colle
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `course_certificates`
+--
+
+CREATE TABLE `course_certificates` (
+  `id` int(11) NOT NULL,
+  `enrollment_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `certificate_number` varchar(50) NOT NULL,
+  `certificate_file` varchar(255) DEFAULT NULL,
+  `issued_at` timestamp NULL DEFAULT current_timestamp(),
+  `issued_by` int(11) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `course_enrollments`
 --
 
@@ -139,8 +178,8 @@ CREATE TABLE `course_enrollments` (
 --
 
 INSERT INTO `course_enrollments` (`id`, `course_id`, `student_id`, `enrolled_by`, `progress_percentage`, `status`, `created_by`, `updated_by`, `enrolled_at`, `completed_at`, `updated_at`) VALUES
-(1, 1, 1, 3, '0.00', 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23'),
-(2, 1, 2, 3, '0.00', 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23');
+(1, 1, 1, 3, 0.00, 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23'),
+(2, 1, 2, 3, 0.00, 'enrolled', 3, NULL, '2026-01-03 17:57:23', NULL, '2026-01-03 17:57:23');
 
 -- --------------------------------------------------------
 
@@ -320,7 +359,7 @@ CREATE TABLE `instruments` (
 --
 
 INSERT INTO `instruments` (`id`, `name`, `category`, `serial_no`, `model`, `brand`, `condition_notes`, `instrument_price`, `instrument_image`, `description`, `availability_status`, `condition`, `college_id`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'piano', 'string', 'JRK660', 'Octavé ', 'Juarez ', 'lit ebtoke', '100000.00', 'uploads/instruments/07c7da1eec88d74c2a62a8b45b7c4fe9.png', 'SDSsaDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0, 'excellent', 1, 1, NULL, 1, '2026-01-03 17:41:44', '2026-01-03 17:41:44');
+(1, 'piano', 'string', 'JRK660', 'Octavé ', 'Juarez ', 'lit ebtoke', 100000.00, 'uploads/instruments/07c7da1eec88d74c2a62a8b45b7c4fe9.png', 'SDSsaDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0, 'excellent', 1, 1, NULL, 1, '2026-01-03 17:41:44', '2026-01-03 17:41:44');
 
 -- --------------------------------------------------------
 
@@ -438,6 +477,26 @@ INSERT INTO `students` (`id`, `name`, `email`, `phone`, `password`, `roll_no`, `
 (3, 'jim', 'eces1@demo.in', '06380249124', '$2y$10$Yt1xsQhpENlfQfMnsxCQFue6/y2tUP78k5lQ6Tqv3rBq6byF5SIwW', 'ug1223', '3', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:30:00', '2026-01-03 01:30:00', '6'),
 (4, 'cook', 'eces2@demo.in', '8380249114', '$2y$10$7xcxKCrC.xVgz6xjJieDO.TsqHhCWVIhmYf3lPrK5EycMVURySOrC', 'ug1224', '2', '2026', 1, NULL, NULL, 1, NULL, NULL, '2026-01-03 01:31:46', '2026-01-03 01:31:46', '6');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_lesson_progress`
+--
+
+CREATE TABLE `student_lesson_progress` (
+  `id` int(11) NOT NULL,
+  `enrollment_id` int(11) NOT NULL,
+  `lesson_id` int(11) NOT NULL,
+  `module_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `status` enum('not_started','in_progress','completed') DEFAULT 'not_started',
+  `started_at` timestamp NULL DEFAULT NULL,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -456,6 +515,13 @@ ALTER TABLE `announcements`
   ADD KEY `idx_visibility_dept` (`visibility`,`department_id`);
 
 --
+-- Indexes for table `certificate_requests`
+--
+ALTER TABLE `certificate_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_request` (`enrollment_id`);
+
+--
 -- Indexes for table `college`
 --
 ALTER TABLE `college`
@@ -467,6 +533,13 @@ ALTER TABLE `college`
 ALTER TABLE `courses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `college_id` (`college_id`);
+
+--
+-- Indexes for table `course_certificates`
+--
+ALTER TABLE `course_certificates`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `certificate_number` (`certificate_number`);
 
 --
 -- Indexes for table `course_enrollments`
@@ -559,6 +632,13 @@ ALTER TABLE `students`
   ADD KEY `college_id` (`college_id`);
 
 --
+-- Indexes for table `student_lesson_progress`
+--
+ALTER TABLE `student_lesson_progress`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_lesson_progress` (`enrollment_id`,`lesson_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -567,6 +647,12 @@ ALTER TABLE `students`
 --
 ALTER TABLE `announcements`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `certificate_requests`
+--
+ALTER TABLE `certificate_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `college`
@@ -579,6 +665,12 @@ ALTER TABLE `college`
 --
 ALTER TABLE `courses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `course_certificates`
+--
+ALTER TABLE `course_certificates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `course_enrollments`
@@ -645,6 +737,12 @@ ALTER TABLE `memgroups`
 --
 ALTER TABLE `students`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `student_lesson_progress`
+--
+ALTER TABLE `student_lesson_progress`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables

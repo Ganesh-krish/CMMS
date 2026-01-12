@@ -53,7 +53,7 @@
                                 <p class="mb-0">Manage lessons within this module</p>
                             </div>
                             <div class="col-md-6 text-right">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addLessonModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLessonModal">
                                     <i class="feather icon-plus"></i> Add Lesson
                                 </button>
                             </div>
@@ -73,7 +73,7 @@
                                 <i class="feather icon-file-text" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Lessons</h4>
                                 <p class="text-muted">There are no lessons in this module yet.</p>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addLessonModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLessonModal">
                                     Add First Lesson
                                 </button>
                             </div>
@@ -153,7 +153,7 @@
                 <h5 class="modal-title" id="addLessonModalLabel">Add Lesson</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?php echo base_url($url.'/courses/add_lesson'); ?>" method="post" enctype="multipart/form-data">
+            <form action="<?php echo base_url($url.'/courses/add_lesson'); ?>" method="post" enctype="multipart/form-data" id="addLessonForm">
                 <div class="modal-body">
                     <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
                     <input type="hidden" name="module_id" value="<?php echo $module_id; ?>">
@@ -179,7 +179,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="lesson_type">Lesson Type <span class="text-danger">*</span></label>
-                                <select class="form-control select2" id="lesson_type" name="type" required>
+                                <select class="form-control" id="lesson_type" name="type" required>
                                     <option value="">Select Type</option>
                                     <option value="<?php echo LESSON_TYPE_TEXT; ?>"><?php echo ucfirst(LESSON_TYPE_TEXT); ?></option>
                                     <option value="<?php echo LESSON_TYPE_VIDEO; ?>"><?php echo ucfirst(LESSON_TYPE_VIDEO); ?></option>
@@ -358,46 +358,73 @@
 <link rel="stylesheet" href="<?= base_url('') ?>assets/libs/bootstrap-select/bootstrap-select.css">
 
 <script>
+// Ensure jQuery is loaded
+if (typeof jQuery === 'undefined') {
+    console.error('jQuery is not loaded!');
+}
+
 $(document).ready(function() {
-    // Initialize Bootstrap Select for lesson type dropdowns
-    $('#lesson_type').selectpicker({
-        noneSelectedText: 'Select lesson type',
-        liveSearch: true,
-        size: 5
-    });
+    console.log('Document ready - initializing lesson form handlers');
+    
+    // Reset form when add modal opens (Bootstrap 5 event)
+    var addLessonModal = document.getElementById('addLessonModal');
+    if (addLessonModal) {
+        addLessonModal.addEventListener('shown.bs.modal', function() {
+            console.log('Add lesson modal opened');
+            resetAddLessonForm();
+            // Check if type is already selected (shouldn't be, but just in case)
+            var currentType = $('#lesson_type').val();
+            if (currentType) {
+                toggleLessonFields(currentType);
+            }
+        });
+    }
 
-    $('#edit_lesson_type').selectpicker({
-        noneSelectedText: 'Select lesson type',
-        liveSearch: true,
-        size: 5
+    // Handle lesson type change for add modal - use multiple event handlers to ensure it works
+    $('#lesson_type').on('change', function() {
+        var selectedType = $(this).val();
+        console.log('Lesson type changed (direct handler) to:', selectedType);
+        if (selectedType) {
+            toggleLessonFields(selectedType);
+        } else {
+            hideAllLessonFields();
+        }
     });
-
-    // Reset form when add modal opens
-    $('#addLessonModal').on('shown.bs.modal', function() {
-        resetAddLessonForm();
-        // Refresh Bootstrap Select
-        $('#lesson_type').selectpicker('refresh');
+    
+    // Also use event delegation as backup
+    $(document).on('change', '#lesson_type', function() {
+        var selectedType = $(this).val();
+        console.log('Lesson type changed (delegated handler) to:', selectedType);
+        if (selectedType) {
+            toggleLessonFields(selectedType);
+        } else {
+            hideAllLessonFields();
+        }
     });
-
-    // Handle lesson type change for add modal
-    $(document).on('change changed.bs.select', '#lesson_type', function() {
-        toggleLessonFields($(this).val());
+    
+    // Also handle input event in case change doesn't fire
+    $('#lesson_type').on('input', function() {
+        var selectedType = $(this).val();
+        if (selectedType) {
+            toggleLessonFields(selectedType);
+        }
     });
 
     // Handle lesson type change for edit modal
-    $(document).on('change changed.bs.select', '#edit_lesson_type', function() {
-        toggleEditLessonFields($(this).val());
-    });
-
-    // Also handle Bootstrap Select specific events
-    $(document).on('changed.bs.select', '#lesson_type', function() {
-        console.log('Bootstrap Select changed to:', $(this).val());
-        toggleLessonFields($(this).val());
-    });
-
-    $(document).on('changed.bs.select', '#edit_lesson_type', function() {
-        console.log('Bootstrap Select edit changed to:', $(this).val());
-        toggleEditLessonFields($(this).val());
+    $(document).on('change', '#edit_lesson_type', function() {
+        var selectedType = $(this).val();
+        console.log('Edit lesson type changed to:', selectedType);
+        if (selectedType) {
+            toggleEditLessonFields(selectedType);
+        } else {
+            // Hide all fields if no type selected
+            $('#edit_lesson_text_field').hide();
+            $('#edit_lesson_video_field').hide();
+            $('#edit_lesson_file_field').hide();
+            $('#edit_lesson_text').removeAttr('required').val('');
+            $('#edit_lesson_video').removeAttr('required').val('');
+            $('#edit_lesson_file').removeAttr('required').val('');
+        }
     });
 });
 
@@ -419,9 +446,8 @@ function resetAddLessonForm() {
         document.getElementById('lesson_file').value = '';
     }
 
-    // Reset Bootstrap Select dropdown
+    // Reset dropdown
     $('#lesson_type').val('');
-    $('#lesson_type').selectpicker('refresh');
 
     // Hide all dynamic fields
     $('#lesson_text_field').hide();
@@ -437,29 +463,68 @@ function resetAddLessonForm() {
     document.getElementById('lesson_active').checked = true;
 }
 
-function toggleLessonFields(selectedType) {
-    // Hide all dynamic fields first
+function hideAllLessonFields() {
     $('#lesson_text_field').hide();
     $('#lesson_video_field').hide();
     $('#lesson_file_field').hide();
+    $('#lesson_text').removeAttr('required').val('');
+    $('#lesson_video').removeAttr('required').val('');
+    $('#lesson_file').removeAttr('required').val('');
+}
 
-    // Remove required attributes
-    $('#lesson_text').removeAttr('required');
-    $('#lesson_video').removeAttr('required');
-    $('#lesson_file').removeAttr('required');
+function toggleLessonFields(selectedType) {
+    console.log('toggleLessonFields called with:', selectedType);
+    console.log('LESSON_TYPE_TEXT constant:', '<?php echo LESSON_TYPE_TEXT; ?>');
+    
+    if (!selectedType || selectedType === '') {
+        hideAllLessonFields();
+        return;
+    }
+    
+    // Hide all dynamic fields first
+    hideAllLessonFields();
 
     // Show the selected field and make it required
-    if (selectedType === '<?php echo LESSON_TYPE_TEXT; ?>') {
+    var textType = '<?php echo LESSON_TYPE_TEXT; ?>';
+    var videoType = '<?php echo LESSON_TYPE_VIDEO; ?>';
+    var fileType = '<?php echo LESSON_TYPE_FILE; ?>';
+    
+    console.log('Comparing:', selectedType, '===', textType, '?', selectedType === textType);
+    console.log('Text type value:', textType, 'Selected:', selectedType, 'Match:', selectedType === textType);
+    
+    if (selectedType === textType || selectedType.trim() === textType.trim()) {
+        console.log('Showing text field');
         $('#lesson_text_field').show();
         $('#lesson_text').attr('required', 'required');
-    } else if (selectedType === '<?php echo LESSON_TYPE_VIDEO; ?>') {
+        console.log('Text field should now be visible');
+    } else if (selectedType === videoType || selectedType.trim() === videoType.trim()) {
+        console.log('Showing video field');
         $('#lesson_video_field').show();
         $('#lesson_video').attr('required', 'required');
-    } else if (selectedType === '<?php echo LESSON_TYPE_FILE; ?>') {
+    } else if (selectedType === fileType || selectedType.trim() === fileType.trim()) {
+        console.log('Showing file field');
         $('#lesson_file_field').show();
         $('#lesson_file').attr('required', 'required');
+    } else {
+        console.log('Unknown lesson type:', selectedType, 'Expected one of:', textType, videoType, fileType);
     }
 }
+
+// Clear irrelevant fields before form submission
+$('#addLessonForm').on('submit', function(e) {
+    var lessonType = $('#lesson_type').val();
+    
+    // Clear fields that are not relevant to the selected type
+    if (lessonType !== '<?php echo LESSON_TYPE_TEXT; ?>') {
+        $('#lesson_text').val('').removeAttr('required');
+    }
+    if (lessonType !== '<?php echo LESSON_TYPE_VIDEO; ?>') {
+        $('#lesson_video').val('').removeAttr('required');
+    }
+    if (lessonType !== '<?php echo LESSON_TYPE_FILE; ?>') {
+        $('#lesson_file').val('').removeAttr('required');
+    }
+});
 
 function toggleEditLessonFields(selectedType) {
     // Hide all dynamic fields first
@@ -516,12 +581,17 @@ function editLesson(id, title, type, content, courseText, courseUrl, courseFile,
     // Show/hide fields based on current type
     toggleEditLessonFields(type);
 
-    $('#editLessonModal').modal('show');
+    // Use Bootstrap 5 modal API
+    var editLessonModal = new bootstrap.Modal(document.getElementById('editLessonModal'));
+    editLessonModal.show();
 }
 
 function confirmDeleteLesson(lessonId, lessonName) {
     document.getElementById('lessonName').textContent = lessonName;
     document.getElementById('deleteLessonBtn').href = '<?php echo base_url($url.'/courses/delete_lesson/'.$course_id.'/'.$module_id.'/'); ?>' + lessonId;
-    $('#deleteLessonModal').modal('show');
+    // Use Bootstrap 5 modal API
+    var deleteLessonModal = new bootstrap.Modal(document.getElementById('deleteLessonModal'));
+    deleteLessonModal.show();
 }
+</script>
 </script>

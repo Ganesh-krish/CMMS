@@ -616,14 +616,21 @@ class Course extends CI_Controller {
             $this->form_validation->set_rules('content', 'Description', 'trim|required');
             $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
 
-            // Conditional validation based on lesson type
-            $lesson_type = $this->input->post('type');
+            // Get lesson type first
+            $lesson_type = trim($this->input->post('type'));
+            
+            // Conditional validation based on lesson type - only set rules for the selected type
             if ($lesson_type === LESSON_TYPE_TEXT) {
-                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim|required');
+                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim|required', array('required' => 'The Lesson Text field is required for text type lessons.'));
             } elseif ($lesson_type === LESSON_TYPE_VIDEO) {
-                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim|required|valid_url');
+                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim|required|valid_url', array('required' => 'The Video URL field is required for video type lessons.', 'valid_url' => 'Please enter a valid video URL.'));
             } elseif ($lesson_type === LESSON_TYPE_FILE) {
-                // File validation is handled separately in the upload logic
+                // File validation will be handled in the upload logic below
+                // No form validation rule needed here as file validation is different
+            } else {
+                // If lesson type is not set or invalid, show error
+                $this->session->set_flashdata('message', array('danger', "Please select a valid lesson type."));
+                return redirect($_SERVER['HTTP_REFERER']);
             }
 
             if ($this->form_validation->run() == FALSE) {
@@ -653,7 +660,35 @@ class Course extends CI_Controller {
 
                 // Handle file upload for course_file
                 $course_file_path = null;
-                if (!empty($_FILES['lesson_file']['name'])) {
+                if ($lesson_type === LESSON_TYPE_FILE) {
+                    // For file type, file is required
+                    if (empty($_FILES['lesson_file']['name'])) {
+                        $this->session->set_flashdata('message', array('danger', "Please upload a file for this lesson."));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                    
+                    $config['upload_path'] = './uploads/course_files/';
+                    $config['allowed_types'] = 'pdf|doc|docx|ppt|pptx|txt|jpg|jpeg|png|gif';
+                    $config['max_size'] = 10240; // 10MB
+                    $config['file_name'] = 'lesson_' . time() . '_' . rand(1000, 9999);
+
+                    // Create directory if it doesn't exist
+                    if (!is_dir($config['upload_path'])) {
+                        mkdir($config['upload_path'], 0777, true);
+                    }
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('lesson_file')) {
+                        $upload_data = $this->upload->data();
+                        $course_file_path = 'uploads/course_files/' . $upload_data['file_name'];
+                    } else {
+                        $error = $this->upload->display_errors('', '');
+                        $this->session->set_flashdata('message', array('danger', "File upload failed: " . $error));
+                        return redirect($_SERVER['HTTP_REFERER']);
+                    }
+                } elseif (!empty($_FILES['lesson_file']['name'])) {
+                    // Optional file upload for other types
                     $config['upload_path'] = './uploads/course_files/';
                     $config['allowed_types'] = 'pdf|doc|docx|ppt|pptx|txt|jpg|jpeg|png|gif';
                     $config['max_size'] = 10240; // 10MB
@@ -704,14 +739,24 @@ class Course extends CI_Controller {
             $this->form_validation->set_rules('content', 'Description', 'trim|required');
             $this->form_validation->set_rules('order', 'Order', 'trim|required|numeric');
 
-            // Conditional validation based on lesson type
-            $lesson_type = $this->input->post('type');
+            // Get lesson type first
+            $lesson_type = trim($this->input->post('type'));
+            
+            // Conditional validation based on lesson type - only validate the relevant field
             if ($lesson_type === LESSON_TYPE_TEXT) {
                 $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim|required');
+                // Clear validation for other type-specific fields
+                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim');
             } elseif ($lesson_type === LESSON_TYPE_VIDEO) {
                 $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim|required|valid_url');
+                // Clear validation for other type-specific fields
+                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim');
             } elseif ($lesson_type === LESSON_TYPE_FILE) {
-                // File validation is handled separately in the upload logic
+                // For file type, check if file is uploaded (only for new files, not required for edit)
+                // File validation is handled in the upload logic below
+                // Clear validation for other type-specific fields
+                $this->form_validation->set_rules('lesson_text', 'Lesson Text', 'trim');
+                $this->form_validation->set_rules('lesson_video', 'Video URL', 'trim');
             }
 
             if ($this->form_validation->run() == FALSE) {
@@ -945,13 +990,192 @@ class Course extends CI_Controller {
             }
         }
 
-        $data = array('status' => $status);
-        if ($this->db_model->update(TABLE_COURSE_ENROLLMENTS, $data, ["id" => $enrollment_id])) {
-            $this->session->set_flashdata('message', array('success', "Enrollment status updated successfully!"));
-                    } else {
-            $this->session->set_flashdata('message', array('danger', "Failed to update enrollment status."));
-        }
+        // NOTE: Manual status changes are disabled. Status is now automatically calculated based on lesson completion.
+        // This method is kept for backward compatibility but should not be used.
+        // Status changes happen automatically when students complete lessons.
+        
+        $this->session->set_flashdata('message', array('info', "Enrollment status is now automatically calculated based on lesson progress. Manual status changes are disabled."));
         redirect(base_url($this->url . "/courses/enrollments/" . $course['id']));
+    }
+
+    // Certificate Request Management
+    public function certificate_requests() {
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        
+        // Only Principal and Vice-Principal can access
+        // Debug: Log role values for troubleshooting
+        log_message('debug', 'Certificate Requests Access Check - Role: ' . $role . ', ROLE_PRINCIPAL: ' . ROLE_PRINCIPAL . ', ROLE_VICE_PRINCIPAL: ' . ROLE_VICE_PRINCIPAL);
+        log_message('debug', 'Session data: ' . json_encode($this->session_data));
+        
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to access certificate requests. Only Principal and Vice-Principal can access this page."));
+            redirect(base_url($this->url . "/dashboard"));
+            return;
+        }
+
+        $this->load->model('Certificate_request_model', 'cert_request');
+        
+        $data['url'] = $this->url;
+        $data['college'] = $this->college;
+        $data['session_data'] = $this->session_data;
+        
+        // Get pending requests
+        $data['pending_requests'] = $this->cert_request->get_pending_requests();
+        
+        // Get all requests for history
+        $data['all_requests'] = $this->cert_request->get_all_requests();
+        
+        $class['classname'] = "certificate_requests";
+        $class['url'] = $this->url;
+        $class['sidebar_href'] = base_url($this->url . "/courses/certificate_requests");
+        $class['college'] = $this->college;
+
+        $this->load->view('common/sidebar', $class);
+        $this->load->view('faculty/courses/certificate_requests', $data);
+        $this->load->view('common/footer');
+    }
+
+    // Approve certificate request
+    public function approve_certificate_request($request_id) {
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to approve certificate requests."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        $this->load->model('Certificate_request_model', 'cert_request');
+        $this->load->model('Certificate_model', 'certificate_model');
+        $this->load->library('Certificate_generator');
+        
+        $request = $this->cert_request->get_request($request_id);
+        
+        if (!$request) {
+            $this->session->set_flashdata('message', array('danger', "Certificate request not found."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        if ($request['status'] !== 'pending') {
+            $this->session->set_flashdata('message', array('warning', "This request has already been processed."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        // Get enrollment details
+        $enrollment = $this->db_model->get_row(TABLE_COURSE_ENROLLMENTS, ['id' => $request['enrollment_id']]);
+        $course = $this->db_model->get_row(TABLE_COURCES, ['id' => $request['course_id']]);
+        $student = $this->db_model->get_row(TABLE_STUDENT, ['id' => $request['student_id']]);
+
+        if (!$enrollment || !$course || !$student) {
+            $this->session->set_flashdata('message', array('danger', "Invalid request data."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        // Approve the request
+        $notes = $this->input->post('notes');
+        if ($this->cert_request->approve_request($request_id, $this->session_data['id'], $notes)) {
+            // Generate certificate
+            try {
+                // Check if certificate already exists
+                if (!$this->certificate_model->certificate_exists($enrollment['id'])) {
+                    // Generate certificate number
+                    $cert_number = $this->certificate_model->generate_certificate_number(
+                        $course['id'], 
+                        $student['id']
+                    );
+                    
+                    // Prepare certificate data
+                    $cert_data = [
+                        'student_name' => $student['name'],
+                        'course_name' => $course['name'],
+                        'certificate_number' => $cert_number,
+                        'issued_at' => date('Y-m-d H:i:s'),
+                        'college_name' => $this->college['name'] ?? 'Educational Institution'
+                    ];
+                    
+                    // Generate certificate file
+                    $cert_file = $this->certificate_generator->generate_pdf($cert_data);
+                    
+                    if ($cert_file !== false) {
+                        // Save certificate record
+                        $cert_record = [
+                            'enrollment_id' => $enrollment['id'],
+                            'course_id' => $course['id'],
+                            'student_id' => $student['id'],
+                            'certificate_number' => $cert_number,
+                            'certificate_file' => $cert_file,
+                            'issued_at' => date('Y-m-d H:i:s'),
+                            'issued_by' => $this->session_data['id'],
+                            'is_active' => 1
+                        ];
+                        
+                        if ($this->certificate_model->create_certificate($cert_record)) {
+                            $this->session->set_flashdata('message', array('success', "Certificate request approved and certificate generated successfully!"));
+                        } else {
+                            $this->session->set_flashdata('message', array('warning', "Request approved but certificate generation failed. Please try again."));
+                        }
+                    } else {
+                        $this->session->set_flashdata('message', array('warning', "Request approved but certificate file generation failed. Please check uploads/certificates directory permissions."));
+                    }
+                } else {
+                    $this->session->set_flashdata('message', array('info', "Request approved. Certificate already exists for this enrollment."));
+                }
+            } catch (Exception $e) {
+                log_message('error', 'Certificate generation error: ' . $e->getMessage());
+                $this->session->set_flashdata('message', array('warning', "Request approved but certificate generation error: " . $e->getMessage()));
+            }
+        } else {
+            $this->session->set_flashdata('message', array('danger', "Failed to approve certificate request."));
+        }
+
+        redirect(base_url($this->url . "/courses/certificate_requests"));
+    }
+
+    // Reject certificate request
+    public function reject_certificate_request($request_id) {
+        $role = (int)($this->session_data['role'] ?? $this->session_data['designation'] ?? null);
+        
+        if (!in_array($role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL], true)) {
+            $this->session->set_flashdata('message', array('danger', "You don't have permission to reject certificate requests."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        $this->load->model('Certificate_request_model', 'cert_request');
+        
+        $request = $this->cert_request->get_request($request_id);
+        
+        if (!$request) {
+            $this->session->set_flashdata('message', array('danger', "Certificate request not found."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        if ($request['status'] !== 'pending') {
+            $this->session->set_flashdata('message', array('warning', "This request has already been processed."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        $rejection_reason = $this->input->post('rejection_reason');
+        $notes = $this->input->post('notes');
+
+        if (empty($rejection_reason)) {
+            $this->session->set_flashdata('message', array('danger', "Rejection reason is required."));
+            redirect(base_url($this->url . "/courses/certificate_requests"));
+            return;
+        }
+
+        if ($this->cert_request->reject_request($request_id, $this->session_data['id'], $rejection_reason, $notes)) {
+            $this->session->set_flashdata('message', array('success', "Certificate request rejected successfully."));
+        } else {
+            $this->session->set_flashdata('message', array('danger', "Failed to reject certificate request."));
+        }
+
+        redirect(base_url($this->url . "/courses/certificate_requests"));
     }
 
     public function unenroll_student($enrollment_id = null) {

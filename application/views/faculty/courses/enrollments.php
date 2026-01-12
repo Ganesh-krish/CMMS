@@ -52,7 +52,7 @@
                                 <p class="mb-0">Manage student enrollments for this course</p>
                             </div>
                             <div class="col-md-6 text-right">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enrollStudentModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enrollStudentModal">
                                     <i class="feather icon-user-plus"></i> Enroll Student
                                 </button>
                             </div>
@@ -72,7 +72,7 @@
                                 <i class="feather icon-users" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Enrollments</h4>
                                 <p class="text-muted">No students are enrolled in this course yet.</p>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enrollStudentModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enrollStudentModal">
                                     Enroll First Student
                                 </button>
                             </div>
@@ -129,29 +129,13 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
-                                                        <!-- Update Status -->
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                <i class="feather icon-settings"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/courses/update_enrollment_status/'.$enrollment['id'].'/enrolled'); ?>">
-                                                                    <i class="feather icon-play-circle"></i> Mark Enrolled
-                                                                </a>
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/courses/update_enrollment_status/'.$enrollment['id'].'/in_progress'); ?>">
-                                                                    <i class="feather icon-clock"></i> Mark In Progress
-                                                                </a>
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/courses/update_enrollment_status/'.$enrollment['id'].'/completed'); ?>">
-                                                                    <i class="feather icon-check-circle"></i> Mark Completed
-                                                                </a>
-                                                                <a class="dropdown-item" href="<?php echo base_url($url.'/courses/update_enrollment_status/'.$enrollment['id'].'/dropped'); ?>">
-                                                                    <i class="feather icon-pause-circle"></i> Mark Dropped
-                                                                </a>
-                                                            </div>
-                                                        </div>
+                                                        <!-- Status is now automatic based on lesson completion -->
+                                                        <span class="badge badge-info" title="Status is automatically updated based on lesson progress">
+                                                            <i class="feather icon-info"></i> Auto
+                                                        </span>
 
                                                         <!-- Unenroll Student -->
-                                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmUnenroll(<?php echo $enrollment['id']; ?>, '<?php echo htmlspecialchars(addslashes($enrollment['student_name'])); ?>')" title="Unenroll Student">
+                                                        <button type="button" class="btn btn-outline-danger btn-sm ml-2" onclick="confirmUnenroll(<?php echo $enrollment['id']; ?>, '<?php echo htmlspecialchars(addslashes($enrollment['student_name'])); ?>')" title="Unenroll Student">
                                                             <i class="feather icon-user-minus"></i>
                                                         </button>
                                                     </div>
@@ -241,6 +225,8 @@ $(document).ready(function() {
 function confirmUnenroll(enrollmentId, studentName) {
     document.getElementById('studentName').textContent = studentName;
     document.getElementById('unenrollBtn').href = '<?php echo base_url($url.'/courses/unenroll_student/'); ?>' + enrollmentId;
-    $('#unenrollModal').modal('show');
+    // Use Bootstrap 5 modal API
+    var unenrollModal = new bootstrap.Modal(document.getElementById('unenrollModal'));
+    unenrollModal.show();
 }
 </script>

@@ -62,6 +62,11 @@ $route['student-portal/courses'] = 'StudentPortal/courses';
 $route['student-portal/course-modules/(:num)'] = 'StudentPortal/course_modules/$1';
 $route['student-portal/module-lessons/(:num)/(:num)'] = 'StudentPortal/module_lessons/$1/$2';
 $route['student-portal/view-lesson/(:num)/(:num)/(:num)'] = 'StudentPortal/view_lesson/$1/$2/$3';
+$route['student-portal/mark-lesson-completed/(:num)/(:num)/(:num)'] = 'StudentPortal/mark_lesson_completed/$1/$2/$3';
+$route['student-portal/request-certificate/(:num)'] = 'StudentPortal/request_certificate/$1';
+$route['student-portal/certificates'] = 'StudentPortal/certificates';
+$route['student-portal/certificate/(:num)'] = 'StudentPortal/certificate/$1';
+$route['student-portal/download_certificate/(:num)'] = 'StudentPortal/download_certificate/$1';
 $route['student-portal/inventory'] = 'StudentPortal/inventory';
 $route['student-portal/announcements'] = 'StudentPortal/announcements';
 
@@ -164,6 +169,9 @@ $route['(:any)/courses/view_lesson/(:num)/(:num)/(:num)'] = 'Course/view_lesson/
 $route['(:any)/courses/enroll_student'] = 'Course/enroll_student';
 $route['(:any)/courses/update_enrollment_status/(:num)/(:any)'] = 'Course/update_enrollment_status/$2/$3';
 $route['(:any)/courses/unenroll_student/(:num)'] = 'Course/unenroll_student/$2';
+$route['(:any)/courses/certificate_requests'] = 'Course/certificate_requests';
+$route['(:any)/courses/approve_certificate_request/(:num)'] = 'Course/approve_certificate_request/$2';
+$route['(:any)/courses/reject_certificate_request/(:num)'] = 'Course/reject_certificate_request/$2';
 
 // Course Students overview route
 $route['(:any)/courses/students'] = 'Course/students';

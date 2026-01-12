@@ -11,9 +11,16 @@
             </ol>
         </div>
 
+        <?php if ($this->session->flashdata('message')) { ?>
+            <div class="alert alert-<?php echo $this->session->flashdata('message')[0]; ?> alert-dismissible fade show">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <?php echo $this->session->flashdata('message')[1]; ?>
+            </div>
+        <?php } ?>
+        
         <?php if ($this->session->flashdata('error')) { ?>
             <div class="alert alert-danger alert-dismissible fade show">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <?php echo $this->session->flashdata('error'); ?>
             </div>
         <?php } ?>
@@ -35,6 +42,25 @@
                                 <p class="text-white-75 mb-0"><?php echo htmlspecialchars($lesson['content'] ?: 'No description available.'); ?></p>
                             </div>
                             <div class="col-md-4 text-right">
+                                <?php
+                                $lesson_status = isset($lesson_progress) && $lesson_progress ? $lesson_progress['status'] : 'not_started';
+                                $status_badge_class = 'secondary';
+                                $status_text = 'Not Started';
+                                
+                                if ($lesson_status === 'in_progress') {
+                                    $status_badge_class = 'warning';
+                                    $status_text = 'In Progress';
+                                } elseif ($lesson_status === 'completed') {
+                                    $status_badge_class = 'success';
+                                    $status_text = 'Completed';
+                                }
+                                ?>
+                                <div class="mb-2">
+                                    <span class="badge badge-<?php echo $status_badge_class; ?>">
+                                        <i class="feather icon-<?php echo $lesson_status === 'completed' ? 'check-circle' : ($lesson_status === 'in_progress' ? 'clock' : 'circle'); ?>"></i>
+                                        <?php echo $status_text; ?>
+                                    </span>
+                                </div>
                                 <a href="<?php echo base_url('student-portal/module-lessons/'.$course['id'].'/'.$module['id']); ?>" class="btn btn-light">
                                     <i class="feather icon-arrow-left"></i> Back to Lessons
                                 </a>
@@ -230,12 +256,12 @@
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Lesson Actions -->
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
+                        <div class="row align-items-center">
                             <div class="col-md-6">
                                 <?php
                                 // Get previous lesson
@@ -260,6 +286,60 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <?php
+                                $lesson_status = isset($lesson_progress) && $lesson_progress ? $lesson_progress['status'] : 'not_started';
+                                
+                                // Show "Mark as Completed" button if not completed
+                                if ($lesson_status !== 'completed'): ?>
+                                    <a href="<?php echo base_url('student-portal/mark-lesson-completed/'.$course['id'].'/'.$module['id'].'/'.$lesson['id']); ?>" 
+                                       class="btn btn-success" 
+                                       onclick="return confirm('Mark this lesson as completed?');">
+                                        <i class="feather icon-check-circle"></i> Mark as Completed
+                                    </a>
+                                <?php else: ?>
+                                    <span class="badge badge-success p-2">
+                                        <i class="feather icon-check-circle"></i> Completed
+                                    </span>
+                                <?php endif; ?>
+                                
+                                <?php
+                                // Show "Request Certificate" button if:
+                                // 1. This is the last lesson in the module
+                                // 2. All lessons in course are completed
+                                // 3. Certificate request doesn't exist or is rejected
+                                if ($is_last_lesson && $all_lessons_completed): 
+                                    $show_request_btn = false;
+                                    if (!isset($certificate_request) || !$certificate_request) {
+                                        $show_request_btn = true;
+                                    } elseif ($certificate_request['status'] === 'rejected') {
+                                        $show_request_btn = true;
+                                    }
+                                    
+                                    if ($show_request_btn): ?>
+                                        <a href="<?php echo base_url('student-portal/request-certificate/'.$course['id']); ?>" 
+                                           class="btn btn-primary ml-2" 
+                                           onclick="return confirm('Request certificate for this course? Your request will be reviewed by the principal.');">
+                                            <i class="feather icon-award"></i> Request Certificate
+                                        </a>
+                                    <?php elseif (isset($certificate_request)): 
+                                        $request_status = $certificate_request['status'];
+                                        $status_class = $request_status === 'approved' ? 'success' : ($request_status === 'rejected' ? 'danger' : 'warning');
+                                        $status_text = ucfirst($request_status);
+                                    ?>
+                                        <span class="badge badge-<?php echo $status_class; ?> p-2 ml-2">
+                                            <i class="feather icon-<?php echo $request_status === 'approved' ? 'check' : ($request_status === 'rejected' ? 'x' : 'clock'); ?>"></i>
+                                            Certificate Request: <?php echo $status_text; ?>
+                                        </span>
+                                        <?php if ($request_status === 'rejected' && !empty($certificate_request['rejection_reason'])): ?>
+                                            <div class="mt-2">
+                                                <small class="text-danger">
+                                                    <strong>Reason:</strong> <?php echo htmlspecialchars($certificate_request['rejection_reason']); ?>
+                                                </small>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                
+                                <?php
                                 // Get next lesson
                                 $this->db->select('id, title')
                                         ->from('course_module_lessons')
@@ -271,11 +351,11 @@
                                 $next_lesson = $this->db->get()->row_array();
 
                                 if ($next_lesson): ?>
-                                    <a href="<?php echo base_url('student-portal/view-lesson/'.$course['id'].'/'.$module['id'].'/'.$next_lesson['id']); ?>" class="btn btn-primary">
+                                    <a href="<?php echo base_url('student-portal/view-lesson/'.$course['id'].'/'.$module['id'].'/'.$next_lesson['id']); ?>" class="btn btn-primary ml-2">
                                         Next: <?php echo htmlspecialchars(substr($next_lesson['title'], 0, 30)); ?> <i class="feather icon-chevron-right"></i>
                                     </a>
                                 <?php else: ?>
-                                    <button class="btn btn-primary" disabled>
+                                    <button class="btn btn-primary ml-2" disabled>
                                         Next Lesson <i class="feather icon-chevron-right"></i>
                                     </button>
                                 <?php endif; ?>

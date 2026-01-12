@@ -71,6 +71,13 @@
                                             <i class="feather icon-layers"></i> View Modules
                                         </a>
 
+                                        <?php if ($course['enrollment_status'] === 'completed' && isset($certificates_map[$course['id']])): ?>
+                                            <a href="<?php echo base_url('student-portal/certificate/' . $certificates_map[$course['id']]['id']); ?>"
+                                               class="btn btn-success btn-sm" target="_blank">
+                                                <i class="feather icon-award"></i> View Certificate
+                                            </a>
+                                        <?php endif; ?>
+
                                         <?php if (isset($course['enrollment_status'])): ?>
                                             <div class="text-center">
                                                 <small class="text-muted">

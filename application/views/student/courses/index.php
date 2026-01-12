@@ -71,6 +71,44 @@
                                             <i class="feather icon-layers"></i> View Modules
                                         </a>
 
+                                        <?php 
+                                        // Show "Request Certificate" button if:
+                                        // 1. All lessons are completed
+                                        // 2. Certificate doesn't exist
+                                        // 3. Request doesn't exist or was rejected
+                                        $show_request_btn = false;
+                                        if (isset($course['all_lessons_completed']) && $course['all_lessons_completed']) {
+                                            if (!isset($certificates_map[$course['id']])) {
+                                                if (!isset($course['certificate_request']) || !$course['certificate_request']) {
+                                                    $show_request_btn = true;
+                                                } elseif (isset($course['certificate_request']['status']) && $course['certificate_request']['status'] === 'rejected') {
+                                                    $show_request_btn = true;
+                                                }
+                                            }
+                                        }
+                                        
+                                        if ($show_request_btn): ?>
+                                            <a href="<?php echo base_url('student-portal/request-certificate/'.$course['id']); ?>" 
+                                               class="btn btn-warning btn-sm" 
+                                               onclick="return confirm('Request certificate for this course? Your request will be reviewed by the principal.');">
+                                                <i class="feather icon-award"></i> Request Certificate
+                                            </a>
+                                        <?php elseif (isset($course['certificate_request']) && $course['certificate_request']): 
+                                            $request_status = $course['certificate_request']['status'];
+                                            $status_class = $request_status === 'approved' ? 'success' : ($request_status === 'rejected' ? 'danger' : 'warning');
+                                            $status_text = ucfirst($request_status);
+                                        ?>
+                                            <span class="badge badge-<?php echo $status_class; ?> p-2">
+                                                <i class="feather icon-<?php echo $request_status === 'approved' ? 'check' : ($request_status === 'rejected' ? 'x' : 'clock'); ?>"></i>
+                                                Request: <?php echo $status_text; ?>
+                                            </span>
+                                            <?php if ($request_status === 'rejected' && !empty($course['certificate_request']['rejection_reason'])): ?>
+                                                <small class="text-danger d-block mt-1" title="<?php echo htmlspecialchars($course['certificate_request']['rejection_reason']); ?>">
+                                                    <i class="feather icon-info"></i> View reason
+                                                </small>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+
                                         <?php if ($course['enrollment_status'] === 'completed' && isset($certificates_map[$course['id']])): ?>
                                             <a href="<?php echo base_url('student-portal/certificate/' . $certificates_map[$course['id']]['id']); ?>"
                                                class="btn btn-success btn-sm" target="_blank">
@@ -78,8 +116,8 @@
                                             </a>
                                         <?php endif; ?>
 
-                                        <?php if (isset($course['enrollment_status'])): ?>
-                                            <div class="text-center">
+                                        <?php if (isset($course['enrolled_at'])): ?>
+                                            <div class="text-center mt-2">
                                                 <small class="text-muted">
                                                     Enrolled: <?php echo date('M d, Y', strtotime($course['enrolled_at'])); ?>
                                                 </small>

@@ -302,44 +302,6 @@
                                 <?php endif; ?>
                                 
                                 <?php
-                                // Show "Request Certificate" button if:
-                                // 1. This is the last lesson in the module
-                                // 2. All lessons in course are completed
-                                // 3. Certificate request doesn't exist or is rejected
-                                if ($is_last_lesson && $all_lessons_completed): 
-                                    $show_request_btn = false;
-                                    if (!isset($certificate_request) || !$certificate_request) {
-                                        $show_request_btn = true;
-                                    } elseif ($certificate_request['status'] === 'rejected') {
-                                        $show_request_btn = true;
-                                    }
-                                    
-                                    if ($show_request_btn): ?>
-                                        <a href="<?php echo base_url('student-portal/request-certificate/'.$course['id']); ?>" 
-                                           class="btn btn-primary ml-2" 
-                                           onclick="return confirm('Request certificate for this course? Your request will be reviewed by the principal.');">
-                                            <i class="feather icon-award"></i> Request Certificate
-                                        </a>
-                                    <?php elseif (isset($certificate_request)): 
-                                        $request_status = $certificate_request['status'];
-                                        $status_class = $request_status === 'approved' ? 'success' : ($request_status === 'rejected' ? 'danger' : 'warning');
-                                        $status_text = ucfirst($request_status);
-                                    ?>
-                                        <span class="badge badge-<?php echo $status_class; ?> p-2 ml-2">
-                                            <i class="feather icon-<?php echo $request_status === 'approved' ? 'check' : ($request_status === 'rejected' ? 'x' : 'clock'); ?>"></i>
-                                            Certificate Request: <?php echo $status_text; ?>
-                                        </span>
-                                        <?php if ($request_status === 'rejected' && !empty($certificate_request['rejection_reason'])): ?>
-                                            <div class="mt-2">
-                                                <small class="text-danger">
-                                                    <strong>Reason:</strong> <?php echo htmlspecialchars($certificate_request['rejection_reason']); ?>
-                                                </small>
-                                            </div>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                                
-                                <?php
                                 // Get next lesson
                                 $this->db->select('id, title')
                                         ->from('course_module_lessons')

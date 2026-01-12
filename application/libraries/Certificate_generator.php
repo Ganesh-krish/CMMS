@@ -79,145 +79,310 @@ class Certificate_generator {
             size: A4 landscape;
             margin: 0;
         }
-        body {
-            font-family: "Times New Roman", serif;
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Georgia", "Times New Roman", serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
         .certificate-container {
-            width: 11in;
-            height: 8.5in;
-            background: white;
-            padding: 60px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            width: 11.69in;
+            height: 8.27in;
+            background: #ffffff;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             position: relative;
-            border: 20px solid #d4af37;
+            overflow: hidden;
         }
+        
+        /* Outer Gold Border */
+        .outer-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 25px solid #d4af37;
+            z-index: 1;
+        }
+        
+        /* Inner Decorative Border */
+        .inner-border {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            border: 8px double #d4af37;
+            z-index: 2;
+        }
+        
+        /* Corner Decorations */
+        .corner-decoration {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 4px solid #d4af37;
+            z-index: 3;
+        }
+        .corner-top-left {
+            top: 50px;
+            left: 50px;
+            border-right: none;
+            border-bottom: none;
+        }
+        .corner-top-right {
+            top: 50px;
+            right: 50px;
+            border-left: none;
+            border-bottom: none;
+        }
+        .corner-bottom-left {
+            bottom: 50px;
+            left: 50px;
+            border-right: none;
+            border-top: none;
+        }
+        .corner-bottom-right {
+            bottom: 50px;
+            right: 50px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        /* Content Wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            padding: 80px 100px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* Header Section */
         .certificate-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #d4af37;
         }
         .certificate-header h1 {
-            font-size: 48px;
-            color: #2c3e50;
+            font-size: 52px;
+            color: #1a1a1a;
             margin: 0;
-            font-weight: bold;
-            letter-spacing: 3px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            font-family: "Georgia", serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
+        .certificate-header .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-top: 10px;
+            letter-spacing: 3px;
+            font-style: italic;
+        }
+        
+        /* Body Section */
         .certificate-body {
             text-align: center;
-            margin: 60px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
         }
         .certificate-text {
-            font-size: 24px;
-            color: #34495e;
-            line-height: 1.8;
-            margin: 20px 0;
+            font-size: 22px;
+            color: #333;
+            line-height: 2;
+            margin: 15px 0;
+            font-weight: 400;
         }
         .student-name {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 30px 0;
-            text-decoration: underline;
-            text-decoration-color: #d4af37;
-            text-decoration-thickness: 3px;
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 25px 0;
+            padding: 15px 40px;
+            border-bottom: 4px solid #d4af37;
+            border-top: 4px solid #d4af37;
+            display: inline-block;
+            letter-spacing: 2px;
+            font-family: "Georgia", serif;
         }
         .course-name {
-            font-size: 28px;
-            color: #667eea;
-            font-weight: bold;
-            margin: 20px 0;
+            font-size: 32px;
+            color: #2a5298;
+            font-weight: 600;
+            margin: 25px 0;
+            font-style: italic;
+            letter-spacing: 1px;
         }
+        .college-name {
+            font-size: 24px;
+            color: #555;
+            margin-top: 30px;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+        
+        /* Footer Section */
         .certificate-footer {
-            margin-top: 80px;
+            margin-top: 40px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
         }
         .signature-block {
             text-align: center;
-            width: 250px;
+            width: 280px;
+            flex: 1;
         }
         .signature-line {
-            border-top: 2px solid #2c3e50;
-            margin-top: 60px;
-            padding-top: 10px;
+            border-top: 3px solid #1a1a1a;
+            margin-top: 70px;
+            padding-top: 12px;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .signature-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
         }
         .signature-title {
-            font-size: 14px;
-            color: #7f8c8d;
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
         }
-        .certificate-number {
+        
+        /* Bottom Info */
+        .certificate-info {
             position: absolute;
-            bottom: 30px;
-            right: 60px;
-            font-size: 12px;
-            color: #95a5a6;
+            bottom: 40px;
+            left: 100px;
+            right: 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+            z-index: 10;
         }
         .issue-date {
-            position: absolute;
-            bottom: 30px;
-            left: 60px;
-            font-size: 14px;
-            color: #34495e;
+            font-weight: 500;
         }
-        .decorative-border {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 3px solid #d4af37;
-            pointer-events: none;
+        .certificate-number {
+            font-weight: 600;
+            color: #2a5298;
+            letter-spacing: 1px;
         }
+        
+        /* Background Seal */
         .seal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 150px;
-            height: 150px;
-            border: 5px solid #d4af37;
+            width: 200px;
+            height: 200px;
+            border: 8px solid #d4af37;
             border-radius: 50%;
-            background: rgba(212, 175, 55, 0.1);
+            background: rgba(212, 175, 55, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 80px;
             color: #d4af37;
-            opacity: 0.3;
-            z-index: 0;
+            opacity: 0.25;
+            z-index: 5;
         }
-        .content-wrapper {
-            position: relative;
-            z-index: 1;
+        .seal::before {
+            content: "✓";
+            font-weight: bold;
+        }
+        
+        /* Decorative Lines */
+        .decorative-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+            z-index: 6;
+        }
+        .decorative-line-top {
+            top: 180px;
+        }
+        .decorative-line-bottom {
+            bottom: 200px;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .certificate-container {
+                box-shadow: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="certificate-container">
-        <div class="decorative-border"></div>
-        <div class="seal">✓</div>
+        <!-- Outer Gold Border -->
+        <div class="outer-border"></div>
         
+        <!-- Inner Decorative Border -->
+        <div class="inner-border"></div>
+        
+        <!-- Corner Decorations -->
+        <div class="corner-decoration corner-top-left"></div>
+        <div class="corner-decoration corner-top-right"></div>
+        <div class="corner-decoration corner-bottom-left"></div>
+        <div class="corner-decoration corner-bottom-right"></div>
+        
+        <!-- Background Seal -->
+        <div class="seal"></div>
+        
+        <!-- Decorative Lines -->
+        <div class="decorative-line decorative-line-top"></div>
+        <div class="decorative-line decorative-line-bottom"></div>
+        
+        <!-- Main Content -->
         <div class="content-wrapper">
+            <!-- Header -->
             <div class="certificate-header">
                 <h1>CERTIFICATE OF COMPLETION</h1>
+                <div class="subtitle">This is to Certify</div>
             </div>
             
+            <!-- Body -->
             <div class="certificate-body">
                 <div class="certificate-text">
-                    This is to certify that
+                    That
                 </div>
                 
                 <div class="student-name">
@@ -229,14 +394,15 @@ class Certificate_generator {
                 </div>
                 
                 <div class="course-name">
-                    ' . $course_name . '
+                    "' . $course_name . '"
                 </div>
                 
-                <div class="certificate-text" style="margin-top: 40px;">
+                <div class="college-name">
                     ' . $college_name . '
                 </div>
             </div>
             
+            <!-- Footer with Signatures -->
             <div class="certificate-footer">
                 <div class="signature-block">
                     <div class="signature-line">
@@ -252,13 +418,15 @@ class Certificate_generator {
                     </div>
                 </div>
             </div>
-            
+        </div>
+        
+        <!-- Bottom Info -->
+        <div class="certificate-info">
             <div class="issue-date">
-                Date: ' . $issue_date . '
+                <strong>Date of Issue:</strong> ' . $issue_date . '
             </div>
-            
             <div class="certificate-number">
-                Certificate No: ' . $certificate_number . '
+                <strong>Certificate No:</strong> ' . $certificate_number . '
             </div>
         </div>
     </div>

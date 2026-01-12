@@ -106,11 +106,24 @@ class StudentPortal extends CI_Controller {
         $this->db->where('ce.status !=', 'dropped');
         $courses = $this->db->get()->result_array();
 
-        // Load certificate model and get certificates for completed courses
+        // Load models to check lesson completion and certificate requests
         $this->load->model('Certificate_model', 'certificate_model');
+        $this->load->model('Lesson_progress_model', 'lesson_progress');
+        $this->load->model('Certificate_request_model', 'cert_request');
+        
         $certificates_map = [];
         
         foreach ($courses as &$course) {
+            // Check if all lessons are completed
+            $course['all_lessons_completed'] = $this->lesson_progress->are_all_lessons_completed(
+                $course['enrollment_id'], 
+                $course['id']
+            );
+            
+            // Check if certificate request exists
+            $course['certificate_request'] = $this->cert_request->get_request_by_enrollment($course['enrollment_id']);
+            
+            // Check if certificate exists
             if ($course['enrollment_status'] === 'completed') {
                 $certificate = $this->certificate_model->get_certificate_by_enrollment($course['enrollment_id']);
                 if ($certificate) {
@@ -290,25 +303,6 @@ class StudentPortal extends CI_Controller {
 
         // Get lesson progress status
         $data['lesson_progress'] = $this->lesson_progress->get_lesson_progress($enrollment['id'], $lesson_id);
-        
-        // Get all lessons in module to check if this is the last one
-        $all_lessons = $this->db_model->get_all('course_module_lessons', [
-            'module_id' => $module_id,
-            'is_active' => 1
-        ], '*', 'order', 'ASC');
-        
-        $data['is_last_lesson'] = false;
-        if (!empty($all_lessons)) {
-            $last_lesson = end($all_lessons);
-            $data['is_last_lesson'] = ($last_lesson['id'] == $lesson_id);
-        }
-        
-        // Check if all lessons in course are completed
-        $data['all_lessons_completed'] = $this->lesson_progress->are_all_lessons_completed($enrollment['id'], $course_id);
-        
-        // Check if certificate request exists
-        $this->load->model('Certificate_request_model', 'cert_request');
-        $data['certificate_request'] = $this->cert_request->get_request_by_enrollment($enrollment['id']);
         
         // Get enrollment for progress calculation
         $data['enrollment'] = $enrollment;

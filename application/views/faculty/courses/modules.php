@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <?php if (isset($permissions['create']) && $permissions['create']): ?>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModuleModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
                                     <i class="feather icon-plus"></i> Add Module
                                 </button>
                                 <?php endif; ?>
@@ -75,7 +75,7 @@
                                 <h4 class="mt-3">No Modules</h4>
                                 <p class="text-muted">There are no modules in this course yet.</p>
                                 <?php if (isset($permissions['create']) && $permissions['create']): ?>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModuleModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
                                     Add First Module
                                 </button>
                                 <?php endif; ?>
@@ -246,12 +246,16 @@ function editModule(id, name, description, order) {
     document.getElementById('edit_module_description').value = description;
     document.getElementById('edit_module_order').value = order;
     document.getElementById('editModuleForm').action = '<?php echo base_url($url.'/courses/edit_module/'.$course_id.'/'); ?>' + id;
-    $('#editModuleModal').modal('show');
+    // Use Bootstrap 5 modal API
+    var editModal = new bootstrap.Modal(document.getElementById('editModuleModal'));
+    editModal.show();
 }
 
 function confirmDeleteModule(moduleId, moduleName) {
     document.getElementById('moduleName').textContent = moduleName;
     document.getElementById('deleteModuleBtn').href = '<?php echo base_url($url.'/courses/delete_module/'.$course_id.'/'); ?>' + moduleId;
-    $('#deleteModuleModal').modal('show');
+    // Use Bootstrap 5 modal API
+    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModuleModal'));
+    deleteModal.show();
 }
 </script>

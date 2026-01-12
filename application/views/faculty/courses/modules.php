@@ -52,7 +52,11 @@
                                 <p class="mb-0">Manage course modules and lessons</p>
                             </div>
                             <div class="col-md-6 text-right">
-                                <?php if (isset($permissions['create']) && $permissions['create']): ?>
+                                <?php 
+                                // Show button if user has create permission OR is Principal/Vice Principal/HOD/Staff
+                                $can_create = (isset($permissions['create']) && $permissions['create']) || 
+                                             (isset($current_user_role) && in_array($current_user_role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]));
+                                if ($can_create): ?>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
                                     <i class="feather icon-plus"></i> Add Module
                                 </button>
@@ -74,7 +78,11 @@
                                 <i class="feather icon-layers" style="font-size: 4rem; color: #ccc;"></i>
                                 <h4 class="mt-3">No Modules</h4>
                                 <p class="text-muted">There are no modules in this course yet.</p>
-                                <?php if (isset($permissions['create']) && $permissions['create']): ?>
+                                <?php 
+                                // Show button if user has create permission OR is Principal/Vice Principal/HOD/Staff
+                                $can_create = (isset($permissions['create']) && $permissions['create']) || 
+                                             (isset($current_user_role) && in_array($current_user_role, [ROLE_PRINCIPAL, ROLE_VICE_PRINCIPAL, ROLE_HOD, ROLE_STAFF]));
+                                if ($can_create): ?>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
                                     Add First Module
                                 </button>

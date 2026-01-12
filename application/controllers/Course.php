@@ -394,7 +394,14 @@ class Course extends CI_Controller {
 
         $data["course"] = $course;
         $data["current_user_role"] = $user_role; // Pass current user role to view
-        $data["permissions"] = $this->permissions; // Pass permissions to view
+        
+        // Set proper permissions for module management
+        $data["permissions"] = [
+            'create' => $this->faculty_common->has_permission($this->session_data, 'create', 'module'),
+            'edit' => $this->faculty_common->has_permission($this->session_data, 'edit', 'module'),
+            'delete' => $this->faculty_common->has_permission($this->session_data, 'delete', 'module')
+        ];
+        
         $data["modules"] = $this->db_model->get_all(TABLE_COURSE_MODULES, [
             "course_id" => $course_id,
             "is_active" => 1

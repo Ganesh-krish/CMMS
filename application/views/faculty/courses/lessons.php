@@ -431,7 +431,9 @@ $(document).ready(function() {
 function resetAddLessonForm() {
     // Reset the form
     document.getElementById('lesson_title').value = '';
-    document.getElementById('lesson_order').value = '';
+    // Auto-fill order with next available number (don't clear it)
+    var lessonCount = <?php echo count($lessons ?? []); ?>;
+    document.getElementById('lesson_order').value = lessonCount + 1;
     document.getElementById('lesson_duration').value = '';
     document.getElementById('lesson_content').value = '';
 

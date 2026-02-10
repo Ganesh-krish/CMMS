@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="icon" type="image/png" href="<?= base_url("/") ?>assets/images/favicon.svg">
 
-    <!-- Icon fonts -->
+    <!-- Icon fonts -->   
     <link rel="stylesheet" href="<?= base_url('') ?>assets/fonts/ionicons.css">
     <link rel="stylesheet" href="<?= base_url('') ?>assets/fonts/feather.css">
 
@@ -71,7 +71,7 @@
         <div class="layout-inner">
 
             <!-- Layout sidenav -->
-            <div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical bg-dark student-sidebar">
+            <div id="sidenav-main" class="layout-sidenav sidenav sidenav-vertical bg-dark student-sidebar">
 
                 <!-- Brand demo (see assets/css/demo/demo.css) -->
                 <div class="app-brand demo">
@@ -85,7 +85,8 @@
                     <a href="javascript:void(0)" class="app-brand-text demo sidenav-text font-weight-normal ml-2" style="color: #fff;">
                         Student Portal
                     </a>
-                    <a href="javascript:void(0)" class="layout-sidenav-toggle sidenav-link text-large ml-auto">
+                    <!-- Hamburger icon for sidebar toggle -->
+                    <a href="javascript:void(0)" id="iconSidenav" class="sidenav-toggle sidenav-link text-large ml-auto">
                         <i class="ion ion-md-menu align-middle"></i>
                     </a>
                 </div>
@@ -164,10 +165,6 @@
             <div class="layout-container">
                 <!-- Layout navbar -->
                 <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-white container-p-x" id="layout-navbar">
-
-                    <a href="javascript:void(0)" class="nav-link nav-link-style rounded-circle press-scale-down d-none d-lg-block" data-action="sidenav-pin">
-                        <i class="ion ion-md-menu text-muted"></i>
-                    </a>
 
                     <div class="navbar-nav flex-row ml-auto align-items-center">
                         <!-- College Name -->

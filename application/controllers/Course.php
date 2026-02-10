@@ -297,7 +297,7 @@ class Course extends CI_Controller {
 
                 $data = array(
                     'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
+                    'course_code' => $this->input->post('code'),
                     'description' => $this->input->post('description'),
                     'updated_by' => $this->session_data['id']
                 );
@@ -334,10 +334,31 @@ class Course extends CI_Controller {
             }
 
             $data["course"] = $course;
-            $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
-                "is_active" => 1,
-                "college_id" => $this->college['id']
-            ]);
+            
+            // DEBUG: Log department query parameters
+            $college_id = isset($this->college['id']) ? $this->college['id'] : null;
+            log_message('debug', 'Edit Course - College ID: ' . ($college_id ?? 'NULL'));
+            
+            // Get departments - if college_id is set, filter by it
+            if (!empty($college_id)) {
+                $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, [
+                    "is_active" => 1,
+                    "college_id" => $college_id
+                ]);
+            } else {
+                // No college_id, get all active departments
+                $data["departments"] = $this->db_model->get_all(TABLE_DEPARTMENT, ["is_active" => 1]);
+            }
+            
+            // DEBUG: Log number of departments found
+            log_message('debug', 'Edit Course - Number of departments: ' . count($data["departments"]));
+            
+            // DEBUG: Log departments data if found
+            if (!empty($data["departments"])) {
+                log_message('debug', 'Edit Course - Departments data: ' . json_encode($data["departments"]));
+            } else {
+                log_message('debug', 'Edit Course - No departments found with query');
+            }
 
             $data["url"] = $this->url;
             $class["classname"] = "courses";

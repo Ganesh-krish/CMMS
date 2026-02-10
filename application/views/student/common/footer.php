@@ -21,6 +21,9 @@
     <!-- Core scripts -->
     <script src="<?= base_url('') ?>assets/js/sidenav.js"></script>
     
+    <!-- Soft UI Dashboard JS (for sidebar toggle) -->
+    <script src="<?= base_url('') ?>assets/js/soft-ui-dashboard.min.js"></script>
+    
     <!-- Pace.js (loading indicator) -->
     <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">

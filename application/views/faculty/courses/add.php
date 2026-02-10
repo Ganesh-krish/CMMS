@@ -51,24 +51,31 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="department">Department</label>
-                                        <select class="form-control select2" id="department" name="department">
+                                        <select class="form-control" id="department" name="department">
                                             <option value="">Select Department</option>
-                                            <?php foreach ($departments as $dept): ?>
-                                                <option value="<?php echo $dept['id']; ?>"
-                                                        <?php
-                                                        $is_selected = false;
-                                                        if (isset($course) && $course['department'] == $dept['id']) {
-                                                            $is_selected = true;
-                                                        } elseif (isset($selected_department) && $selected_department == $dept['id']) {
-                                                            $is_selected = true;
-                                                        } elseif (set_select('department', $dept['id'])) {
-                                                            $is_selected = true;
-                                                        }
-                                                        echo $is_selected ? 'selected' : '';
-                                                        ?>>
-                                                    <?php echo htmlspecialchars($dept['name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
+                                            <?php 
+                                            // Debug: Log departments data
+                                            if (empty($departments)) {
+                                                echo '<option value="">No departments found</option>';
+                                            } else {
+                                                foreach ($departments as $dept): ?>
+                                                    <option value="<?php echo $dept['id']; ?>"
+                                                            <?php
+                                                            $is_selected = false;
+                                                            // Safely check if department key exists in course array
+                                                            if (isset($course['department']) && $course['department'] == $dept['id']) {
+                                                                $is_selected = true;
+                                                            } elseif (isset($selected_department) && $selected_department == $dept['id']) {
+                                                                $is_selected = true;
+                                                            } elseif (set_select('department', $dept['id'])) {
+                                                                $is_selected = true;
+                                                            }
+                                                            echo $is_selected ? 'selected' : '';
+                                                            ?>>
+                                                        <?php echo htmlspecialchars($dept['name']); ?>
+                                                    </option>
+                                                <?php endforeach;
+                                            } ?>
                                         </select>
                                         <?php echo form_error('department', '<small class="text-danger">', '</small>'); ?>
                                         <small class="form-text text-muted">Leave empty if course is available to all departments</small>
@@ -121,13 +128,3 @@
         </div>
     </div>
 </div>
-
-<script>
-// Initialize Select2 for department dropdown
-$(document).ready(function() {
-    $('.select2').select2({
-        placeholder: "Select department",
-        allowClear: true
-    });
-});
-</script>
